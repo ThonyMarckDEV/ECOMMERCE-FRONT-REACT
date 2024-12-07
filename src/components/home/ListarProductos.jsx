@@ -40,12 +40,14 @@ function ListarProductos({ filtro }) {
     setProductoSeleccionado(null);
   };
 
-  if (loading) return <p>Cargando productos...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="text-black">Cargando productos...</p>
+  if (error) return <p className="text-red">Error: {error}</p>;
 
   return (
     <div className="bg-white min-h-screen p-4">
-      <h1 className="text-3xl font-bold text-center my-6 text-black">Productos</h1>
+       <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10">
+          Productos
+        </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {productos.map((producto) => (
           <div

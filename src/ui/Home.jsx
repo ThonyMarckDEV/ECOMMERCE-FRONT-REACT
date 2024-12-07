@@ -1,5 +1,8 @@
 import '../index.css';
 
+import React, { useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 //Componentes HOME
 import NavBarHome from '../components/home/NavBarHome'; 
 import CarruselHome from '../components/home/CarruselHome'; 
@@ -12,8 +15,10 @@ import image2 from '../img/2.webp';
 import image3 from '../img/3.webp';
 
 
-
 function Home() {
+
+  const categoriasRef = useRef(null);
+  const location = useLocation();
 
   // const [currentIndex] = useState(0);
   // const navigate = useNavigate(); // Hook para redirigir al usuario
@@ -59,8 +64,6 @@ function Home() {
   //       }
   //     };
 
-
-
   // Array de imágenes
   const images = [
     image1, // Imagen local
@@ -68,27 +71,37 @@ function Home() {
     image3, // Imagen local
   ];
 
-  return (
+  
+  useEffect(() => {
+    // Detectar el parámetro de la URL y hacer scroll
+    const params = new URLSearchParams(location.search);
+    const scrollTo = params.get('scrollTo');
+    if (scrollTo === 'categories' && categoriasRef.current) {
+      categoriasRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location]);
+  
+
+   return (
     <div className="bg-gray-800 font-sans text-gray-200">
       {/* Barra de navegación */}
-      <NavBarHome />
+      <NavBarHome/> {/* Pasa la función como prop */}
       
       {/* Carrusel debajo de la barra de navegación */}
-      <div >
+      <div>
         <CarruselHome images={images} interval={5000} />
       </div>
 
       {/* Grid de categorías debajo del carrusel */}
-      <div >
+      <div ref={categoriasRef}> {/* Asignamos la referencia aquí */}
         <CategoriasHome />
       </div>
 
-
-       {/* Footer */}
-       <Footer />
-
+      {/* Footer */}
+      <Footer />
     </div>
   );
-}
+};
+
 
 export default Home;

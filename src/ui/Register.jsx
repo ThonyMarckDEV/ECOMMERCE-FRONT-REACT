@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../../js/urlHelper';
-import Notification from './Notificacion'; // Importar el componente de notificación
+import API_BASE_URL from '../js/urlHelper';
+import Notification from '../components/home/Notificacion'; // Importar el componente de notificación
 
 const Register = () => {
   const [name, setName] = useState('');

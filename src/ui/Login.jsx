@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../../js/urlHelper';
+import API_BASE_URL from '../js/urlHelper';
 
-const ModalLogin = ({ closeLoginModal }) => {
+const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -43,14 +43,6 @@ const ModalLogin = ({ closeLoginModal }) => {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('jwt');
-    if (token) {
-      // Si ya tiene un token, redirige a la página principal
-      navigate('/');
-    }
-  }, [navigate]);
-
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
       <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg transform transition-all">
@@ -88,7 +80,7 @@ const ModalLogin = ({ closeLoginModal }) => {
           {/* Botón de iniciar sesión */}
           <button
             type="submit"
-            className="w-full py-3  bg-black text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full py-3 bg-black text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           >
             Iniciar sesión
           </button>
@@ -111,12 +103,12 @@ const ModalLogin = ({ closeLoginModal }) => {
 
         {/* Botón de regresar */}
         <div className="mt-4 text-center">
-        <button
+          <button
             onClick={() => navigate('/')} // Redirige a la página principal
             className="w-full py-3 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-        >
+          >
             Regresar
-        </button>
+          </button>
         </div>
 
       </div>
@@ -124,4 +116,4 @@ const ModalLogin = ({ closeLoginModal }) => {
   );
 };
 
-export default ModalLogin;
+export default Login;

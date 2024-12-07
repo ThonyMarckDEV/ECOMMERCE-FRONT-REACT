@@ -60,8 +60,8 @@ function DetalleProducto({ productoId, onClose }) {
     // Aquí agregarías el producto al carrito
   };
 
-  if (loading) return <p>Cargando detalles del producto...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="text-black" >Cargando detalles del producto...</p>;
+  if (error) return <p className="text-red">Error: {error}</p>;
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-30">

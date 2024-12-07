@@ -2,13 +2,23 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 
+
+//ComponentesHome
 import Home from './ui/Home'; // Cambia './Home' al camino correcto si está en otra carpeta
-
 import Productos from './ui/Productos'; // Cambia './Home' al camino correcto si está en otra carpeta
+import Login from './ui/Login'; // Asegúrate de tener el componente Login
+import Register from './ui/Register'; // Asegúrate de tener el componente Login
 
-import Login from './components/home/Login'; // Asegúrate de tener el componente Login
+//UIS
+//=====================================================================================================================
+//UserUI
+import PerfilUser from './ui/userUI/PerfilUser'; // Asegúrate de tener el componente Login
 
-import Register from './components/home/Register'; // Asegúrate de tener el componente Login
+
+//utilities
+import ProtectedRouteHome from './utilities/ProtectedRouteHome'; // Importar el componente ProtectedRoute
+
+import ProtectedRouteRol from './utilities/ProtectedRouteRol';
 
 // Scripts para actividad y token
 // import { updateLastActivity } from './js/lastActivity';
@@ -37,14 +47,19 @@ function AppContent() {
 
   return (
     <Routes>
+
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/productos" element={<Productos />} />
-      {/*
-      <Route path="/servicios" element={<Servicios />} />
-      <Route path="/contacto" element={<Contacto />} /> 
-      */}
+
+       {/* Usar ProtectedRouteHome para login y registro */}
+       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
+       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
+       {/* Usar ProtectedRouteHome para login y registro */}
+
+       <Route path="/productos" element={<Productos />} />
+
+      {/* Usar ProtectedRoute para UIUSER POR ROL cliente */}
+       <Route path="/perfil" element={<ProtectedRouteRol element={<PerfilUser />} allowedRoles={['cliente']} />} />
+
     </Routes>
   );
 }

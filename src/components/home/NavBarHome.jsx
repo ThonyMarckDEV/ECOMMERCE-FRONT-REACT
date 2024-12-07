@@ -33,7 +33,7 @@ const Navbar = () => {
   };
 
   const goToProfile = () => {
-    navigate('/profile'); // Redirige a la página de perfil
+    navigate('/perfil'); // Redirige a la página de perfil
   };
 
   // Llamamos al logout.js cuando el usuario hace click en "Cerrar sesión"
@@ -41,7 +41,10 @@ const Navbar = () => {
     logout(); // Llama a la función del archivo logout.js
     setIsAuthenticated(false); // Actualiza el estado de autenticación
     setIsProfileMenuOpen(false);
-    navigate('/login'); // Redirige al login
+  };
+
+  const handleCategoriesClick = () => {
+    navigate('/?scrollTo=categories'); // Redirige a la página principal con un query param
   };
 
   return (
@@ -56,15 +59,18 @@ const Navbar = () => {
 
         {/* Categorías para pantallas grandes */}
         <div className="hidden md:flex space-x-8 flex-1 justify-center">
-          <a href="#categoria2" className="hover:text-gray-400 font-bold">
+          <a href="/" className="hover:text-gray-400 font-bold">
             Home
           </a>
           <a href="/productos" className="hover:text-gray-400 font-bold">
             Productos
           </a>
-          <a href="#categoria3" className="hover:text-gray-400 font-bold">
-            Categoría 3
-          </a>
+          <button
+            onClick={handleCategoriesClick}
+            className="hover:text-gray-400 font-bold"
+          >
+            Categorías
+          </button>
         </div>
 
         {/* Botón del menú para móviles */}
@@ -89,7 +95,7 @@ const Navbar = () => {
         </button>
 
         {/* Carrito de compras */}
-        <div className="relative">
+        <div className="relative ml-12 sm:ml-4 md:ml-6">
           <button className="hover:text-gray-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -106,10 +112,13 @@ const Navbar = () => {
               />
             </svg>
           </button>
-          {/* Indicador del número de productos en el carrito */}
-          <span className="absolute top-0 right-1 -mt-3 -mr-3 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black bg-white rounded-full">
-            3
-          </span>
+
+          {/* Mostrar el indicador solo si hay token */}
+          {localStorage.getItem('jwt') && (
+            <span className="absolute top-0 right-1 -mt-3 -mr-3 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black bg-white rounded-full">
+              3
+            </span>
+          )}
         </div>
 
         {/* Ícono de perfil */}
@@ -180,15 +189,18 @@ const Navbar = () => {
       <div
         className={`md:hidden mt-4 ${isMenuOpen ? 'block' : 'hidden'}`}
       >
-        <a href="#categoria2" className="block py-2 px-4 hover:bg-gray-700 font-bold">
+        <a href="/" className="block py-2 px-4 hover:bg-gray-700 font-bold">
           Home
         </a>
         <a href="/productos" className="block py-2 px-4 hover:bg-gray-700 font-bold">
           Productos
         </a>
-        <a href="#categoria3" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-          Categoría 3
-        </a>
+        <button
+          onClick={handleCategoriesClick}
+          className="block py-2 px-4 hover:bg-gray-700 font-bold text-left w-full"
+        >
+          Categorías
+        </button>
       </div>
     </nav>
   );

@@ -7,10 +7,10 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
   // Obtener el JWT desde localStorage, cookies, o donde lo almacenes
   const token = localStorage.getItem('jwt'); // Cambia esta línea si usas otro método de almacenamiento
 
-  if (!token) {
-    // Si no hay token, redirigir al login
-    return <Navigate to="/login" />;
-  }
+   if (!token) {
+     // Si no hay token, redirigir al login
+     return <Navigate to="/" />;
+   }
 
   try {
     // Decodificar el JWT
@@ -26,7 +26,7 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
     }
   } catch (error) {
     // Si el token no es válido o no se puede decodificar, redirigir al login
-    return <Navigate to="/login" />;
+     return <Navigate to="/" />;
   }
 };
 
