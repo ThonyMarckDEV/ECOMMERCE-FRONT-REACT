@@ -32,7 +32,7 @@ const Login = ({ closeLoginModal }) => {
         localStorage.setItem('jwt', result.token);
         
         // Redirigir a la página principal
-        navigate('/');
+        window.location.href = '/';
       } else {
         // Mostrar error si las credenciales son incorrectas o hubo algún problema
         setError(result.error || 'Hubo un error al iniciar sesión.');

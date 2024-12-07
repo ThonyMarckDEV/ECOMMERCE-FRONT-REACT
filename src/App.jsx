@@ -21,29 +21,28 @@ import ProtectedRouteHome from './utilities/ProtectedRouteHome'; // Importar el 
 import ProtectedRouteRol from './utilities/ProtectedRouteRol';
 
 // Scripts para actividad y token
-// import { updateLastActivity } from './js/lastActivity';
-// import { checkToken, clearTokenCheckInterval } from './js/checkTokenIntervalanduserStatus';
+import { updateLastActivity } from './js/lastActivity';
+import { checkStatus} from './js/checkUserStatus';
 
 // Componente para manejar la lógica con useLocation
 function AppContent() {
   // const location = useLocation();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('jwt');
-  //   if (token) {
-  //     updateLastActivity();
-  //     checkToken();
+  useEffect(() => {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      updateLastActivity();
+      checkStatus();
 
-  //     const intervalId = setInterval(() => {
-  //       updateLastActivity();
-  //     }, 30000); // Ejecutar cada 30 segundos
+      const intervalId = setInterval(() => {
+        updateLastActivity();
+      }, 30000); // Ejecutar cada 30 segundos
 
-  //     return () => {
-  //       clearInterval(intervalId);
-  //       clearTokenCheckInterval();
-  //     };
-  //   }
-  // }, [location.pathname]); // Ejecutar cada vez que cambie la ruta
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [location.pathname]); // Ejecutar cada vez que cambie la ruta
 
   return (
     <Routes>

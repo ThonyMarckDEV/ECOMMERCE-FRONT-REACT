@@ -38,11 +38,7 @@ const Register = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    const apellidoPattern = /^[a-zA-ZÀ-ÿ]+(\s[a-zA-ZÀ-ÿ]+)+$/;
 
-    if (!apellidos || !apellidoPattern.test(apellidos)) {
-      newErrors.apellidos = 'Debe ingresar al menos dos apellidos separados por un espacio.';
-    }
 
     if (!name) {
       newErrors.name = 'El nombre es obligatorio.';

@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import NavBarHome from '../../components/home/NavBarHome';
 import { getIdUsuario } from '../../utilities/jwtUtils'; // Importamos getIdUsuario
-import API_BASE_URL from '../../js/urlHelper';
 import LoadingScreen from '../../components/home/LoadingScreen'; // Importamos el componente LoadingScreen
 import Notification from '../../components/home/Notificacion'; // Importamos el componente de notificación
+//Js scripts
+import { verificarYRenovarToken,renovarToken } from '../../js/authToken';
+import API_BASE_URL from '../../js/urlHelper';
+
 
 function Perfil() {
   const [perfilData, setPerfilData] = useState({
@@ -39,6 +42,7 @@ function Perfil() {
   useEffect(() => {
     if (token) {
       setIsLoading(true); // Activar la pantalla de carga
+      verificarYRenovarToken();
       fetch(`${API_BASE_URL}/api/perfilCliente`, {
         method: 'GET',
         headers: {
@@ -80,6 +84,7 @@ function Perfil() {
 
   const handleSave = () => {
     setIsLoading(true); // Activar la pantalla de carga
+    verificarYRenovarToken();
     fetch(`${API_BASE_URL}/api/updateCliente/${idUsuario}`, {
       method: 'PUT',
       headers: {
@@ -115,12 +120,13 @@ function Perfil() {
     if (newProfileImage) {
       const formData = new FormData();
       formData.append('perfil', newProfileImage); // Asegúrate de que el nombre del campo sea 'perfil'
-  
       setIsLoading(true); // Activar la pantalla de carga
+  
+      // Subir la foto de perfil
       fetch(`${API_BASE_URL}/api/uploadProfileImageCliente/${idUsuario}`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Asegúrate de que el token es válido aquí
         },
         body: formData,
       })
@@ -130,23 +136,35 @@ function Perfil() {
             description: 'Foto de perfil actualizada exitosamente',
             bgColor: 'bg-green-400', // Notificación de éxito
           });
+  
           // Desactivar el modo de edición después de la subida de la foto
           setIsEditing(false);
   
-          // Obtener nuevamente los datos del perfil para actualizar la foto
-          fetch(`${API_BASE_URL}/api/perfilCliente`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-            .then(response => response.json())
-            .then(data => {
-              setPerfilData(data.data); // Actualizar los datos del perfil
-              setIsLoading(false);
+          // Renovar el token después de la subida exitosa de la foto
+          renovarToken()
+            .then(nuevoToken => {
+              // Obtener nuevamente los datos del perfil con el token renovado
+              fetch(`${API_BASE_URL}/api/perfilCliente`, {
+                method: 'GET',
+                headers: {
+                  Authorization: `Bearer ${nuevoToken}`, // Usar el nuevo token
+                },
+              })
+                .then(response => response.json())
+                .then(data => {
+                  setPerfilData(data.data); // Actualizar los datos del perfil
+                  setIsLoading(false);
+  
+                  // Llamar a la función updateProfileImage para actualizar la imagen en Navbar
+                  updateProfileImage(nuevoToken); // Actualizar la imagen del perfil con el nuevo token
+                })
+                .catch(error => {
+                  console.error("Error al obtener los datos del perfil:", error);
+                  setIsLoading(false);
+                });
             })
             .catch(error => {
-              console.error("Error al obtener los datos del perfil:", error);
+              console.error("Error al renovar el token:", error);
               setIsLoading(false);
             });
         })

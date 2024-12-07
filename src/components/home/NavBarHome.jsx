@@ -23,6 +23,7 @@ const Navbar = () => {
       setIsAuthenticated(false); // Si no hay token, no está autenticado
     }
   }, []);
+  
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

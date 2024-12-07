@@ -38,11 +38,11 @@ export async function renovarToken() {
             showNotification('El token ha expirado. Recargando la página...', 'bg-red-500');
             setTimeout(() => window.location.reload(), 3000);
         } else {
-           // logoutAndRedirect();
+            logoutAndRedirect();
         }
     } catch (error) {
         console.error("Error al intentar renovar el token:", error);
-       // logoutAndRedirect();
+        logoutAndRedirect();
     }
 }
 
@@ -54,7 +54,7 @@ export async function verificarYRenovarToken() {
             console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token, redirigiendo al login...");
-            //logoutAndRedirect();
+            logoutAndRedirect();
         }
     } else {
        // console.log("El token es válido y no necesita renovación.");
