@@ -6,6 +6,10 @@ import Home from './ui/Home'; // Cambia './Home' al camino correcto si está en 
 
 import Productos from './ui/Productos'; // Cambia './Home' al camino correcto si está en otra carpeta
 
+import Login from './components/home/Login'; // Asegúrate de tener el componente Login
+
+import Register from './components/home/Register'; // Asegúrate de tener el componente Login
+
 // Scripts para actividad y token
 // import { updateLastActivity } from './js/lastActivity';
 // import { checkToken, clearTokenCheckInterval } from './js/checkTokenIntervalanduserStatus';
@@ -34,10 +38,13 @@ function AppContent() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/productos" element={<Productos />} />
-      {/* <Route path="/login" element={<Login />} />
+      {/*
       <Route path="/servicios" element={<Servicios />} />
-      <Route path="/contacto" element={<Contacto />} /> */}
+      <Route path="/contacto" element={<Contacto />} /> 
+      */}
     </Routes>
   );
 }

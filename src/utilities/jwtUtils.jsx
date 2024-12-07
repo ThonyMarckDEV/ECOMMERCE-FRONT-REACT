@@ -1,3 +1,7 @@
+// jwtUtils.jsx
+
+import API_BASE_URL from '../js/urlHelper';
+
 // Función para decodificar el payload de un JWT manualmente
 const decodeToken = (token) => {
   try {
@@ -13,8 +17,21 @@ const decodeToken = (token) => {
   }
 };
 
+// Función para obtener el perfil (imagen de perfil) con la URL base concatenada
+export const getPerfil = (token) => {
+  const decodedToken = decodeToken(token);
+  if (decodedToken) {
+    // Asumiendo que la URL base de la API es algo como 'http://127.0.0.1:8000/storage/'
+    const baseUrl = `${API_BASE_URL}/storage/`;
+    return decodedToken.perfil ? `${baseUrl}${decodedToken.perfil}` : ''; // Concatenamos la URL base con el perfil
+  }
+  return ''; // Si el token es inválido o no tiene perfil
+};
 // Función para obtener el ID del usuario
 export const getIdUsuario = (token) => decodeToken(token)?.idUsuario ?? null;
+
+// Función para obtener el nombre de usuario
+export const getUsername = (token) => decodeToken(token)?.username ?? null;
 
 // Función para obtener el rol del usuario
 export const getUserRole = (token) => decodeToken(token)?.rol ?? null;
@@ -35,13 +52,25 @@ export const getTokenExpirationDate = (token) => {
   return exp ? new Date(exp * 1000) : null;
 };
 
-// Función para obtener el nombre de usuario
-export const getUsername = (token) => decodeToken(token)?.username ?? null;
+// Función para verificar el token de manera general
+export const verifyToken = (token) => {
+  if (!token) {
+    return { valid: false, message: "Token no proporcionado" };
+  }
+  
+  if (isTokenExpired(token)) {
+    return { valid: false, message: "Token expirado" };
+  }
+  
+  return { valid: true, message: "Token válido" };
+};
 
 export default {
+  getPerfil,
   getIdUsuario,
+  getUsername,
   getUserRole,
   isTokenExpired,
   getTokenExpirationDate,
-  getUsername,
+  verifyToken
 };

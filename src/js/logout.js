@@ -30,8 +30,9 @@ export async function logout() {
   
         // Eliminar el session de localStorage
        sessionStorage.removeItem('hasReloaded');
-    // Redirigir a la página de inicio de sesión en el dominio raíz
-    window.location.href = `/login`;
+       
+        // Redirigir a la página de inicio de sesión en el dominio raíz
+        window.location.href = `/`;
 
 }
 

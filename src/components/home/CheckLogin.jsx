@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function ModalLogin({ setShowModal }) {
+function CheckLogin({ setShowModal }) {
   const navigate = useNavigate();
 
   // Verificar el token cuando el modal se muestra
@@ -41,4 +41,4 @@ function ModalLogin({ setShowModal }) {
   );
 }
 
-export default ModalLogin;
+export default CheckLogin;

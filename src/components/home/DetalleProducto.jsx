@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import { useNavigate } from 'react-router-dom';
-import ModalLogin from '../home/CheckLogin'; // Importa el nuevo componente ModalLogin
+import CheckLogin from '../home/CheckLogin'; // Importa el nuevo componente ModalLogin
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'; // Íconos para los botones de cantidad
+
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -120,7 +121,7 @@ function DetalleProducto({ productoId, onClose }) {
         </button>
 
         {/* Llamada al ModalLogin */}
-        {showModal && <ModalLogin setShowModal={setShowModal} />}
+        {showModal && <CheckLogin setShowModal={setShowModal} />}
         
       </div>
     </div>

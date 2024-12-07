@@ -1,10 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../../js/logout'; // Cambiar a importación nombrada
+import jwtUtils from '../../utilities/jwtUtils'; // Importar las utilidades JWT
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Verificación de autenticación
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Verificar si el menú de perfil está abierto
+  const navigate = useNavigate(); // Inicializamos useNavigate
+
+  // Estado para la foto de perfil
+  const [profileImage, setProfileImage] = useState('');
+
+  // Verificar si hay token en el localStorage al cargar el componente
+  useEffect(() => {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      setIsAuthenticated(true); // Si hay token, está autenticado
+      const profileImgUrl = jwtUtils.getPerfil(token); // Obtener URL de la imagen del perfil desde el token
+      setProfileImage(profileImgUrl); // Establecer la imagen de perfil
+    } else {
+      setIsAuthenticated(false); // Si no hay token, no está autenticado
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen); // Cambia el estado de visibilidad del menú de perfil
+  };
+
+  const goToProfile = () => {
+    navigate('/profile'); // Redirige a la página de perfil
+  };
+
+  // Llamamos al logout.js cuando el usuario hace click en "Cerrar sesión"
+  const handleLogout = () => {
+    logout(); // Llama a la función del archivo logout.js
+    setIsAuthenticated(false); // Actualiza el estado de autenticación
+    setIsProfileMenuOpen(false);
+    navigate('/login'); // Redirige al login
   };
 
   return (
@@ -12,18 +49,18 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         {/* Nombre de la empresa */}
         <a href="/" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-        <div className="text-xl font-bold">
-          ECOMMERCE
-        </div>
+          <div className="text-xl font-bold">
+            ECOMMERCE
+          </div>
         </a>
 
         {/* Categorías para pantallas grandes */}
         <div className="hidden md:flex space-x-8 flex-1 justify-center">
+          <a href="#categoria2" className="hover:text-gray-400 font-bold">
+            Home
+          </a>
           <a href="/productos" className="hover:text-gray-400 font-bold">
             Productos
-          </a>
-          <a href="#categoria2" className="hover:text-gray-400 font-bold">
-            Categoría 2
           </a>
           <a href="#categoria3" className="hover:text-gray-400 font-bold">
             Categoría 3
@@ -74,17 +111,80 @@ const Navbar = () => {
             3
           </span>
         </div>
+
+        {/* Ícono de perfil */}
+        <div className="relative ml-4">
+          <button
+            onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')} // Si está autenticado, abre el menú; si no, redirige al login
+            className="hover:text-gray-400"
+          >
+            {profileImage ? (
+              <img
+                src={profileImage} // Mostrar la imagen del perfil
+                alt="Perfil"
+                className="w-8 h-8 rounded-full"
+              />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-8 h-8"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 3v3h14V3m-7 4v9m0 0H5m7 0h7m-7 0v5"
+                />
+              </svg>
+            )}
+          </button>
+
+          {/* Menú desplegable de perfil */}
+          {isProfileMenuOpen && isAuthenticated && (
+            <div className="absolute right-0 mt-2 bg-white text-black border border-gray-300 rounded-lg shadow-lg w-48 z-10">
+              <ul>
+                <li>
+                  <button
+                    onClick={goToProfile}
+                    className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                  >
+                    Mi perfil
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/addresses')} // Redirige a la página de direcciones
+                    className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                  >
+                    Direcciones
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogout} // Cierra sesión
+                    className="block px-4 py-2 hover:bg-gray-200 w-full text-left text-red-600"
+                  >
+                    Cerrar sesión
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Menú desplegable en móviles */}
       <div
         className={`md:hidden mt-4 ${isMenuOpen ? 'block' : 'hidden'}`}
       >
-        <a href="/productos" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-          Productos 1
-        </a>
         <a href="#categoria2" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-          Categoría 2
+          Home
+        </a>
+        <a href="/productos" className="block py-2 px-4 hover:bg-gray-700 font-bold">
+          Productos
         </a>
         <a href="#categoria3" className="block py-2 px-4 hover:bg-gray-700 font-bold">
           Categoría 3
