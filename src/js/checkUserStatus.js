@@ -36,17 +36,17 @@ export const checkUserStatus = async () => {
           //  console.log("Respuesta de estado recibida:", data);
 
             if (data.status === 'loggedOff' || (data.status === 'loggedOnInvalidToken' && !data.isTokenValid)) {
-                console.log("Estado del usuario/token inválido. Redirigiendo al login...");
+               // console.log("Estado del usuario/token inválido. Redirigiendo al login...");
                 logoutAndRedirect();
             } else if (data.status === 'loggedOn' && data.isTokenValid) {
-               console.log("Estado del usuario activo y token válido.");
+              // console.log("Estado del usuario activo y token válido.");
             }
         } else {
-            console.log("Error en la respuesta al verificar el estado, redirigiendo...");
+           // console.log("Error en la respuesta al verificar el estado, redirigiendo...");
             logoutAndRedirect();
         }
     } catch (error) {
-        console.error("Error en la solicitud de verificación del estado del usuario:", error);
+        //console.error("Error en la solicitud de verificación del estado del usuario:", error);
         logoutAndRedirect();
     }
 }

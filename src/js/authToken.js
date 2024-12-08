@@ -5,13 +5,13 @@ import { logout as logoutAndRedirect } from './logout.js';
 function tokenExpirado() {
     const token = localStorage.getItem('jwt');
     if (!token) {
-        console.log("Token no encontrado en localStorage.");
+       // console.log("Token no encontrado en localStorage.");
         return true;
     }
 
     const payload = parseJwt(token);
     if (!payload || !payload.exp) {
-        console.error("El token es inválido o no contiene un campo de expiración.");
+       // console.error("El token es inválido o no contiene un campo de expiración.");
         return true;
     }
 
@@ -29,7 +29,7 @@ function tokenExpirado() {
 export async function renovarToken() {
     const token = localStorage.getItem('jwt');
     if (!token) {
-        console.log("Token no encontrado en localStorage.");
+        //console.log("Token no encontrado en localStorage.");
         return null;
     }
 
@@ -56,10 +56,10 @@ export async function renovarToken() {
         } else if (response.status === 401) {
             const errorData = await response.json();
             if (errorData.error === "The token has been blacklisted") {
-                console.log('El token ha sido invalidado. Redirigiendo al login...');
+               // console.log('El token ha sido invalidado. Redirigiendo al login...');
                 logoutAndRedirect();
             } else {
-                console.log('El token ha expirado. Recargando la página...');
+                //console.log('El token ha expirado. Recargando la página...');
                 setTimeout(() => window.location.reload(), 3000);
             }
         } else if (response.status === 500) {
@@ -78,7 +78,7 @@ export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
         const nuevoToken = await renovarToken();
         if (nuevoToken) {
-            console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
+           // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token, redirigiendo al login...");
             logoutAndRedirect();

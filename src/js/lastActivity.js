@@ -23,9 +23,9 @@ export async function updateLastActivity() {
             });
 
             const data = await response.json();
-            console.log('Last activity updated:', data.message);
+           // console.log('Last activity updated:', data.message);
         } catch (error) {
-            console.error('Error updating last activity:', error);
+           // console.error('Error updating last activity:', error);
         }
     }
 }

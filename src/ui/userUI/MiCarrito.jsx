@@ -59,21 +59,25 @@ function Carrito() {
     return productos.reduce((total, producto) => total + producto.subtotal, 0);
   };
 
-     // Función para actualizar la cantidad de un producto
   const actualizarCantidad = async (idProducto, cantidad) => {
     try {
-
       // Verificamos si la cantidad es válida
       if (cantidad < 1) {
         setNotification({
           description: 'La cantidad no puede ser menor a 1.',
           bgColor: 'bg-red-500',
         });
-        setIsLoading(false);
+        setIsLoading(false);  // Desactivamos el loader inmediatamente si es una cantidad inválida
         return;
       }
-
-      setIsLoading(true);
+  
+      setIsLoading(true);  // Activamos el loader antes de la solicitud
+      // Mostrar notificación de "Actualizando cantidad..."
+      setNotification({
+        description: 'Actualizando cantidad...',
+        bgColor: 'bg-blue-500',
+      });
+  
       const token = localStorage.getItem('jwt');
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
         method: 'PUT',
@@ -83,15 +87,10 @@ function Carrito() {
         },
         body: JSON.stringify({ cantidad }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setNotification({
-            description: 'Cantidad actualizada correctamente.',
-            bgColor: 'bg-green-500',
-          });
-
           // Actualizamos el carrito en el estado con la nueva cantidad
           setProductos((prevProductos) =>
             prevProductos.map((producto) =>
@@ -100,25 +99,29 @@ function Carrito() {
                 : producto
             )
           );
-
+  
           // Si la cantidad llega a 0, eliminamos el producto
           if (cantidad < 1) {
             eliminarProducto(idProducto);
           }
-          setIsLoading(false);
-          // Recargamos la página después de 2 segundos
+  
+          // Notificación exitosa antes de la recarga
+          setNotification({
+            description: 'Cantidad actualizada correctamente.',
+            bgColor: 'bg-green-500',
+          });
+  
+          // Recargamos la página después de 2 segundos para mostrar la notificación
           setTimeout(() => {
             window.location.reload();
-          }, 1200);
+          }, 2000);  // Esperamos 2 segundos para mostrar la notificación antes de recargar
         } else {
-          setIsLoading(false);
           setNotification({
             description: data.message || 'Error al actualizar la cantidad.',
             bgColor: 'bg-red-500',
           });
         }
       } else {
-        setIsLoading(false);
         setNotification({
           description: 'Error al conectar con el servidor.',
           bgColor: 'bg-red-500',
@@ -131,14 +134,22 @@ function Carrito() {
         bgColor: 'bg-red-500',
       });
     } finally {
-      setIsLoading(false);
+      // No desactivamos el loader hasta que la página se recargue
+      // setIsLoading(false); Este paso no es necesario ya que la recarga de la página maneja la desaparición del loader
     }
   };
+  
 
-  // Función para eliminar un producto del carrito
   const eliminarProducto = async (idProducto) => {
     try {
-      setIsLoading(true); // Desactivamos el loader
+      setIsLoading(true);  // Activamos el loader al comenzar el proceso de eliminación
+  
+      // Mostrar notificación de "Eliminando producto..."
+      setNotification({
+        description: 'Eliminando producto...',
+        bgColor: 'bg-blue-500',
+      });
+  
       const token = localStorage.getItem('jwt');
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
         method: 'DELETE',
@@ -147,58 +158,50 @@ function Carrito() {
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setNotification({
-            description: 'Producto eliminado correctamente.',
-            bgColor: 'bg-green-500',
-          });
-          setIsLoading(false); // Desactivamos el loader
           // Actualizamos el carrito para eliminar el producto
           setProductos((prevProductos) =>
             prevProductos.filter((producto) => producto.idProducto !== idProducto)
           );
-            // Recargamos la página después de 2 segundos
-            setTimeout(() => {
-              window.location.reload();
-            }, 1200);
+  
+          // Mostrar notificación de éxito mientras está el loader
+          setNotification({
+            description: 'Producto eliminado correctamente.',
+            bgColor: 'bg-green-500',
+          });
+  
+          // Recargamos la página después de 2 segundos para dar tiempo a la notificación
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000); // Ajusté el tiempo de recarga a 2000 ms para dar tiempo a la notificación
+  
         } else {
-          setIsLoading(false); // Desactivamos el loader
           setNotification({
             description: 'Error al eliminar el producto.',
             bgColor: 'bg-red-500',
           });
-           // Recargamos la página después de 2 segundos
-           setTimeout(() => {
-            window.location.reload();
-          }, 1200);
         }
       } else {
-        setIsLoading(false); // Desactivamos el loader
         setNotification({
           description: 'Error al conectar con el servidor.',
           bgColor: 'bg-red-500',
         });
-          // Recargamos la página después de 2 segundos
-          setTimeout(() => {
-            window.location.reload();
-          }, 1200);
       }
     } catch (error) {
-      setIsLoading(false); // Desactivamos el loader
       console.error('Error al eliminar el producto:', error);
       setNotification({
         description: 'Ocurrió un error al eliminar el producto.',
         bgColor: 'bg-red-500',
       });
-        // Recargamos la página después de 2 segundos
-        setTimeout(() => {
-          window.location.reload();
-        }, 1200);
+    } finally {
+      // No desactivamos el loader hasta que la página se recargue
+      // setIsLoading(false); // Este paso ya no es necesario, porque el loader sigue activo hasta la recarga
     }
   };
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-800">
@@ -224,9 +227,9 @@ function Carrito() {
                 <h2 className="text-xl font-semibold text-black">{producto.nombreProducto}</h2>
                 <p className="text-gray-600 text-sm mb-2">{producto.descripcion}</p>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-medium text-black">${producto.precio.toFixed(2)}</span>
-                  <span className="text-sm text-gray-500">
-                    x {producto.cantidad} = ${producto.subtotal.toFixed(2)}
+                  <span className="text-lg font-medium text-black">S/.{producto.precio.toFixed(2)}</span>
+                  <span className="text-sm text-black-500">
+                    x {producto.cantidad} = S/.{producto.subtotal.toFixed(2)}
                   </span>
                 </div>
 
@@ -276,7 +279,7 @@ function Carrito() {
       <div className="fixed bottom-0 left-0 w-full bg-gray-900 p-4 text-white flex justify-between items-center">
         <div className="text-xl font-semibold">
           <span>Total: </span>
-          <span>${calcularTotal().toFixed(2)}</span>
+          <span>S/.{calcularTotal().toFixed(2)}</span>
         </div>
         <button
           className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
