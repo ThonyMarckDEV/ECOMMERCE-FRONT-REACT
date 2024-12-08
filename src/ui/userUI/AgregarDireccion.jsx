@@ -224,7 +224,7 @@ function AgregarDirecciones() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white p-3 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-black text-white p-3 rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={loading}
             >
               {loading ? 'Cargando...' : 'Agregar Dirección'}

@@ -353,7 +353,7 @@ function Perfil() {
               {!isEditing ? (
                 <button
                   onClick={handleEdit}
-                  className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+                  className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
                 >
                   Editar
                 </button>
@@ -361,13 +361,13 @@ function Perfil() {
                 <>
                   <button
                     onClick={handleSave}
-                    className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
+                    className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
                   >
                     Guardar Cambios
                   </button>
                   <button
                     onClick={handleProfileImageUpload}
-                    className="bg-yellow-500 text-white px-6 py-2 rounded-md hover:bg-yellow-600"
+                    className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-800"
                   >
                     Actualizar Foto
                   </button>
