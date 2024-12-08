@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
-import { AiOutlineFilter, AiOutlineClose } from 'react-icons/ai'; // Usamos un ícono de filtro
+import { AiOutlineFilter, AiOutlineClose } from 'react-icons/ai';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css'; // Importar estilos de rc-slider
 
 function FiltradoProductos({ onFilter }) {
   const [categorias, setCategorias] = useState([]);
-  const [filtro, setFiltro] = useState({ texto: '', categoria: '' });
-  const [isOpen, setIsOpen] = useState(false); // Estado para controlar si el filtro está abierto o cerrado
+  const [filtro, setFiltro] = useState({
+    texto: '',
+    categoria: '',
+    precioInicial: 0,
+    precioFinal: 500
+  });
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     // Fetch categorías desde la API
@@ -27,9 +34,9 @@ function FiltradoProductos({ onFilter }) {
   useEffect(() => {
     // Bloquear o permitir el scroll del body según si el filtro está abierto
     if (isOpen) {
-      document.body.style.overflow = 'hidden'; // Bloquear el scroll cuando el filtro está abierto
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'auto'; // Restaurar el scroll cuando el filtro está cerrado
+      document.body.style.overflow = 'auto';
     }
 
     // Limpiar el estilo al desmontar el componente
@@ -42,11 +49,18 @@ function FiltradoProductos({ onFilter }) {
     const { name, value } = e.target;
     const updatedFiltro = { ...filtro, [name]: value };
     setFiltro(updatedFiltro);
-    onFilter(updatedFiltro); // Pasar el filtro actualizado al componente padre
+    onFilter(updatedFiltro);
+  };
+
+  const handlePriceChange = (value) => {
+    const [min, max] = value;
+    const updatedFiltro = { ...filtro, precioInicial: min, precioFinal: max };
+    setFiltro(updatedFiltro);
+    onFilter(updatedFiltro);
   };
 
   const toggleFilter = () => {
-    setIsOpen(!isOpen); // Alternar la visibilidad del filtro
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -62,16 +76,18 @@ function FiltradoProductos({ onFilter }) {
       {/* Fondo negro transparente que aparece cuando el filtro se abre en móviles */}
       {isOpen && (
         <div
-          onClick={toggleFilter} // Cierra el filtro cuando se hace click en el fondo
+          onClick={toggleFilter}
           className="fixed inset-0 bg-black bg-opacity-50 z-10"
         />
       )}
 
       {/* Contenedor del filtro deslizable */}
       <aside
-        className={`lg:block fixed inset-x-0 lg:top-0 top-20 bottom-0 bg-gray-100 p-4 w-64 transition-transform transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:relative lg:w-64 z-10  overflow-hidden`}
+        className={`lg:block fixed inset-x-0 lg:top-0 top-20 bottom-0 bg-gray-100 p-4 w-64 transition-transform transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:relative lg:w-64 z-10 overflow-hidden`}
       >
         <h2 className="text-xl font-bold mb-4 text-black">Filtrar Productos</h2>
+        
+        {/* Filtro por nombre */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-black mb-1">Buscar por nombre</label>
           <input
@@ -83,7 +99,9 @@ function FiltradoProductos({ onFilter }) {
             placeholder="Nombre del producto"
           />
         </div>
-        <div>
+        
+        {/* Filtro por categoría */}
+        <div className="mb-4">
           <label className="block text-sm font-medium text-black mb-1">Categoría</label>
           <select
             name="categoria"
@@ -99,11 +117,28 @@ function FiltradoProductos({ onFilter }) {
             ))}
           </select>
         </div>
+        
+        {/* Filtro por rango de precios */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-black mb-2">Rango de Precio: ${filtro.precioInicial} - ${filtro.precioFinal}</label>
+          <Slider
+            range
+            min={0}
+            max={500}
+            defaultValue={[filtro.precioInicial, filtro.precioFinal]}
+            value={[filtro.precioInicial, filtro.precioFinal]}
+            onChange={(value) => handlePriceChange(value)}
+            trackStyle={[{ backgroundColor: '#4A90E2' }]}
+            handleStyle={[
+              { borderColor: '#4A90E2' },
+              { borderColor: '#4A90E2' }
+            ]}
+            railStyle={{ backgroundColor: '#d9d9d9' }}
+          />
+        </div>
       </aside>
     </>
   );
 }
 
 export default FiltradoProductos;
-
-
