@@ -23,7 +23,6 @@ const Navbar = () => {
       setIsAuthenticated(false); // Si no hay token, no está autenticado
     }
   }, []);
-  
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -51,6 +50,7 @@ const Navbar = () => {
   return (
     <nav className="bg-black text-white py-4 px-6">
       <div className="flex items-center justify-between">
+        
         {/* Nombre de la empresa */}
         <a href="/" className="block py-2 px-4 hover:bg-gray-700 font-bold">
           <div className="text-xl font-bold">
@@ -74,9 +74,9 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Botón del menú para móviles */}
+       {/* Botón del menú para móviles */}
         <button
-          className="md:hidden focus:outline-none"
+          className="md:hidden focus:outline-none -ml-10" // Añadido -ml-2 para moverlo a la izquierda
           onClick={toggleMenu}
         >
           <svg
@@ -95,94 +95,104 @@ const Navbar = () => {
           </svg>
         </button>
 
-        {/* Carrito de compras */}
-        <div className="relative ml-12 sm:ml-4 md:ml-6">
-        <button className="hover:text-gray-400">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-10 h-10 md:w-8 md:h-8" // Más grande en móviles, más pequeño en pantallas medianas+
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
-            />
-          </svg>
-        </button>
-
-          {/* Mostrar el indicador solo si hay token */}
-          {localStorage.getItem('jwt') && (
-            <span className="absolute top-0 right-1 -mt-3 -mr-3 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black bg-white rounded-full">
-              3
-            </span>
-          )}
-        </div>
-
-       {/* Ícono de perfil */}
-      <div className="relative ml-4">
-        <button
-          onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
-          className="hover:text-gray-400"
-        >
-          {profileImage ? (
-            <img
-              src={profileImage}
-              alt="Perfil"
-              className="w-14 h-14 md:w-10 md:h-10 rounded-full" // Más grande en móviles, más pequeño en pantallas medianas+
-            />
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-14 h-14 md:w-10 md:h-10" // Más grande en móviles, más pequeño en pantallas medianas+
+        {/* Contenedor Flex para los íconos del carrito y perfil */}
+        <div className="flex items-center space-x-2 md:space-x-6"> {/* Aumentado space-x-2 en móvil */}
+          
+          {/* Carrito de compras */}
+          <div className="relative">
+            <button
+              className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
+              aria-label="Carrito de compras"
+              title="Carrito de compras"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 3v3h14V3m-7 4v9m0 0H5m7 0h7m-7 0v5"
-              />
-            </svg>
-          )}
-        </button>
-  
-          {/* Menú desplegable de perfil */}
-          {isProfileMenuOpen && isAuthenticated && (
-            <div className="absolute right-0 mt-2 bg-white text-black border border-gray-300 rounded-lg shadow-lg w-48 z-10">
-              <ul>
-                <li>
-                  <button
-                    onClick={goToProfile}
-                    className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
-                  >
-                    Mi perfil
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/addresses')} // Redirige a la página de direcciones
-                    className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
-                  >
-                    Direcciones
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout} // Cierra sesión
-                    className="block px-4 py-2 hover:bg-gray-200 w-full text-left text-red-600"
-                  >
-                    Cerrar sesión
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-12 h-12 md:w-10 md:h-10" 
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
+                />
+              </svg>
+            </button>
+
+            {/* Mostrar el indicador solo si hay token */}
+            {localStorage.getItem('jwt') && (
+              <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                3
+              </span>
+            )}
+          </div>
+
+          {/* Ícono de perfil */}
+          <div className="relative">
+            <button
+              onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
+              className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
+              aria-label="Perfil de usuario"
+              title="Perfil de usuario"
+            >
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Perfil"
+                  className="w-12 h-12 md:w-10 md:h-10 rounded-full"
+                />
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-12 h-12 md:w-10 md:h-10"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.485 0 4.739.565 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              )}
+            </button>
+
+            {/* Menú desplegable de perfil */}
+            {isProfileMenuOpen && isAuthenticated && (
+              <div className="absolute right-0 mt-2 bg-white text-black border border-gray-300 rounded-lg shadow-lg w-48 z-10">
+                <ul>
+                  <li>
+                    <button
+                      onClick={goToProfile}
+                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                    >
+                      Mi perfil
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => navigate('/addresses')} // Redirige a la página de direcciones
+                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                    >
+                      Direcciones
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout} // Cierra sesión
+                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left text-red-600"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

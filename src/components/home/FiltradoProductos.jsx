@@ -150,33 +150,33 @@ function FiltradoProductos({ onFilter }) {
         </div>
         
        {/* Filtro por rango de precios */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-black mb-2">
-          Rango de Precio
-        </label>
-        
-        {/* Slider */}
-        <Slider
-          range
-          min={0}
-          max={500}
-          step={1} // Define el paso para mayor precisión
-          allowCross={false} // Evita que los handles se crucen
-          value={[filtro.precioInicial, filtro.precioFinal]}
-          onChange={handlePriceChange}
-          trackStyle={[{ backgroundColor: '#000000' }]}
-          handleStyle={[
-            { borderColor: '#000000' },
-            { borderColor: '#000000' },
-          ]}
-          railStyle={{ backgroundColor: '#d9d9d9' }}
-        />
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-black mb-2">
+            Rango de Precio
+          </label>
+          
+          {/* Slider */}
+          <Slider
+            range
+            min={0}
+            max={500}
+            step={1} // Define el paso para mayor precisión
+            allowCross={false} // Evita que los handles se crucen
+            value={[filtro.precioInicial, filtro.precioFinal]}
+            onChange={handlePriceChange}
+            trackStyle={[{ backgroundColor: '#000000' }]}
+            handleStyle={[
+              { borderColor: '#000000' },
+              { borderColor: '#000000' },
+            ]}
+            railStyle={{ backgroundColor: '#d9d9d9' }}
+          />
 
-        {/* Rango de precio debajo del slider */}
-        <div className="mt-2 text-sm text-black">
-          S/.{filtro.precioInicial} - S/.{filtro.precioFinal}
+          {/* Rango de precio debajo del slider */}
+          <div className="mt-2 text-sm text-black">
+            S/.{filtro.precioInicial} - S/.{filtro.precioFinal}
+          </div>
         </div>
-      </div>
 
         {/* Botones de Aplicar y Reiniciar Filtros */}
         <div className="flex flex-col space-y-2">
