@@ -4,9 +4,8 @@ import { getIdUsuario } from '../../utilities/jwtUtils'; // Importamos getIdUsua
 import LoadingScreen from '../../components/home/LoadingScreen'; // Importamos el componente LoadingScreen
 import Notification from '../../components/home/Notificacion'; // Importamos el componente de notificación
 //Js scripts
-import { verificarYRenovarToken,renovarToken } from '../../js/authToken';
+import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
-
 
 function Perfil() {
   const [perfilData, setPerfilData] = useState({
@@ -101,6 +100,11 @@ function Perfil() {
           bgColor: 'bg-green-400', // Notificación de éxito
         });
         setIsLoading(false); // Desactivar la pantalla de carga
+  
+        // Limpiar la notificación después de 3 segundos
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
       })
       .catch(error => {
         console.error("Error al actualizar el perfil:", error);
@@ -109,8 +113,14 @@ function Perfil() {
           bgColor: 'bg-red-400', // Notificación de error
         });
         setIsLoading(false); // Desactivar la pantalla de carga
+  
+        // Limpiar la notificación después de 3 segundos
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
       });
   };
+  
 
   const handleProfileImageChange = (e) => {
     setNewProfileImage(e.target.files[0]); // Guardamos la imagen seleccionada
@@ -120,13 +130,12 @@ function Perfil() {
     if (newProfileImage) {
       const formData = new FormData();
       formData.append('perfil', newProfileImage); // Asegúrate de que el nombre del campo sea 'perfil'
+      verificarYRenovarToken();
       setIsLoading(true); // Activar la pantalla de carga
-  
-      // Subir la foto de perfil
       fetch(`${API_BASE_URL}/api/uploadProfileImageCliente/${idUsuario}`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`, // Asegúrate de que el token es válido aquí
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       })
@@ -136,35 +145,28 @@ function Perfil() {
             description: 'Foto de perfil actualizada exitosamente',
             bgColor: 'bg-green-400', // Notificación de éxito
           });
-  
           // Desactivar el modo de edición después de la subida de la foto
           setIsEditing(false);
   
-          // Renovar el token después de la subida exitosa de la foto
-          renovarToken()
-            .then(nuevoToken => {
-              // Obtener nuevamente los datos del perfil con el token renovado
-              fetch(`${API_BASE_URL}/api/perfilCliente`, {
-                method: 'GET',
-                headers: {
-                  Authorization: `Bearer ${nuevoToken}`, // Usar el nuevo token
-                },
-              })
-                .then(response => response.json())
-                .then(data => {
-                  setPerfilData(data.data); // Actualizar los datos del perfil
-                  setIsLoading(false);
+          // Limpiar la notificación después de 3 segundos
+          setTimeout(() => {
+            setNotification(null);
+          }, 3000);
   
-                  // Llamar a la función updateProfileImage para actualizar la imagen en Navbar
-                  updateProfileImage(nuevoToken); // Actualizar la imagen del perfil con el nuevo token
-                })
-                .catch(error => {
-                  console.error("Error al obtener los datos del perfil:", error);
-                  setIsLoading(false);
-                });
+          // Obtener nuevamente los datos del perfil para actualizar la foto
+          fetch(`${API_BASE_URL}/api/perfilCliente`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then(response => response.json())
+            .then(data => {
+              setPerfilData(data.data); // Actualizar los datos del perfil
+              setIsLoading(false);
             })
             .catch(error => {
-              console.error("Error al renovar el token:", error);
+              console.error("Error al obtener los datos del perfil:", error);
               setIsLoading(false);
             });
         })
@@ -175,6 +177,11 @@ function Perfil() {
             bgColor: 'bg-red-400', // Notificación de error
           });
           setIsLoading(false);
+  
+          // Limpiar la notificación después de 3 segundos
+          setTimeout(() => {
+            setNotification(null);
+          }, 3000);
         });
     }
   };
@@ -203,144 +210,169 @@ function Perfil() {
     <div className="flex flex-col min-h-screen bg-gray-800 font-sans text-gray-200">
       {/* Barra de navegación */}
       <NavBarHome />
-
+  
       {/* Pantalla de carga */}
       {isLoading && <LoadingScreen />}
-
+  
       {/* Notificación */}
       {notification && (
         <Notification description={notification.description} bgColor={notification.bgColor} />
       )}
-
+  
       <div className="flex flex-grow justify-center items-center py-10 px-4">
         <div
-          ref={perfilRef} // Asignamos la referencia al contenedor del perfil
-          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl flex flex-col md:flex-row items-center md:items-start"
+          ref={perfilRef}
+          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl flex flex-col items-center"
         >
           {/* Foto de perfil */}
-          <div className="flex justify-center items-center mb-6 md:mb-0 md:w-1/3">
+          <div className="flex justify-center items-center mb-6">
             <img
               src={perfilData.perfil || '/path/to/default-avatar.jpg'}
               alt="Foto de perfil"
               className="w-40 h-40 rounded-full object-cover shadow-md"
             />
           </div>
-
+  
           {/* Información del usuario */}
-          <div className="md:ml-6 text-center md:text-left md:w-2/3">
-            <h2 className="text-2xl font-bold text-gray-800">{perfilData.username}</h2>
-            <div className="mt-4 text-gray-600 space-y-4">
-              {/* Campos no editables */}
-              {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }, { label: 'Edad', name: 'edad', type: 'number' }].map(({ label, name, type = 'text' }) => (
-                <div key={name} className="flex justify-between items-center">
-                  <span className="font-semibold">{label}:</span>
-                  <span>{perfilData[name] || ''}</span>
-                </div>
-              ))}
-
-              {/* Campos editables */}
-              {[{ label: 'Correo', name: 'correo', type: 'email' }, { label: 'Dirección', name: 'direccion' }, { label: 'Teléfono', name: 'telefono' }, { label: 'Nacimiento', name: 'nacimiento', type: 'date' }].map(({ label, name, type = 'text' }) => (
-                <div key={name} className="flex justify-between items-center">
-                  <span className="font-semibold">{label}:</span>
-                  {isEditing ? (
-                    <input
-                      type={type}
-                      name={name}
-                      value={perfilData[name] || ''}
-                      onChange={handleChange}
-                      className="text-gray-800 border-b focus:outline-none w-full"
-                    />
-                  ) : (
-                    <span>{perfilData[name] || ''}</span>
-                  )}
-                </div>
-              ))}
-
-              {/* Campos select */}
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">Sexo:</span>
-                {isEditing ? (
-                  <select
-                    name="sexo"
-                    value={perfilData.sexo || ''}
-                    onChange={handleChange}
-                    className="text-gray-800 border-b focus:outline-none w-full"
-                  >
-                    {sexos.map((sexo, index) => (
-                      <option key={index} value={sexo}>
-                        {sexo}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span>{perfilData.sexo || ''}</span>
-                )}
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">Departamento:</span>
-                {isEditing ? (
-                  <select
-                    name="departamento"
-                    value={perfilData.departamento || ''}
-                    onChange={handleChange}
-                    className="text-gray-800 border-b focus:outline-none w-full"
-                  >
-                    {departamentos.map((departamento, index) => (
-                      <option key={index} value={departamento}>
-                        {departamento}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span>{perfilData.departamento || ''}</span>
-                )}
-              </div>
-
-              {/* Campo para seleccionar la nueva foto de perfil */}
-              {isEditing && (
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-semibold">Foto de perfil:</span>
+          <div className="w-full">
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">{perfilData.username}</h2>
+  
+            {/* Fila de 3 elementos no editables */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+              {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }].map(({ label, name }) => (
+                <div key={name} className="flex flex-col space-y-2">
+                  <label className="font-semibold text-gray-700">{label}</label>
                   <input
-                    type="file"
-                    onChange={handleProfileImageChange}
-                    className="text-gray-800"
+                    type="text"
+                    name={name}
+                    value={perfilData[name] || ''}
+                    disabled
+                    className="border bg-gray-100 text-gray-900 p-2 rounded-md"
                   />
                 </div>
-              )}
-
-              {/* Botones para editar y guardar */}
-              <div className="flex justify-center md:justify-start mt-6 space-x-4">
-                {!isEditing ? (
-                  <button
-                    onClick={handleEdit}
-                    className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
-                  >
-                    Editar
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={handleSave}
-                      className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
-                    >
-                      Guardar Cambios
-                    </button>
-                    <button
-                      onClick={handleProfileImageUpload}
-                      className="bg-yellow-500 text-white px-6 py-2 rounded-md hover:bg-yellow-600"
-                    >
-                      Actualizar Foto
-                    </button>
-                  </>
-                )}
+              ))}
+            </div>
+  
+            {/* Fila de 2 elementos: Correo, Dirección, Edad */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+              {[{ label: 'Correo', name: 'correo', type: 'email' }, { label: 'Dirección', name: 'direccion' }].map(({ label, name, type = 'text' }) => (
+                <div key={name} className="flex flex-col space-y-2">
+                  <label className="font-semibold text-gray-700">{label}</label>
+                  <input
+                    type={type}
+                    name={name}
+                    value={perfilData[name] || ''}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
+                  />
+                </div>
+              ))}
+              {/* Edad (no editable) */}
+              <div className="flex flex-col space-y-2">
+                <label className="font-semibold text-gray-700">Edad</label>
+                <input
+                  type="number"
+                  name="edad"
+                  value={perfilData.edad || ''}
+                  disabled
+                  className="border bg-gray-100 text-gray-900 p-2 rounded-md"
+                />
               </div>
+            </div>
+  
+            {/* Fila de 2 elementos: Fecha de nacimiento, Sexo y Departamento */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+              <div className="flex flex-col space-y-2">
+                <label className="font-semibold text-gray-700">Fecha de Nacimiento</label>
+                <input
+                  type="date"
+                  name="nacimiento"
+                  value={perfilData.nacimiento || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
+                />
+              </div>
+  
+              <div className="flex flex-col space-y-2">
+                <label className="font-semibold text-gray-700">Sexo</label>
+                <select
+                  name="sexo"
+                  value={perfilData.sexo || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
+                >
+                  {sexos.map((sexo, index) => (
+                    <option key={index} value={sexo}>
+                      {sexo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+  
+              <div className="flex flex-col space-y-2">
+                <label className="font-semibold text-gray-700">Departamento</label>
+                <select
+                  name="departamento"
+                  value={perfilData.departamento || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
+                >
+                  {departamentos.map((departamento, index) => (
+                    <option key={index} value={departamento}>
+                      {departamento}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+  
+            {/* Campo para seleccionar la nueva foto de perfil */}
+            {isEditing && (
+              <div className="flex flex-col space-y-2 mb-6">
+                <label className="font-semibold text-gray-700">Foto de perfil</label>
+                <input
+                  type="file"
+                  onChange={handleProfileImageChange}
+                  className="text-gray-800"
+                />
+              </div>
+            )}
+  
+            {/* Botones para editar y guardar */}
+            <div className="flex justify-center md:justify-start space-x-4">
+              {!isEditing ? (
+                <button
+                  onClick={handleEdit}
+                  className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Editar
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleSave}
+                    className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
+                  >
+                    Guardar Cambios
+                  </button>
+                  <button
+                    onClick={handleProfileImageUpload}
+                    className="bg-yellow-500 text-white px-6 py-2 rounded-md hover:bg-yellow-600"
+                  >
+                    Actualizar Foto
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
+    );
 }
 
 export default Perfil;

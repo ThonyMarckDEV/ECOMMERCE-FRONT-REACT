@@ -17,19 +17,17 @@ const Notification = ({ description, bgColor }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 mx-auto p-4 z-50 ${bgColor} text-white text-center font-bold`}
+      className={`fixed top-0 left-1/2 transform -translate-x-1/2 p-4 z-50 ${bgColor} text-white text-center font-bold shadow-lg`} 
       style={{
-        maxWidth: '500px',
-        width: '100%',
         borderRadius: '8px',
         marginTop: '10px',
       }}
     >
       <div className="flex justify-between items-center">
-        <span>{description}</span>
+        <span className="text-sm sm:text-base">{description}</span>
         <button
           onClick={() => setIsVisible(false)}
-          className="ml-4 bg-transparent text-white font-bold text-xl"
+          className="ml-4 bg-transparent text-white font-bold text-lg sm:text-xl hover:text-gray-200"
         >
           ×
         </button>

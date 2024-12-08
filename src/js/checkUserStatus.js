@@ -1,6 +1,6 @@
 import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
-import { getIdUsuario } from '../utilities/jwtUtils.jsx'; // Importamos la función getIdUsuario
+import { getIdUsuario, isTokenExpired } from '../utilities/jwtUtils.jsx'; // Importamos la función getIdUsuario
 
 const checkUserStatusInterval = 5000; // Verificación de estado de usuario cada 5 segundos
 let userStatusIntervalId; // Declaramos la variable fuera de la función
@@ -18,6 +18,14 @@ export const checkStatus= async () => {
 export const checkUserStatus = async () => {
 
     const token = localStorage.getItem('jwt'); // Asegúrate de obtener el token de localStorage
+
+     // Verificar si el token está presente y no ha expirado
+    if (!token || isTokenExpired(token)) {
+        console.log("Token ausente o expirado. Redirigiendo al login...");
+        logoutAndRedirect();
+        return;
+    }
+
     const idUsuario = getIdUsuario(token); // Usamos la función getIdUsuario importada
 
     try {

@@ -39,9 +39,13 @@ const Register = () => {
   const validateForm = () => {
     const newErrors = {};
 
-
     if (!name) {
       newErrors.name = 'El nombre es obligatorio.';
+    }
+
+     // Validación de los apellidos: deben estar separados por un espacio
+    if (!apellidos || apellidos.split(' ').length < 2) {
+      newErrors.apellidos = 'Debe ingresar al menos dos apellidos separados por un espacio.';
     }
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
