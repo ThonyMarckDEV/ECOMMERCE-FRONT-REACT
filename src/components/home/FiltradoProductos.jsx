@@ -1,3 +1,4 @@
+// FiltradoProductos.jsx
 import React, { useEffect, useState } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import { AiOutlineFilter, AiOutlineClose } from 'react-icons/ai';
@@ -6,12 +7,23 @@ import 'rc-slider/assets/index.css'; // Importar estilos de rc-slider
 
 function FiltradoProductos({ onFilter }) {
   const [categorias, setCategorias] = useState([]);
+  
+  // Estado para almacenar los filtros actuales que el usuario está seleccionando
   const [filtro, setFiltro] = useState({
     texto: '',
     categoria: '',
     precioInicial: 0,
     precioFinal: 500
   });
+
+  // Estado para manejar los filtros que han sido aplicados
+  const [appliedFiltro, setAppliedFiltro] = useState({
+    texto: '',
+    categoria: '',
+    precioInicial: 0,
+    precioFinal: 500
+  });
+
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -47,20 +59,37 @@ function FiltradoProductos({ onFilter }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const updatedFiltro = { ...filtro, [name]: value };
-    setFiltro(updatedFiltro);
-    onFilter(updatedFiltro);
+    setFiltro((prevFiltro) => ({ ...prevFiltro, [name]: value }));
   };
 
   const handlePriceChange = (value) => {
     const [min, max] = value;
-    const updatedFiltro = { ...filtro, precioInicial: min, precioFinal: max };
-    setFiltro(updatedFiltro);
-    onFilter(updatedFiltro);
+    setFiltro((prevFiltro) => ({ ...prevFiltro, precioInicial: min, precioFinal: max }));
   };
 
   const toggleFilter = () => {
     setIsOpen(!isOpen);
+  };
+
+  // Función para aplicar los filtros
+  const handleApplyFilters = () => {
+    setAppliedFiltro(filtro);
+    onFilter(filtro);
+    setIsOpen(false); // Cerrar el panel de filtros en móviles después de aplicar
+  };
+
+  // Función para reiniciar los filtros a sus valores predeterminados
+  const handleResetFilters = () => {
+    const resetFiltro = {
+      texto: '',
+      categoria: '',
+      precioInicial: 0,
+      precioFinal: 500
+    };
+    setFiltro(resetFiltro);
+    setAppliedFiltro(resetFiltro);
+    onFilter(resetFiltro);
+    setIsOpen(false); // Cerrar el panel de filtros en móviles después de reiniciar
   };
 
   return (
@@ -83,7 +112,9 @@ function FiltradoProductos({ onFilter }) {
 
       {/* Contenedor del filtro deslizable */}
       <aside
-        className={`lg:block fixed inset-x-0 lg:top-0 top-20 bottom-0 bg-gray-100 p-4 w-64 transition-transform transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:relative lg:w-64 z-10 overflow-hidden`}
+        className={`lg:block fixed inset-x-0 lg:top-0 top-20 bottom-0 bg-gray-100 p-4 w-64 transition-transform transform ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 lg:relative lg:w-64 z-20 overflow-y-auto`}
       >
         <h2 className="text-xl font-bold mb-4 text-black">Filtrar Productos</h2>
         
@@ -119,15 +150,16 @@ function FiltradoProductos({ onFilter }) {
         </div>
         
         {/* Filtro por rango de precios */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-black mb-2">Rango de Precio: ${filtro.precioInicial} - ${filtro.precioFinal}</label>
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-black mb-2">
+            Rango de Precio: ${filtro.precioInicial} - ${filtro.precioFinal}
+          </label>
           <Slider
             range
             min={0}
             max={500}
-            defaultValue={[filtro.precioInicial, filtro.precioFinal]}
             value={[filtro.precioInicial, filtro.precioFinal]}
-            onChange={(value) => handlePriceChange(value)}
+            onChange={handlePriceChange}
             trackStyle={[{ backgroundColor: '#4A90E2' }]}
             handleStyle={[
               { borderColor: '#4A90E2' },
@@ -135,6 +167,22 @@ function FiltradoProductos({ onFilter }) {
             ]}
             railStyle={{ backgroundColor: '#d9d9d9' }}
           />
+        </div>
+
+        {/* Botones de Aplicar y Reiniciar Filtros */}
+        <div className="flex flex-col space-y-2">
+          <button
+            onClick={handleApplyFilters}
+            className="w-full px-4 py-2 bg-black text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Aplicar Filtros
+          </button>
+          <button
+            onClick={handleResetFilters}
+            className="w-full px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 transition-colors"
+          >
+            Reiniciar Filtros
+          </button>
         </div>
       </aside>
     </>

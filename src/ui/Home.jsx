@@ -1,19 +1,19 @@
+// Home.jsx
+import React, { useRef, useEffect, useMemo, Suspense, lazy } from 'react';
+import { useLocation } from 'react-router-dom';
 import '../index.css';
 
-import React, { useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+// Lazy load components para mejorar el tiempo de carga inicial
+const NavBarHome = lazy(() => import('../components/home/NavBarHome'));
+const CarruselHome = lazy(() => import('../components/home/CarruselHome'));
+const CategoriasHome = lazy(() => import('../components/home/CategoriasHome'));
+const Footer = lazy(() => import('../components/home/Footer'));
 
-//Componentes HOME
-import NavBarHome from '../components/home/NavBarHome'; 
-import CarruselHome from '../components/home/CarruselHome'; 
-import CategoriasHome from '../components/home/CategoriasHome';
-import Footer from '../components/home/Footer';
 
-//IMAGENES CARRUSEL
+// Importar imágenes desde la carpeta src/img
 import image1 from '../img/1.webp';
 import image2 from '../img/2.webp';
 import image3 from '../img/3.webp';
-
 
 function Home() {
 
@@ -64,44 +64,38 @@ function Home() {
   //       }
   //     };
 
-  // Array de imágenes
-  const images = [
-    image1, // Imagen local
-    image2, // Imagen local
-    image3, // Imagen local
-  ];
+   // Memoizar el array de imágenes para evitar recreaciones en cada render
+   const images = useMemo(() => [image1, image2, image3], []);
 
-  
-  useEffect(() => {
-    // Detectar el parámetro de la URL y hacer scroll
-    const params = new URLSearchParams(location.search);
-    const scrollTo = params.get('scrollTo');
-    if (scrollTo === 'categories' && categoriasRef.current) {
-      categoriasRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [location]);
-  
-
+   useEffect(() => {
+     // Detectar el parámetro de la URL y hacer scroll si es necesario
+     const params = new URLSearchParams(location.search);
+     const scrollTo = params.get('scrollTo');
+     if (scrollTo === 'categories' && categoriasRef.current) {
+       categoriasRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+     }
+   }, [location]);
+ 
    return (
-    <div className="bg-gray-800 font-sans text-gray-200">
-      {/* Barra de navegación */}
-      <NavBarHome/> {/* Pasa la función como prop */}
-      
-      {/* Carrusel debajo de la barra de navegación */}
-      <div>
-        <CarruselHome images={images} interval={5000} />
-      </div>
-
-      {/* Grid de categorías debajo del carrusel */}
-      <div ref={categoriasRef}> {/* Asignamos la referencia aquí */}
-        <CategoriasHome />
-      </div>
-
-      {/* Footer */}
-      <Footer />
-    </div>
-  );
-};
-
-
-export default Home;
+     <div className="bg-gray-800 font-sans text-gray-200">
+       {/* Usar Suspense para manejar componentes cargados de forma diferida */}
+       <Suspense fallback={<div className="text-center text-white">Cargando...</div>}>
+         {/* Barra de navegación */}
+         <NavBarHome />
+ 
+         {/* Carrusel debajo de la barra de navegación */}
+         <CarruselHome images={images} interval={5000} />
+ 
+         {/* Grid de categorías debajo del carrusel */}
+         <div ref={categoriasRef}>
+           <CategoriasHome />
+         </div>
+ 
+         {/* Footer */}
+         <Footer />
+       </Suspense>
+     </div>
+   );
+ }
+ 
+ export default Home;

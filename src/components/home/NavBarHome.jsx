@@ -97,22 +97,22 @@ const Navbar = () => {
 
         {/* Carrito de compras */}
         <div className="relative ml-12 sm:ml-4 md:ml-6">
-          <button className="hover:text-gray-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-8 h-8"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
-              />
-            </svg>
-          </button>
+        <button className="hover:text-gray-400">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="w-10 h-10 md:w-8 md:h-8" // Más grande en móviles, más pequeño en pantallas medianas+
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
+            />
+          </svg>
+        </button>
 
           {/* Mostrar el indicador solo si hay token */}
           {localStorage.getItem('jwt') && (
@@ -125,14 +125,14 @@ const Navbar = () => {
         {/* Ícono de perfil */}
         <div className="relative ml-4">
           <button
-            onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')} // Si está autenticado, abre el menú; si no, redirige al login
+            onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
             className="hover:text-gray-400"
           >
             {profileImage ? (
               <img
-                src={profileImage} // Mostrar la imagen del perfil
+                src={profileImage}
                 alt="Perfil"
-                className="w-8 h-8 rounded-full"
+                className="w-12 h-12 md:w-10 md:h-10 rounded-full" // Más grande en móviles, más pequeño en pantallas medianas+
               />
             ) : (
               <svg
@@ -140,7 +140,7 @@ const Navbar = () => {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                className="w-8 h-8"
+                className="w-12 h-12 md:w-10 md:h-10" // Más grande en móviles, más pequeño en pantallas medianas+
               >
                 <path
                   strokeLinecap="round"
