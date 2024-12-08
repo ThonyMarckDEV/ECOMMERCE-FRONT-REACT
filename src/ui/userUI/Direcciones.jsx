@@ -151,43 +151,45 @@ function Direcciones() {
           <h2 className="text-2xl font-semibold mb-4">Direcciones</h2>
           
           {direcciones.length > 0 ? (
-            <table className="table-auto w-full border-collapse">
-              <thead>
-                <tr className="border-b">
-                  <th className="px-4 py-2">Región</th>
-                  <th className="px-4 py-2">Provincia</th>
-                  <th className="px-4 py-2">Dirección</th>
-                  <th className="px-4 py-2">Estado</th>
-                  <th className="px-4 py-2">Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {direcciones.map((direccion) => (
-                  <tr key={direccion.idDireccion} className="border-b">
-                    <td className="px-4 py-2">{direccion.region}</td>
-                    <td className="px-4 py-2">{direccion.provincia}</td>
-                    <td className="px-4 py-2">{direccion.direccion}</td>
-                    <td className="px-4 py-2">{direccion.estado}</td>
-                    <td className="px-4 py-2">
-                      {direccion.estado === 'no usando' && (
-                        <button
-                          className="bg-black text-white px-4 py-2 rounded"
-                          onClick={() => setDireccionUsando(direccion.idDireccion)}
-                        >
-                          Usar
-                        </button>
-                      )}
-                      <button
-                        className="bg-red-500 text-white px-4 py-2 rounded ml-2"
-                        onClick={() => eliminarDireccion(direccion.idDireccion)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
+            <div className="overflow-x-auto"> {/* Contenedor con desplazamiento horizontal */}
+              <table className="table-auto w-full border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="px-4 py-2">Región</th>
+                    <th className="px-4 py-2">Provincia</th>
+                    <th className="px-4 py-2">Dirección</th>
+                    <th className="px-4 py-2">Estado</th>
+                    <th className="px-4 py-2">Acción</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {direcciones.map((direccion) => (
+                    <tr key={direccion.idDireccion} className="border-b">
+                      <td className="px-4 py-2">{direccion.region}</td>
+                      <td className="px-4 py-2">{direccion.provincia}</td>
+                      <td className="px-4 py-2">{direccion.direccion}</td>
+                      <td className="px-4 py-2">{direccion.estado}</td>
+                      <td className="px-4 py-2">
+                        {direccion.estado === 'no usando' && (
+                          <button
+                            className="bg-black text-white px-4 py-2 rounded"
+                            onClick={() => setDireccionUsando(direccion.idDireccion)}
+                          >
+                            Usar
+                          </button>
+                        )}
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded ml-2"
+                          onClick={() => eliminarDireccion(direccion.idDireccion)}
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <p className="text-center text-gray-500">No tienes direcciones guardadas.</p>
           )}

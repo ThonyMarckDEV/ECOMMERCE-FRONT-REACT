@@ -28,11 +28,11 @@ const Estado = ({ estadoActual, onClose }) => {
                                     <img src={gifs[estado]} alt={`GIF de ${estado}`} className="w-12 h-12 mb-2" />
                                 )}
 
-                                <div className={`w-8 h-8 flex items-center justify-center rounded-full ${isActive ? 'bg-green-500' : 'bg-gray-300'}`}>
+                                <div className={`w-8 h-8 flex items-center justify-center rounded-full ${isActive ? 'bg-black' : 'bg-gray-300'}`}>
                                     <span className="text-white font-bold">{index + 1}</span>
                                 </div>
 
-                                <p className={`mt-2 text-sm ${isActive ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                                <p className={`mt-2 text-sm ${isActive ? 'text-black font-semibold' : 'text-gray-600'}`}>
                                     {capitalizeFirstLetter(estado)}
                                 </p>
 
