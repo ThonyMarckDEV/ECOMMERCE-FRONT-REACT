@@ -207,7 +207,7 @@ function Perfil() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-800 font-sans text-gray-200">
+    <div className="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-200">
       {/* Barra de navegación */}
       <NavBarHome />
   

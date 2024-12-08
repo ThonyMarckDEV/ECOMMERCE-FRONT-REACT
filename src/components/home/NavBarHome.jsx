@@ -209,10 +209,26 @@ const Navbar = () => {
                   </li>
                   <li>
                     <button
-                      onClick={() => navigate('/addresses')} // Redirige a la página de direcciones
+                      onClick={() => navigate('/agregar/direcciones')} // Redirige a la página de direcciones
                       className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
                     >
-                      Direcciones
+                      Agregar Direccion
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => navigate('/direcciones')} // Redirige a la página de direcciones
+                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                    >
+                      Mis Direcciones
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => navigate('/pedidos')} // Redirige a la página de direcciones
+                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                    >
+                      Mis Pedidos
                     </button>
                   </li>
                   <li>
