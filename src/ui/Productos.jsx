@@ -17,6 +17,7 @@ function Productos() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white-800 font-sans text-gray-200">
+
       {/* Barra de navegación */}
       <NavBarHome />
   

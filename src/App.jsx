@@ -13,7 +13,7 @@ import Register from './ui/Register'; // Asegúrate de tener el componente Login
 //=====================================================================================================================
 //UserUI
 import PerfilUser from './ui/userUI/PerfilUser'; // Asegúrate de tener el componente Login
-
+import CarritoUser from './ui/userUI/MiCarrito'; // Asegúrate de tener el componente Login
 
 //utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome'; // Importar el componente ProtectedRoute
@@ -58,7 +58,7 @@ function AppContent() {
 
       {/* Usar ProtectedRoute para UIUSER POR ROL cliente */}
        <Route path="/perfil" element={<ProtectedRouteRol element={<PerfilUser />} allowedRoles={['cliente']} />} />
-
+       <Route path="/carrito" element={<ProtectedRouteRol element={<CarritoUser />} allowedRoles={['cliente']} />} />
     </Routes>
   );
 }
@@ -72,3 +72,4 @@ function App() {
 }
 
 export default App;
+

@@ -21,12 +21,12 @@ const decodeToken = (token) => {
 export const getPerfil = (token) => {
   const decodedToken = decodeToken(token);
   if (decodedToken) {
-    // Asumiendo que la URL base de la API es algo como 'http://127.0.0.1:8000/storage/'
     const baseUrl = `${API_BASE_URL}/storage/`;
     return decodedToken.perfil ? `${baseUrl}${decodedToken.perfil}` : ''; // Concatenamos la URL base con el perfil
   }
-  return ''; // Si el token es inválido o no tiene perfil
+  return '';
 };
+
 // Función para obtener el ID del usuario
 export const getIdUsuario = (token) => decodeToken(token)?.idUsuario ?? null;
 
@@ -65,6 +65,9 @@ export const verifyToken = (token) => {
   return { valid: true, message: "Token válido" };
 };
 
+// **Nueva función para obtener el idCarrito**
+export const getIdCarrito = (token) => decodeToken(token)?.idCarrito ?? null;
+
 export default {
   getPerfil,
   getIdUsuario,
@@ -72,5 +75,6 @@ export default {
   getUserRole,
   isTokenExpired,
   getTokenExpirationDate,
-  verifyToken
+  verifyToken,
+  getIdCarrito  // Exportamos la nueva función
 };

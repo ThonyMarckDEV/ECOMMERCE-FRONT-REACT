@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link } from 'react-router-dom';
 import { logout } from '../../js/logout'; // Cambiar a importación nombrada
 import jwtUtils from '../../utilities/jwtUtils'; // Importar las utilidades JWT
+import API_BASE_URL from '../../js/urlHelper'; // Asegúrate de tener la URL base de tu API
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Verificación de autenticación
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Verificar si el menú de perfil está abierto
   const navigate = useNavigate(); // Inicializamos useNavigate
-
+  const [cantidadCarrito, setCantidadCarrito] = useState(0);
+  const [loading, setLoading] = useState(false);
+  
   // Estado para la foto de perfil
   const [profileImage, setProfileImage] = useState('');
 
@@ -24,6 +27,35 @@ const Navbar = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      const token = localStorage.getItem('jwt');
+      if (!token) return;
+  
+      const idUsuario = jwtUtils.getIdUsuario(token);
+      if (!idUsuario) return;
+  
+      setLoading(true);
+  
+      fetch(`${API_BASE_URL}/api/carrito/cantidad?idUsuario=${idUsuario}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        setCantidadCarrito(data.cantidad || 0);
+      })
+      .catch(err => {
+        console.error('Error al obtener cantidad del carrito:', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [isAuthenticated]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -38,8 +70,8 @@ const Navbar = () => {
 
   // Llamamos al logout.js cuando el usuario hace click en "Cerrar sesión"
   const handleLogout = () => {
-    logout(); // Llama a la función del archivo logout.js
-    setIsAuthenticated(false); // Actualiza el estado de autenticación
+    logout(); // Cierra sesión
+    setIsAuthenticated(false); 
     setIsProfileMenuOpen(false);
   };
 
@@ -74,9 +106,9 @@ const Navbar = () => {
           </button>
         </div>
 
-       {/* Botón del menú para móviles */}
+        {/* Botón del menú para móviles */}
         <button
-          className="md:hidden focus:outline-none -ml-10" // Añadido -ml-2 para moverlo a la izquierda
+          className="md:hidden focus:outline-none -ml-10"
           onClick={toggleMenu}
         >
           <svg
@@ -96,35 +128,37 @@ const Navbar = () => {
         </button>
 
         {/* Contenedor Flex para los íconos del carrito y perfil */}
-        <div className="flex items-center space-x-2 md:space-x-6"> {/* Aumentado space-x-2 en móvil */}
+        <div className="flex items-center space-x-2 md:space-x-6">
           
-          {/* Carrito de compras */}
+         {/* Carrito de compras */}
           <div className="relative">
-            <button
-              className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
-              aria-label="Carrito de compras"
-              title="Carrito de compras"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="w-12 h-12 md:w-10 md:h-10" 
+            <Link to="/carrito">
+              <button
+                className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
+                aria-label="Carrito de compras"
+                title="Carrito de compras"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-12 h-12 md:w-10 md:h-10"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
+                  />
+                </svg>
+              </button>
+            </Link>
 
-            {/* Mostrar el indicador solo si hay token */}
-            {localStorage.getItem('jwt') && (
-              <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                3
+            {/* Mostrar el indicador si hay token y cantidadCarrito > 0 */}
+            {isAuthenticated && cantidadCarrito > 0 && (
+              <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-black bg-white rounded-full">
+                {cantidadCarrito}
               </span>
             )}
           </div>

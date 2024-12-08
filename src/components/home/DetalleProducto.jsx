@@ -1,10 +1,13 @@
-// DetalleProducto.jsx
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import { useNavigate } from 'react-router-dom';
 import CheckLogin from '../home/CheckLogin'; // Asegúrate de que la ruta es correcta
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'; // Íconos para los botones de cantidad
 import LoadingScreen from './LoadingScreen'; // Asegúrate de que la ruta es correcta
+import jwtUtils from '../../utilities/jwtUtils'; // Importamos el archivo de utilidades JWT
+import Notification from '../../components/home/Notificacion'; // Importar el componente de notificación
+import { verificarYRenovarToken } from '../../js/authToken';
+
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -13,11 +16,11 @@ function DetalleProducto({ productoId, onClose }) {
   const [error, setError] = useState(null);
   const [showModalLogin, setShowModalLogin] = useState(false);
   const navigate = useNavigate();
+  const [notification, setNotification] = useState(null); // Estado para manejar la notificación
 
   useEffect(() => {
     // Bloquear el desplazamiento del body cuando el modal esté abierto
     document.body.style.overflow = 'hidden';
-
     // Fetch detalles del producto usando el productoId
     fetch(`${API_BASE_URL}/api/productos?idProducto=${productoId}`)
       .then((response) => {
@@ -56,9 +59,63 @@ function DetalleProducto({ productoId, onClose }) {
       return;
     }
 
-    // Lógica para agregar al carrito
-    console.log(`Agregando ${cantidad} unidad(es) de ${producto.nombreProducto} al carrito`); 
-    // Aquí agregarías el producto al carrito, por ejemplo, haciendo una solicitud al servidor
+    const idCarrito = jwtUtils.getIdCarrito(token); // Obtener el idCarrito desde el token
+    const idUsuario = jwtUtils.getIdUsuario(token); // Obtener el idUsuario desde el token
+    const precio = producto?.precio || 0; // Obtener el precio del producto
+
+    if (!idCarrito || !idUsuario) {
+      console.error('No se pudo obtener el idCarrito o idUsuario desde el token');
+      return;
+    }
+
+    // Datos a enviar al backend
+    const data = {
+      idProducto: productoId,
+      cantidad: cantidad,
+      idCarrito: idCarrito,
+      idUsuario: idUsuario,
+      precio: precio
+    };
+
+    // Activar el loading
+    setLoading(true);
+     // Primero verificamos y renovamos el token si es necesario
+     verificarYRenovarToken();
+    // Realizar la petición POST al backend
+    fetch(`${API_BASE_URL}/api/agregarCarrito`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Agregamos el token en el header como Bearer
+      },
+      body: JSON.stringify(data)
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log('Producto agregado al carrito');
+          setNotification({
+            message: 'Producto agregado al carrito',
+            color: 'bg-green-400', // Color de la notificación (verde claro)
+          });
+        } else {
+          console.error('Error al agregar al carrito:', data.message);
+          setNotification({
+            message: 'Error al agregar al carrito',
+            color: 'bg-red-400', // Color de la notificación (rojo)
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error al agregar al carrito:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+        setTimeout(() => {
+          setNotification(null); // Limpiar la notificación después de un tiempo
+          window.location.reload();
+        }, 1500);
+      });
   };
 
   const handleCloseModalLogin = () => {
@@ -152,6 +209,12 @@ function DetalleProducto({ productoId, onClose }) {
           <CheckLogin setShowModal={handleCloseModalLogin} />
         </div>
       )}
+
+      {/* Notificación */}
+      {notification && (
+        <Notification description={notification.message} bgColor={notification.color} />
+      )}
+
     </>
   );
 }

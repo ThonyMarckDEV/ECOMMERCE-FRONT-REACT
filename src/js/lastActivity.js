@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode'; // Asegúrate de importar jwtDecode corr
 
 export async function updateLastActivity() {
     // Verificar y renovar el token antes de cualquier solicitud
-    await verificarYRenovarToken();
+     await verificarYRenovarToken();
 
     const token = localStorage.getItem('jwt'); // Obtener el token actualizado
 

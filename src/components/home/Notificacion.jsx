@@ -4,23 +4,25 @@ const Notification = ({ description, bgColor }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Configurar el temporizador para desaparecer después de 3 segundos
+    // Temporizador para desaparecer después de 3 segundos
     const timer = setTimeout(() => {
-      setIsVisible(false); // Desactivar la visibilidad de la notificación
-    }, 3000); // 3000 ms = 3 segundos
+      setIsVisible(false); // Desactivar la visibilidad
+    }, 3000); // 3 segundos
 
     // Limpiar el temporizador cuando el componente se desmonte o se actualice
     return () => clearTimeout(timer);
-  }, []); // Solo se ejecuta una vez al montar el componente
+  }, []);
 
-  if (!isVisible) return null;
+  if (!isVisible) return null; // Si no es visible, no se renderiza
 
   return (
     <div
-      className={`fixed top-0 left-1/2 transform -translate-x-1/2 p-4 z-50 ${bgColor} text-white text-center font-bold shadow-lg`} 
+      className={`fixed top-0 left-1/2 transform -translate-x-1/2 p-4 z-50 ${bgColor} text-white text-center font-bold shadow-lg transition-opacity duration-500`} 
       style={{
         borderRadius: '8px',
         marginTop: '10px',
+        opacity: isVisible ? 1 : 0, // Efecto de desvanecimiento
+        transition: 'opacity 0.5s ease-out', // Efecto de transición de opacidad
       }}
     >
       <div className="flex justify-between items-center">
