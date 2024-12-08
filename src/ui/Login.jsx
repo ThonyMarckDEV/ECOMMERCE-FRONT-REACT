@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate(); // Inicializamos useNavigate
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -63,24 +69,35 @@ const Login = ({ closeLoginModal }) => {
             />
           </div>
 
-          {/* Input de contraseña */}
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Escribe tu contraseña"
-              required
-              className="w-full p-4 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="mb-6 relative">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+              Contraseña
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Escribe tu contraseña"
+                required
+                autoComplete="new-password" // Importante para evitar autocompletado
+                className="w-full p-4 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-16 appearance-none" // Aumentamos el espacio en pr-16 para que el ícono encaje mejor
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 focus:outline-none"
+              >
+                {showPassword ? <AiFillEyeInvisible size={28} /> : <AiFillEye size={28} />} {/* Aumentamos el tamaño del ícono a 28 */}
+              </button>
+            </div>
           </div>
 
           {/* Botón de iniciar sesión */}
           <button
             type="submit"
-            className="w-full py-3 bg-black text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full py-3 bg-black text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
           >
             Iniciar sesión
           </button>

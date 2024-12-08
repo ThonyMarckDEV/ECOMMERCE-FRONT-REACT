@@ -122,36 +122,36 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Ícono de perfil */}
-        <div className="relative ml-4">
-          <button
-            onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
-            className="hover:text-gray-400"
-          >
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt="Perfil"
-                className="w-12 h-12 md:w-10 md:h-10 rounded-full" // Más grande en móviles, más pequeño en pantallas medianas+
+       {/* Ícono de perfil */}
+      <div className="relative ml-4">
+        <button
+          onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
+          className="hover:text-gray-400"
+        >
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt="Perfil"
+              className="w-14 h-14 md:w-10 md:h-10 rounded-full" // Más grande en móviles, más pequeño en pantallas medianas+
+            />
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-14 h-14 md:w-10 md:h-10" // Más grande en móviles, más pequeño en pantallas medianas+
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 3v3h14V3m-7 4v9m0 0H5m7 0h7m-7 0v5"
               />
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="w-12 h-12 md:w-10 md:h-10" // Más grande en móviles, más pequeño en pantallas medianas+
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 3v3h14V3m-7 4v9m0 0H5m7 0h7m-7 0v5"
-                />
-              </svg>
-            )}
-          </button>
-
+            </svg>
+          )}
+        </button>
+  
           {/* Menú desplegable de perfil */}
           {isProfileMenuOpen && isAuthenticated && (
             <div className="absolute right-0 mt-2 bg-white text-black border border-gray-300 rounded-lg shadow-lg w-48 z-10">

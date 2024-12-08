@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
 import Notification from '../components/home/Notificacion'; // Importar el componente de notificación
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -15,9 +16,9 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [age, setAge] = useState('');
   const [birthDate, setBirthDate] = useState('1990-01-01');
-  const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState(null); // Estado para manejar la notificación
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -211,18 +212,18 @@ const Register = () => {
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+              className="w-full p-2 mt-1 border border-gray-300 rounded-md pr-12"  // Espacio extra a la derecha para el ícono
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2 top-2 text-gray-500"
+              className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"  // Ajustado para mover hacia abajo
             >
               {showPassword ? (
-                <i className="fas fa-eye-slash"></i>
+                <AiFillEyeInvisible className="text-2xl" />  // Ícono más grande
               ) : (
-                <i className="fas fa-eye"></i>
+                <AiFillEye className="text-2xl" />  // Ícono más grande
               )}
             </button>
             {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
@@ -235,18 +236,18 @@ const Register = () => {
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+              className="w-full p-2 mt-1 border border-gray-300 rounded-md pr-12"  // Espacio extra a la derecha para el ícono
               required
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-2 top-2 text-gray-500"
+              className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"  // Ajustado para mover hacia abajo
             >
               {showConfirmPassword ? (
-                <i className="fas fa-eye-slash"></i>
+                <AiFillEyeInvisible className="text-2xl" />  // Ícono más grande
               ) : (
-                <i className="fas fa-eye"></i>
+                <AiFillEye className="text-2xl" />  // Ícono más grande
               )}
             </button>
             {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}

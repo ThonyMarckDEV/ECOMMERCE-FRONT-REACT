@@ -149,31 +149,40 @@ function FiltradoProductos({ onFilter }) {
           </select>
         </div>
         
-        {/* Filtro por rango de precios */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-black mb-2">
-            Rango de Precio: ${filtro.precioInicial} - ${filtro.precioFinal}
-          </label>
-          <Slider
-            range
-            min={0}
-            max={500}
-            value={[filtro.precioInicial, filtro.precioFinal]}
-            onChange={handlePriceChange}
-            trackStyle={[{ backgroundColor: '#4A90E2' }]}
-            handleStyle={[
-              { borderColor: '#4A90E2' },
-              { borderColor: '#4A90E2' }
-            ]}
-            railStyle={{ backgroundColor: '#d9d9d9' }}
-          />
+       {/* Filtro por rango de precios */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-black mb-2">
+          Rango de Precio
+        </label>
+        
+        {/* Slider */}
+        <Slider
+          range
+          min={0}
+          max={500}
+          step={1} // Define el paso para mayor precisión
+          allowCross={false} // Evita que los handles se crucen
+          value={[filtro.precioInicial, filtro.precioFinal]}
+          onChange={handlePriceChange}
+          trackStyle={[{ backgroundColor: '#000000' }]}
+          handleStyle={[
+            { borderColor: '#000000' },
+            { borderColor: '#000000' },
+          ]}
+          railStyle={{ backgroundColor: '#d9d9d9' }}
+        />
+
+        {/* Rango de precio debajo del slider */}
+        <div className="mt-2 text-sm text-black">
+          S/.{filtro.precioInicial} - S/.{filtro.precioFinal}
         </div>
+      </div>
 
         {/* Botones de Aplicar y Reiniciar Filtros */}
         <div className="flex flex-col space-y-2">
           <button
             onClick={handleApplyFilters}
-            className="w-full px-4 py-2 bg-black text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 transition-colors"
           >
             Aplicar Filtros
           </button>

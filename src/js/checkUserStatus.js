@@ -2,7 +2,7 @@ import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
 import { getIdUsuario, isTokenExpired } from '../utilities/jwtUtils.jsx'; // Importamos la función getIdUsuario
 
-const checkUserStatusInterval = 5000; // Verificación de estado de usuario cada 5 segundos
+const checkUserStatusInterval = 10000; // Verificación de estado de usuario cada 5 segundos
 let userStatusIntervalId; // Declaramos la variable fuera de la función
 
 export const checkStatus= async () => {

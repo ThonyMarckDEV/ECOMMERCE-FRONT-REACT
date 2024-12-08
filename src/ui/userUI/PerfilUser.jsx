@@ -229,7 +229,13 @@ function Perfil() {
             <img
               src={perfilData.perfil || '/path/to/default-avatar.jpg'}
               alt="Foto de perfil"
-              className="w-40 h-40 rounded-full object-cover shadow-md"
+              className="rounded-full object-cover shadow-md"
+              style={{
+                width: '160px', // Dimensiones fijas
+                height: '160px',
+                backgroundColor: '#f0f0f0', // Fondo para evitar bordes visibles
+              }}
+              loading="eager"
             />
           </div>
   

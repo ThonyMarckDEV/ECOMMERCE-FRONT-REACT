@@ -9,6 +9,7 @@ const CarruselHome = lazy(() => import('../components/home/CarruselHome'));
 const CategoriasHome = lazy(() => import('../components/home/CategoriasHome'));
 const Footer = lazy(() => import('../components/home/Footer'));
 
+import LoadingScreen from '../components/home/LoadingScreen';  // Importa el componente LoadingScreen
 
 // Importar imágenes desde la carpeta src/img
 import image1 from '../img/1.webp';
@@ -77,25 +78,25 @@ function Home() {
    }, [location]);
  
    return (
-     <div className="bg-gray-800 font-sans text-gray-200">
-       {/* Usar Suspense para manejar componentes cargados de forma diferida */}
-       <Suspense fallback={<div className="text-center text-white">Cargando...</div>}>
-         {/* Barra de navegación */}
-         <NavBarHome />
- 
-         {/* Carrusel debajo de la barra de navegación */}
-         <CarruselHome images={images} interval={5000} />
- 
-         {/* Grid de categorías debajo del carrusel */}
-         <div ref={categoriasRef}>
-           <CategoriasHome />
-         </div>
- 
-         {/* Footer */}
-         <Footer />
-       </Suspense>
-     </div>
-   );
- }
- 
- export default Home;
+    <div className="bg-gray-800 font-sans text-gray-200">
+      {/* Usar Suspense para manejar componentes cargados de forma diferida */}
+      <Suspense fallback={<LoadingScreen />}>  {/* Cambiar el fallback a LoadingScreen */}
+        {/* Barra de navegación */}
+        <NavBarHome />
+
+        {/* Carrusel debajo de la barra de navegación */}
+        <CarruselHome images={images} interval={5000} />
+
+        {/* Grid de categorías debajo del carrusel */}
+        <div ref={categoriasRef}>
+          <CategoriasHome />
+        </div>
+
+        {/* Footer */}
+        <Footer />
+      </Suspense>
+    </div>
+  );
+}
+
+export default Home;
