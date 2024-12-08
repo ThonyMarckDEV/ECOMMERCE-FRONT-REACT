@@ -66,7 +66,7 @@ function ListarProductos({ filtro }) {
             <h2 className="text-sm font-bold mb-2 text-gray-900">{producto.nombreProducto}</h2>
             <p className="text-xs text-gray-600 mb-2">{producto.descripcion}</p>
             <p className="text-xs text-gray-500 mb-2">Categoría: {producto.nombreCategoria}</p>
-            <p className="text-sm font-semibold text-gray-800">${producto.precio}</p>
+            <p className="text-sm font-semibold text-gray-800">S/.{producto.precio}</p>
           </div>
         ))}
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './index.css';
 
 
@@ -26,7 +26,7 @@ import { checkStatus} from './js/checkUserStatus';
 
 // Componente para manejar la lógica con useLocation
 function AppContent() {
-  // const location = useLocation();
+   const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('jwt');
