@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
@@ -137,9 +136,8 @@ function Direcciones() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white font-sans text-gray-800">
-      <NavBarHome />
-      
+    <div className="flex flex-col min-h-screen  font-sans text-gray-800">
+
       {/* Mostrar el loader mientras se hace una solicitud */}
       {loading && <LoadingScreen />}
       

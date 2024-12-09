@@ -65,7 +65,7 @@ export const verifyToken = (token) => {
   return { valid: true, message: "Token válido" };
 };
 
-// **Nueva función para obtener el idCarrito**
+
 export const getIdCarrito = (token) => decodeToken(token)?.idCarrito ?? null;
 
 export default {

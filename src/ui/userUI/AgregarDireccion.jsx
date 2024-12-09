@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import NavBarHome from '../../components/home/NavBarHome';
+//import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';  // Importa el componente LoadingScreen
 import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
@@ -151,12 +151,11 @@ function AgregarDirecciones() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-800">
-      <NavBarHome />
+    <div className="flex flex-col min-h-screen font-sans text-gray-800">
 
       <div className="flex-1 p-6 sm:p-8 md:p-10">
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Detalles de la Dirección</h2>
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6"> {/* Reducir el padding aquí */}
+          <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Detalles de la Dirección</h2>
 
           {notification && (
             <div className={`px-4 py-2 text-white font-semibold text-center ${notification.bgColor} rounded-md shadow-md mb-4`}>
@@ -171,7 +170,7 @@ function AgregarDirecciones() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6 relative">
+          <form onSubmit={handleSubmit} className="space-y-4 relative"> {/* Reducir espacio entre elementos */}
             <div>
               <label className="block text-gray-700 text-sm">Región:</label>
               <input
@@ -208,11 +207,11 @@ function AgregarDirecciones() {
               />
             </div>
 
-            <div className="my-8 z-10 relative">
+            <div className="my-6 z-10 relative"> {/* Reducir el espacio de abajo */}
               <MapContainer
                 center={latitud ? [latitud, longitud] : [-12.04318, -77.02824]}
                 zoom={13}
-                style={{ height: '350px', width: '100%' }}
+                style={{ height: '250px', width: '100%' }} 
                 scrollWheelZoom={true}
               >
                 <TileLayer

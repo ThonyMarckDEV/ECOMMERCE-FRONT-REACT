@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation ,Navigate } from 'react-router-dom';
 import './index.css';
-
 
 //ComponentesHome
 import Home from './ui/Home'; // Cambia './Home' al camino correcto si está en otra carpeta
@@ -12,11 +11,9 @@ import Register from './ui/Register'; // Asegúrate de tener el componente Login
 //UIS
 //=====================================================================================================================
 //UserUI
-import PerfilUser from './ui/userUI/PerfilUser'; // Asegúrate de tener el componente Login
-import CarritoUser from './ui/userUI/MiCarrito'; // Asegúrate de tener el componente Login
-import PedidosUser from './ui/userUI/MisPedidos'; // Asegúrate de tener el componente Login
-import Direcciones from './ui/userUI/Direcciones';
-import AgregarDirecciones from './ui/userUI/AgregarDireccion';
+import Carrito from './ui/userUI/MiCarrito'; // Asegúrate de tener el componente Login
+import MenuUser from './ui/userUI/MenuUser';
+import Pedidos from './ui/userUI/MisPedidos';
 
 //utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome'; // Importar el componente ProtectedRoute
@@ -26,6 +23,8 @@ import ProtectedRouteRol from './utilities/ProtectedRouteRol';
 // Scripts para actividad y token
 import { updateLastActivity } from './js/lastActivity';
 import { checkStatus} from './js/checkUserStatus';
+
+
 
 
 // Componente para manejar la lógica con useLocation
@@ -60,12 +59,14 @@ function AppContent() {
 
        <Route path="/productos" element={<Productos />} />
 
+
+
       {/* Usar ProtectedRoute para UIUSER POR ROL cliente */}
-       <Route path="/perfil" element={<ProtectedRouteRol element={<PerfilUser />} allowedRoles={['cliente']} />} />
-       <Route path="/carrito" element={<ProtectedRouteRol element={<CarritoUser />} allowedRoles={['cliente']} />} />
-       <Route path="/pedidos" element={<ProtectedRouteRol element={<PedidosUser />} allowedRoles={['cliente']} />} />
-       <Route path="/direcciones" element={<ProtectedRouteRol element={<Direcciones />} allowedRoles={['cliente']} />} />
-       <Route path="/agregar/direcciones" element={<ProtectedRouteRol element={<AgregarDirecciones />} allowedRoles={['cliente']} />} />
+       <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
+       <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
+       <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
+      {/* Ruta no definida - Redirigir a la página principal */}
+      <Route path="*" element={<Navigate to="/" replace />} /> {/* Redirige a '/' */}
     </Routes>
   );
 }

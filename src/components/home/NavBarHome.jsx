@@ -65,7 +65,7 @@ const Navbar = () => {
   };
 
   const goToProfile = () => {
-    navigate('/perfil'); // Redirige a la página de perfil
+    navigate('/menuUsuario'); // Redirige a la página de perfil
   };
 
   // Llamamos al logout.js cuando el usuario hace click en "Cerrar sesión"
@@ -204,23 +204,7 @@ const Navbar = () => {
                       onClick={goToProfile}
                       className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
                     >
-                      Mi perfil
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => navigate('/agregar/direcciones')} // Redirige a la página de direcciones
-                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
-                    >
-                      Agregar Direccion
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => navigate('/direcciones')} // Redirige a la página de direcciones
-                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
-                    >
-                      Mis Direcciones
+                      Mi Menu
                     </button>
                   </li>
                   <li>

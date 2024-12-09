@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import NavBarHome from '../../components/home/NavBarHome';
 import { getIdUsuario } from '../../utilities/jwtUtils'; // Importamos getIdUsuario
 import LoadingScreen from '../../components/home/LoadingScreen'; // Importamos el componente LoadingScreen
 import Notification from '../../components/home/Notificacion'; // Importamos el componente de notificación
@@ -207,22 +206,21 @@ function Perfil() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-200">
-      {/* Barra de navegación */}
-      <NavBarHome />
-  
+    <div className="flex flex-col min-h-screen font-sans text-gray-200">
+    
       {/* Pantalla de carga */}
       {isLoading && <LoadingScreen />}
-  
+    
       {/* Notificación */}
       {notification && (
         <Notification description={notification.description} bgColor={notification.bgColor} />
       )}
-  
-      <div className="flex flex-grow justify-center items-center py-10 px-4">
+    
+      <div className="flex flex-grow justify-center items-start py-4 px-4"> {/* Ajusté el padding superior */}
         <div
           ref={perfilRef}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl flex flex-col items-center"
+          style={{ minHeight: '650px' }} 
         >
           {/* Foto de perfil */}
           <div className="flex justify-center items-center mb-6">
@@ -238,11 +236,11 @@ function Perfil() {
               loading="eager"
             />
           </div>
-  
+    
           {/* Información del usuario */}
           <div className="w-full">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">{perfilData.username}</h2>
-  
+    
             {/* Fila de 3 elementos no editables */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }].map(({ label, name }) => (
@@ -258,7 +256,7 @@ function Perfil() {
                 </div>
               ))}
             </div>
-  
+    
             {/* Fila de 2 elementos: Correo, Dirección, Edad */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               {[{ label: 'Correo', name: 'correo', type: 'email' }, { label: 'Dirección', name: 'direccion' }].map(({ label, name, type = 'text' }) => (
@@ -286,7 +284,7 @@ function Perfil() {
                 />
               </div>
             </div>
-  
+    
             {/* Fila de 2 elementos: Fecha de nacimiento, Sexo y Departamento */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               <div className="flex flex-col space-y-2">
@@ -300,7 +298,7 @@ function Perfil() {
                   className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
                 />
               </div>
-  
+      
               <div className="flex flex-col space-y-2">
                 <label className="font-semibold text-gray-700">Sexo</label>
                 <select
@@ -317,7 +315,7 @@ function Perfil() {
                   ))}
                 </select>
               </div>
-  
+    
               <div className="flex flex-col space-y-2">
                 <label className="font-semibold text-gray-700">Departamento</label>
                 <select
@@ -335,7 +333,7 @@ function Perfil() {
                 </select>
               </div>
             </div>
-  
+    
             {/* Campo para seleccionar la nueva foto de perfil */}
             {isEditing && (
               <div className="flex flex-col space-y-2 mb-6">
@@ -347,7 +345,7 @@ function Perfil() {
                 />
               </div>
             )}
-  
+    
             {/* Botones para editar y guardar */}
             <div className="flex justify-center md:justify-start space-x-4">
               {!isEditing ? (
@@ -377,8 +375,7 @@ function Perfil() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
     );
-}
-
+  }
 export default Perfil;
