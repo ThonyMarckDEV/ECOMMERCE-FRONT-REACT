@@ -187,11 +187,14 @@ function DetalleProducto({ productoId, onClose }) {
 
             {/* Botón de agregar al carrito */}
             <button
-              onClick={handleAddToCart}
-              className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-700 transition-colors mt-4"
-            >
-              Agregar al carrito
-            </button>
+            onClick={handleAddToCart}
+            className={`w-full bg-black text-white py-3 rounded-md hover:bg-gray-700 transition-colors mt-4 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading}
+          >
+            {loading ? 'Agregando...' : 'Agregar al carrito'}
+          </button>
+
+
           </div>
 
           {/* Mensaje en caso de error */}

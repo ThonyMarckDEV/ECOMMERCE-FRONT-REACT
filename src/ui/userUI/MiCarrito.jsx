@@ -27,6 +27,7 @@ function Carrito() {
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
+            console.log('Datos del carrito:', data.data); // Log para depuración
             setProductos(data.data);
           } else {
             setNotification({
@@ -149,7 +150,7 @@ function Carrito() {
         setNotification({ description: 'La cantidad no puede ser menor a 1.', bgColor: 'bg-red-500' });
         return;
       }
-
+  
       setIsLoading(true);
       const token = localStorage.getItem('jwt');
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
@@ -160,18 +161,22 @@ function Carrito() {
         },
         body: JSON.stringify({ cantidad }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
           setProductos((prevProductos) =>
             prevProductos.map((producto) =>
               producto.idProducto === idProducto
-                ? { ...producto, cantidad, subtotal: producto.precio * cantidad }
+                ? { 
+                    ...producto, 
+                    cantidad, 
+                    subtotal: producto.precio * cantidad  // Actualizamos el subtotal correctamente
+                  }
                 : producto
             )
           );
-          setNotification({ description: 'Cantidad actualizada correctamente.', bgColor: 'bg-green-500' });
+          setNotification({ description: 'Cantidad y precio actualizados correctamente.', bgColor: 'bg-green-500' });
         } else {
           setNotification({ description: data.message || 'Error al actualizar la cantidad.', bgColor: 'bg-red-500' });
         }
@@ -243,8 +248,9 @@ function Carrito() {
                 <h2 className="text-xl font-semibold text-black">{producto.nombreProducto}</h2>
                 <p className="text-gray-600 text-sm mb-2">{producto.descripcion}</p>
                 <div className="flex justify-between items-center mb-4">
+                  {/* Mostrar el precio correctamente */}
                   <span className="text-lg font-medium text-black">S/.{producto.precio.toFixed(2)}</span>
-                  <span className="text-sm text-black-500">
+                  <span className="text-sm text-gray-500">
                     x {producto.cantidad} = S/.{producto.subtotal.toFixed(2)}
                   </span>
                 </div>
@@ -254,6 +260,7 @@ function Carrito() {
                     <button
                       className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600"
                       onClick={() => actualizarCantidad(producto.idProducto, producto.cantidad - 1)}
+                      disabled={isLoading}
                     >
                       -
                     </button>
@@ -265,10 +272,12 @@ function Carrito() {
                       }
                       className="mx-2 w-16 text-center border-2 border-gray-300 rounded-lg"
                       min="1"
+                      disabled={isLoading}
                     />
                     <button
                       className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600"
                       onClick={() => actualizarCantidad(producto.idProducto, producto.cantidad + 1)}
+                      disabled={isLoading}
                     >
                       +
                     </button>
@@ -279,6 +288,7 @@ function Carrito() {
                   <button
                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                     onClick={() => eliminarProducto(producto.idProducto)}
+                    disabled={isLoading}
                   >
                     Eliminar
                   </button>
@@ -289,18 +299,21 @@ function Carrito() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 w-full bg-gray-900 p-4 text-white flex justify-between items-center">
-        <div className="text-xl font-semibold">
-          <span>Total: </span>
-          <span>S/.{calcularTotal().toFixed(2)}</span>
+      {productos.length > 0 && (
+        <div className="fixed bottom-0 left-0 w-full bg-gray-900 p-4 text-white flex justify-between items-center">
+          <div className="text-xl font-semibold">
+            <span>Total: </span>
+            <span>S/.{calcularTotal().toFixed(2)}</span>
+          </div>
+          <button
+            className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
+            onClick={verificarDireccionUsuario}
+            disabled={isLoading}
+          >
+            Realizar pedido
+          </button>
         </div>
-        <button
-          className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
-          onClick={verificarDireccionUsuario}
-        >
-          Realizar pedido
-        </button>
-      </div>
+      )}
 
       <div className="bg-gray-100 p-4 text-center text-gray-600">
         <p>&copy; 2024 - Todos los derechos reservados</p>
