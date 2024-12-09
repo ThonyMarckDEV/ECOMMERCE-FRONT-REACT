@@ -151,7 +151,7 @@ function DetalleProducto({ productoId, onClose }) {
                   className="w-full h-full object-contain rounded-md"
                   onError={(e) => {
                     e.target.onerror = null; // Evita loops infinitos
-                    e.target.src = '/images/default-product.jpg'; // Ruta a una imagen por defecto
+                    e.target.src = '/img/default-product.png'; // Ruta a una imagen por defecto
                   }}
                 />
               )}

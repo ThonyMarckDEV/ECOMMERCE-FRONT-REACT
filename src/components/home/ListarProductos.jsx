@@ -18,9 +18,15 @@ const ProductoCard = memo(({ producto, onClick }) => {
   });
 
   const [isLoading, setIsLoading] = useState(true); // Estado para controlar si la imagen está cargando
+  const [imgSrc, setImgSrc] = useState(`${API_BASE_URL}/storage/${producto.imagen}`); // Estado para la fuente de la imagen
 
   const handleImageLoad = () => {
     setIsLoading(false); // Cambia el estado cuando la imagen haya cargado
+  };
+
+  const handleImageError = () => {
+    setImgSrc('/img/default-product.png'); // Ruta relativa a la carpeta public
+    setIsLoading(false); // Detener el loader si la imagen por defecto también falla
   };
 
   return (
@@ -35,11 +41,12 @@ const ProductoCard = memo(({ producto, onClick }) => {
       >
         {inView && isLoading && <ImageLoader />} {/* Mostrar el loader encima de la imagen si está cargando */}
 
-        <img
-          src={`${API_BASE_URL}/storage/${producto.imagen}`}
+          <img
+          src={imgSrc}
           alt={producto.nombreProducto}
           className={`w-full h-full object-contain rounded-md ${isLoading ? 'opacity-0' : 'opacity-100'}`} // Hace la imagen invisible mientras se carga
           onLoad={handleImageLoad} // Evento que se dispara cuando la imagen carga
+          onError={handleImageError} // Evento que se dispara si la imagen no carga
         />
       </div>
 

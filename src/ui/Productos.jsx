@@ -16,18 +16,20 @@ function Productos() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white-800 font-sans text-gray-200">
+    <div className="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-900"> {/* Fondo corregido */}
 
       {/* Barra de navegación */}
       <NavBarHome />
   
       {/* Contenido principal */}
-      <div className="flex flex-col sm:flex-row flex-grow">
+      <div className="flex flex-1 flex-col sm:flex-row">
         {/* Filtrado de productos */}
-        <FiltradoProductos onFilter={handleFilterChange} />
-  
+        <div className="w-full sm:w-1/5 lg:w-1/6 p-2 sm:p-4"> {/* Ancho y padding ajustados */}
+          <FiltradoProductos onFilter={handleFilterChange} />
+        </div>
+
         {/* Listar productos */}
-        <div className="flex-grow flex justify-center sm:justify-start items-center w-full">
+        <div className="flex-grow p-2 sm:p-4">
           <ListarProductos filtro={filtro} />
         </div>
       </div>
@@ -36,7 +38,6 @@ function Productos() {
       <Footer />
     </div>
   );
-  
 }
 
 export default Productos;
