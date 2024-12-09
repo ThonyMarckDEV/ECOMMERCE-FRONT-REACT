@@ -31,7 +31,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
 
   return (
     <div
-      className="bg-white rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow flex flex-col max-w-[280px] cursor-pointer"
+      className="bg-white rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow flex flex-col w-full cursor-pointer"
       onClick={() => onClick(producto.idProducto)}
     >
       {/* Contenedor de la imagen con el loader */}
@@ -41,7 +41,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
       >
         {inView && isLoading && <ImageLoader />} {/* Mostrar el loader encima de la imagen si está cargando */}
 
-          <img
+        <img
           src={imgSrc}
           alt={producto.nombreProducto}
           className={`w-full h-full object-contain rounded-md ${isLoading ? 'opacity-0' : 'opacity-100'}`} // Hace la imagen invisible mientras se carga
@@ -129,11 +129,11 @@ function ListarProductos({ filtro }) {
     );
 
   return (
-    <div className="bg-white min-h-screen p-4">
+    <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
       <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10">
         Productos
       </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full">
         {productos.length > 0 ? (
           productos.map((producto) => (
             <ProductoCard
