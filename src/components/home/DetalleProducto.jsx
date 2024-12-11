@@ -7,7 +7,7 @@ import LoadingScreen from './LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
 import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
-import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
+import { useCart } from '../../context/CartContext'; 
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -20,9 +20,10 @@ function DetalleProducto({ productoId, onClose }) {
   const [imagenIndex, setImagenIndex] = useState(0);
   const [imageTransitioning, setImageTransitioning] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
-  const [tallaSeleccionada, setTallaSeleccionada] = useState(null);  // Nuevo estado para la talla seleccionada
+  const [tallaSeleccionada, setTallaSeleccionada] = useState(null);
   const navigate = useNavigate();
-  const { updateCartCount } = useCart(); // Usamos el contexto de carrito
+  const { updateCartCount } = useCart(); 
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
 
@@ -48,7 +49,6 @@ function DetalleProducto({ productoId, onClose }) {
     };
   }, [productoId]);
 
-  const buildImageUrl = (relativePath) => `${API_BASE_URL}/storage/${relativePath}`;
 
   const handleIncrease = () => {
     setCantidad((prevCantidad) => prevCantidad + 1);
@@ -62,7 +62,7 @@ function DetalleProducto({ productoId, onClose }) {
     setModeloSeleccionado(modelo);
     setImagenIndex(0);
     setIsImageLoading(true);
-    setTallaSeleccionada(null);  // Reiniciar la talla seleccionada cuando cambie el modelo
+    setTallaSeleccionada(null); 
   };
 
   const handleAddToCart = () => {
@@ -75,7 +75,6 @@ function DetalleProducto({ productoId, onClose }) {
     const idCarrito = jwtUtils.getIdCarrito(token);
     const idUsuario = jwtUtils.getIdUsuario(token);
   
-    // Aseguramos que el precio sea un número flotante
     const precio = parseFloat(producto?.precio) || 0;
   
     if (!idCarrito || !idUsuario || !tallaSeleccionada) {
@@ -119,12 +118,10 @@ function DetalleProducto({ productoId, onClose }) {
             color: 'bg-green-400'
           });
   
-          // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
-          updateCartCount(); // Ahora funciona correctamente
+          updateCartCount(); 
   
-          // Reiniciar cantidad y desmarcar talla seleccionada
-          setCantidad(1); // Reset cantidad
-          setTallaSeleccionada(null); // Desmarcar la talla
+          setCantidad(1); 
+          setTallaSeleccionada(null);
         } else {
           setNotification({
             message: 'Error al agregar al carrito',
@@ -172,6 +169,13 @@ function DetalleProducto({ productoId, onClose }) {
     setIsImageLoading(false);
   };
 
+  const buildImageUrl = (relativePath) => {
+    if (!relativePath) {
+      return '/img/default-product.png';  // Si no hay imagen, mostrar la imagen predeterminada
+    }
+    return `${API_BASE_URL}/storage/${relativePath}`;
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-30">
@@ -180,7 +184,7 @@ function DetalleProducto({ productoId, onClose }) {
           {loading && <LoadingScreen />}
           <div className={`relative ${loading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <h2 className="text-3xl font-bold mb-4 text-center sm:text-left text-black">{producto?.nombreProducto}</h2>
-
+  
             {modeloSeleccionado && (
               <div className="mb-6">
                 <div className="flex space-x-4 mb-4">
@@ -194,7 +198,7 @@ function DetalleProducto({ productoId, onClose }) {
                     </button>
                   ))}
                 </div>
-
+  
                 <div className="w-full h-80 mb-3 relative bg-white flex items-center justify-center">
                   {modeloSeleccionado.imagenes.length > 1 && (
                     <button
@@ -205,13 +209,13 @@ function DetalleProducto({ productoId, onClose }) {
                     </button>
                   )}
                   <div className={`transition-opacity duration-300 ${imageTransitioning ? 'opacity-0' : 'opacity-100'} w-full h-full`}>
-                    {isImageLoading && (
+                    {isImageLoading && modeloSeleccionado.imagenes.length > 0 && (
                       <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
                         <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
                       </div>
                     )}
                     <img
-                      src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen || '/img/default-product.png')}
+                      src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen)}
                       alt={modeloSeleccionado.nombreModelo}
                       className="w-full h-full object-contain rounded-md"
                       onLoad={handleImageLoad}
@@ -227,7 +231,7 @@ function DetalleProducto({ productoId, onClose }) {
                     </button>
                   )}
                 </div>
-
+  
                 <div className="text-center">
                   <p className="text-lg font-semibold">Tallas disponibles:</p>
                   <div className="space-y-2">
@@ -237,7 +241,7 @@ function DetalleProducto({ productoId, onClose }) {
                           type="checkbox"
                           value={talla.nombreTalla}
                           checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
-                          onChange={() => setTallaSeleccionada(talla)} // Actualizar la talla seleccionada
+                          onChange={() => setTallaSeleccionada(talla)}
                           className="text-black"
                         />
                         <span>{talla.nombreTalla} - {talla.cantidad} unidades</span>
@@ -247,7 +251,7 @@ function DetalleProducto({ productoId, onClose }) {
                 </div>
               </div>
             )}
-
+  
             <div className="flex items-center mb-6 justify-center sm:justify-start">
               <button onClick={handleDecrease} className="px-4 py-2 bg-black text-white rounded-l-md text-xl"> <AiOutlineMinus /></button>
               <input
@@ -258,7 +262,7 @@ function DetalleProducto({ productoId, onClose }) {
               />
               <button onClick={handleIncrease} className="px-4 py-2 bg-black text-white rounded-r-md text-xl"> <AiOutlinePlus /></button>
             </div>
-
+  
             <button
               onClick={handleAddToCart}
               className={`w-full bg-black text-white py-3 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -270,7 +274,7 @@ function DetalleProducto({ productoId, onClose }) {
           {!loading && error && <p className="text-red-500 text-center mt-4">Error: {error}</p>}
         </div>
       </div>
-
+  
       {showModalLogin && <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50"><CheckLogin setShowModal={handleCloseModalLogin} /></div>}
       {notification && <Notification description={notification.message} bgColor={notification.color} />}
     </>

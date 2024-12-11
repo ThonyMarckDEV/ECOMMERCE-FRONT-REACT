@@ -26,12 +26,12 @@ const ProductoCard = memo(({ producto, onClick }) => {
   const handleModeloChange = (modelo, e) => {
     e.stopPropagation(); // Evita activar el onClick de la tarjeta
     setSelectedModelo(modelo);
-    setImgSrc(
+    const newImgSrc =
       modelo.imagenes[0]?.urlImagen
         ? `${API_BASE_URL}/storage/${modelo.imagenes[0]?.urlImagen}`
-        : '/img/default-product.png'
-    );
-    setIsLoading(true);
+        : '/img/default-product.png';
+    setImgSrc(newImgSrc);
+    setIsLoading(!!modelo.imagenes[0]?.urlImagen); // Solo mostrar cargador si hay imagen
   };
 
   return (
@@ -40,7 +40,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
       onClick={() => onClick(producto.idProducto)}
     >
       <div className="w-full h-48 mb-3 relative bg-white flex items-center justify-center">
-        {isLoading && <ImageLoader />}
+        {isLoading && imgSrc !== '/img/default-product.png' && <ImageLoader />}
         <img
           src={imgSrc}
           alt={selectedModelo.nombreModelo}
