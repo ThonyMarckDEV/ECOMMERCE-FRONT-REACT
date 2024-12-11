@@ -23,7 +23,6 @@ function DetalleProducto({ productoId, onClose }) {
   const [tallaSeleccionada, setTallaSeleccionada] = useState(null);  // Nuevo estado para la talla seleccionada
   const navigate = useNavigate();
   const { updateCartCount } = useCart(); // Usamos el contexto de carrito
-  
   useEffect(() => {
     document.body.style.overflow = 'hidden';
 
@@ -122,6 +121,10 @@ function DetalleProducto({ productoId, onClose }) {
   
           // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
           updateCartCount(); // Ahora funciona correctamente
+  
+          // Reiniciar cantidad y desmarcar talla seleccionada
+          setCantidad(1); // Reset cantidad
+          setTallaSeleccionada(null); // Desmarcar la talla
         } else {
           setNotification({
             message: 'Error al agregar al carrito',

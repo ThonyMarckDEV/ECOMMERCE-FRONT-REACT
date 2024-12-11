@@ -6,11 +6,13 @@ import ProductosCarrito from '../../components/userComponents/ProductosCarrito';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
+import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
 
 function Carrito() {
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const { updateCartCount } = useCart(); // Usamos el contexto de carrito
 
   const obtenerCarrito = async () => {
     try {
@@ -205,6 +207,8 @@ function Carrito() {
       setNotification({ description: 'Ocurrió un error al actualizar la cantidad.', bgColor: 'bg-red-500' });
     } finally {
       setIsLoading(false);
+       // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
+       updateCartCount(); // Ahora funciona correctamente
     }
   };
 
@@ -240,6 +244,8 @@ function Carrito() {
       setNotification({ description: 'Ocurrió un error al eliminar el producto.', bgColor: 'bg-red-500' });
     } finally {
       setIsLoading(false);
+       // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
+       updateCartCount(); // Ahora funciona correctamente
     }
   };
 
