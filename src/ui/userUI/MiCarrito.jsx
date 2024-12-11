@@ -12,7 +12,21 @@ function Carrito() {
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [lastAction, setLastAction] = useState(null); // Variable para evitar notificaciones repetidas
   const { updateCartCount } = useCart(); // Usamos el contexto de carrito
+
+  const mostrarNotificacion = (descripcion, color) => {
+    // Si ya se ha mostrado la misma notificación, no mostrarla de nuevo
+    if (lastAction === descripcion) return;
+  
+    setNotification({ description: descripcion, bgColor: color });
+    setLastAction(descripcion); // Registrar la última acción
+  
+    // Ocultar la notificación después de 3 segundos
+    setTimeout(() => {
+      setNotification(null); // Limpiar la notificación
+    }, 3000);
+  };
 
   const obtenerCarrito = async () => {
     try {
@@ -43,10 +57,7 @@ function Carrito() {
         if (data.success) {
           setProductos(data.data);
         } else {
-          setNotification({
-            description: 'No se pudo cargar el carrito.',
-            bgColor: 'bg-red-500',
-          });
+          mostrarNotificacion('No se pudo cargar el carrito.', 'bg-red-500');
         }
       } else {
         setNotification({
@@ -61,6 +72,7 @@ function Carrito() {
       });
     } finally {
       setIsLoading(false);
+      setNotification(null);
     }
   };
 
@@ -248,7 +260,7 @@ function Carrito() {
        updateCartCount(); // Ahora funciona correctamente
     }
   };
-
+  
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-800">
       <NavBarHome />
