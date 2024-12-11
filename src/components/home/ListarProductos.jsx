@@ -1,62 +1,8 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import DetalleProducto from './DetalleProducto';
-import { useInView } from 'react-intersection-observer';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-
-// Loader para cada imagen (centrado sobre la imagen)
-const ImageLoader = () => (
-  <div className="absolute inset-0 flex justify-center items-center bg-gray-200 bg-opacity-50 rounded-md">
-    <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
-  </div>
-);
-
-const ProductoCard = memo(({ producto, onClick }) => {
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    rootMargin: '50px 0px',
-  });
-
-  const [isLoading, setIsLoading] = useState(true); // Estado para controlar si la imagen está cargando
-  const [imgSrc, setImgSrc] = useState(`${API_BASE_URL}/storage/${producto.imagen}`); // Estado para la fuente de la imagen
-
-  const handleImageLoad = () => {
-    setIsLoading(false); // Cambia el estado cuando la imagen haya cargado
-  };
-
-  const handleImageError = () => {
-    setImgSrc('/img/default-product.png'); // Ruta relativa a la carpeta public
-    setIsLoading(false); // Detener el loader si la imagen por defecto también falla
-  };
-
-  return (
-    <div
-      className="bg-white rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow flex flex-col w-full cursor-pointer"
-      onClick={() => onClick(producto.idProducto)}
-    >
-      {/* Contenedor de la imagen con el loader */}
-      <div
-        ref={ref}
-        className="w-full h-48 mb-3 relative bg-gray-100 flex items-center justify-center"
-      >
-        {inView && isLoading && <ImageLoader />} {/* Mostrar el loader encima de la imagen si está cargando */}
-
-        <img
-          src={imgSrc}
-          alt={producto.nombreProducto}
-          className={`w-full h-full object-contain rounded-md ${isLoading ? 'opacity-0' : 'opacity-100'}`} // Hace la imagen invisible mientras se carga
-          onLoad={handleImageLoad} // Evento que se dispara cuando la imagen carga
-          onError={handleImageError} // Evento que se dispara si la imagen no carga
-        />
-      </div>
-
-      <h2 className="text-sm font-bold mb-2 text-gray-900">{producto.nombreProducto}</h2>
-      <p className="text-xs text-gray-600 mb-2">{producto.descripcion}</p>
-      <p className="text-xs text-gray-500 mb-2">Categoría: {producto.nombreCategoria}</p>
-      <p className="text-sm font-semibold text-gray-800">S/.{producto.precio}</p>
-    </div>
-  );
-});
+import ProductoCard from './ProductoCard'; // Asumimos que ProductoCard está exportado correctamente
 
 function ListarProductos({ filtro }) {
   const [productos, setProductos] = useState([]);
@@ -103,14 +49,6 @@ function ListarProductos({ filtro }) {
     };
   }, [filtro]);
 
-  const handleOpenModal = (idProducto) => {
-    setProductoSeleccionado(idProducto);
-  };
-
-  const handleCloseModal = () => {
-    setProductoSeleccionado(null);
-  };
-
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen absolute top-0 left-0 right-0 bottom-0 bg-white z-50">
@@ -139,7 +77,7 @@ function ListarProductos({ filtro }) {
             <ProductoCard
               key={producto.idProducto}
               producto={producto}
-              onClick={handleOpenModal}
+              onClick={() => setProductoSeleccionado(producto.idProducto)}
             />
           ))
         ) : (
@@ -152,7 +90,7 @@ function ListarProductos({ filtro }) {
       {productoSeleccionado && (
         <DetalleProducto
           productoId={productoSeleccionado}
-          onClose={handleCloseModal}
+          onClose={() => setProductoSeleccionado(null)}
         />
       )}
     </div>

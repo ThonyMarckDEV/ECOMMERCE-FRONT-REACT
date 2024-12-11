@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import API_BASE_URL from '../../js/urlHelper';
 import { useNavigate } from 'react-router-dom';
-import CheckLogin from '../home/CheckLogin'; // Asegúrate de que la ruta es correcta
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'; // Íconos para los botones de cantidad
-import LoadingScreen from './LoadingScreen'; // Asegúrate de que la ruta es correcta
-import jwtUtils from '../../utilities/jwtUtils'; // Importamos el archivo de utilidades JWT
-import Notification from '../../components/home/Notificacion'; // Importar el componente de notificación
+import CheckLogin from '../home/CheckLogin'; 
+import { AiOutlineMinus, AiOutlinePlus,AiOutlineLoading3Quarters } from 'react-icons/ai';
+import LoadingScreen from './LoadingScreen';
+import jwtUtils from '../../utilities/jwtUtils';
+import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
-
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -15,13 +14,16 @@ function DetalleProducto({ productoId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModalLogin, setShowModalLogin] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
+  const [imagenIndex, setImagenIndex] = useState(0);
+  const [imageTransitioning, setImageTransitioning] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true); // Estado de carga para la imagen
   const navigate = useNavigate();
-  const [notification, setNotification] = useState(null); // Estado para manejar la notificación
 
   useEffect(() => {
-    // Bloquear el desplazamiento del body cuando el modal esté abierto
     document.body.style.overflow = 'hidden';
-    // Fetch detalles del producto usando el productoId
+
     fetch(`${API_BASE_URL}/api/productos?idProducto=${productoId}`)
       .then((response) => {
         if (!response.ok) {
@@ -31,6 +33,7 @@ function DetalleProducto({ productoId, onClose }) {
       })
       .then((data) => {
         setProducto(data.data);
+        setModeloSeleccionado(data.data.modelos[0]);
         setLoading(false);
       })
       .catch((err) => {
@@ -38,11 +41,12 @@ function DetalleProducto({ productoId, onClose }) {
         setLoading(false);
       });
 
-    // Limpiar el estilo al desmontar el componente o cerrar el modal
     return () => {
-      document.body.style.overflow = 'auto'; // Restaurar el desplazamiento cuando se cierre el modal
+      document.body.style.overflow = 'auto';
     };
   }, [productoId]);
+
+  const buildImageUrl = (relativePath) => `${API_BASE_URL}/storage/${relativePath}`;
 
   const handleIncrease = () => {
     setCantidad((prevCantidad) => prevCantidad + 1);
@@ -52,23 +56,28 @@ function DetalleProducto({ productoId, onClose }) {
     setCantidad((prevCantidad) => (prevCantidad > 1 ? prevCantidad - 1 : 1));
   };
 
+  const handleModeloChange = (modelo) => {
+    setModeloSeleccionado(modelo);
+    setImagenIndex(0);
+    setIsImageLoading(true); // Muestra el loader cuando cambia el modelo
+  };
+
   const handleAddToCart = () => {
     const token = localStorage.getItem('jwt');
     if (!token) {
-      setShowModalLogin(true); // Muestra el modal si no hay token
+      setShowModalLogin(true);
       return;
     }
 
-    const idCarrito = jwtUtils.getIdCarrito(token); // Obtener el idCarrito desde el token
-    const idUsuario = jwtUtils.getIdUsuario(token); // Obtener el idUsuario desde el token
-    const precio = producto?.precio || 0; // Obtener el precio del producto
+    const idCarrito = jwtUtils.getIdCarrito(token);
+    const idUsuario = jwtUtils.getIdUsuario(token);
+    const precio = producto?.precio || 0;
 
     if (!idCarrito || !idUsuario) {
       console.error('No se pudo obtener el idCarrito o idUsuario desde el token');
       return;
     }
 
-    // Datos a enviar al backend
     const data = {
       idProducto: productoId,
       cantidad: cantidad,
@@ -77,32 +86,28 @@ function DetalleProducto({ productoId, onClose }) {
       precio: precio
     };
 
-    // Activar el loading
     setLoading(true);
-     // Primero verificamos y renovamos el token si es necesario
-     verificarYRenovarToken();
-    // Realizar la petición POST al backend
+    verificarYRenovarToken();
+
     fetch(`${API_BASE_URL}/api/agregarCarrito`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Agregamos el token en el header como Bearer
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data)
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          console.log('Producto agregado al carrito');
           setNotification({
             message: 'Producto agregado al carrito',
-            color: 'bg-green-400', // Color de la notificación (verde claro)
+            color: 'bg-green-400'
           });
         } else {
-          console.error('Error al agregar al carrito:', data.message);
           setNotification({
             message: 'Error al agregar al carrito',
-            color: 'bg-red-400', // Color de la notificación (rojo)
+            color: 'bg-red-400'
           });
         }
       })
@@ -111,10 +116,7 @@ function DetalleProducto({ productoId, onClose }) {
       })
       .finally(() => {
         setLoading(false);
-        setTimeout(() => {
-          setNotification(null); // Limpiar la notificación después de un tiempo
-          window.location.reload();
-        }, 1500);
+        setTimeout(() => setNotification(null), 1500);
       });
   };
 
@@ -122,102 +124,125 @@ function DetalleProducto({ productoId, onClose }) {
     setShowModalLogin(false);
   };
 
+  const handleNextImage = () => {
+    setImageTransitioning(true);
+    setTimeout(() => {
+      setImagenIndex((prevIndex) => (prevIndex + 1) % modeloSeleccionado.imagenes.length);
+      setImageTransitioning(false);
+      setIsImageLoading(true); // Activa el loader cuando se cambia de imagen
+    }, 300);
+  };
+
+  const handlePrevImage = () => {
+    setImageTransitioning(true);
+    setTimeout(() => {
+      setImagenIndex((prevIndex) => (prevIndex - 1 + modeloSeleccionado.imagenes.length) % modeloSeleccionado.imagenes.length);
+      setImageTransitioning(false);
+      setIsImageLoading(true); // Activa el loader cuando se cambia de imagen
+    }, 300);
+  };
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false); // Desactiva el loader una vez que la imagen se haya cargado
+  };
+
+  const handleImageError = (e) => {
+    e.target.src = '/img/default-product.png';
+    setIsImageLoading(false);
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-30">
         <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-lg sm:max-w-3xl relative">
-          {/* Botón de cerrar dentro del modal */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 text-2xl hover:text-gray-700 transition-colors"
-          >
-            &times;
-          </button>
-
-          {/* Loader overlay */}
+          <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 text-2xl hover:text-gray-700">&times;</button>
           {loading && <LoadingScreen />}
-
-          {/* Contenido del producto, oculto cuando loading */}
           <div className={`relative ${loading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-            <h2 className="text-3xl font-bold mb-4 text-center sm:text-left text-black">
-              {producto?.nombreProducto}
-            </h2>
+            <h2 className="text-3xl font-bold mb-4 text-center sm:text-left text-black">{producto?.nombreProducto}</h2>
 
-            <div className="w-full h-80 mb-3 relative bg-gray-100 flex items-center justify-center">
-              {producto && (
-                <img
-                  src={`${API_BASE_URL}/storage/${producto.imagen}`}
-                  alt={producto.nombreProducto}
-                  className="w-full h-full object-contain rounded-md"
-                  onError={(e) => {
-                    e.target.onerror = null; // Evita loops infinitos
-                    e.target.src = '/img/default-product.png'; // Ruta a una imagen por defecto
-                  }}
-                />
-              )}
-            </div>
+            {modeloSeleccionado && (
+              <div className="mb-6">
+                <div className="flex space-x-4 mb-4">
+                  {producto?.modelos.map((modelo) => (
+                    <button
+                      key={modelo.nombreModelo}
+                      onClick={() => handleModeloChange(modelo)}
+                      className={`px-4 py-2 rounded-md ${modeloSeleccionado.nombreModelo === modelo.nombreModelo ? 'bg-black text-white' : 'bg-gray-200 text-black'}`}
+                    >
+                      {modelo.nombreModelo}
+                    </button>
+                  ))}
+                </div>
 
-            <p className="text-gray-700 mb-4">{producto?.descripcion}</p>
+                <div className="w-full h-80 mb-3 relative bg-white flex items-center justify-center">
+                  {modeloSeleccionado.imagenes.length > 1 && (
+                    <button
+                      onClick={handlePrevImage}
+                      className="absolute left-0 px-4 py-2 bg-black text-white rounded-md"
+                    >
+                      {'<'}
+                    </button>
+                  )}
+                  <div className={`transition-opacity duration-300 ${imageTransitioning ? 'opacity-0' : 'opacity-100'} w-full h-full`}>
+                  {isImageLoading && (
+                    <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
+                      <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
+                    </div>
+                  )}
+                    <img
+                      src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen || '/img/default-product.png')}
+                      alt={modeloSeleccionado.nombreModelo}
+                      className="w-full h-full object-contain rounded-md"
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                    />
+                  </div>
+                  {modeloSeleccionado.imagenes.length > 1 && (
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-0 px-4 py-2 bg-black text-white rounded-md"
+                    >
+                      {'>'}
+                    </button>
+                  )}
+                </div>
 
-            <p className="text-xl font-semibold text-gray-800 mb-4">S/.{producto?.precio}</p>
+                <div className="text-center">
+                  <p className="text-lg font-semibold">Tallas disponibles:</p>
+                  <ul className="list-disc list-inside">
+                    {modeloSeleccionado.tallas.map((talla, index) => (
+                      <li key={index}>{talla.nombreTalla} - {talla.cantidad} unidades</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
 
-            <p className="text-sm text-gray-500 mb-4">Categoría: {producto?.nombreCategoria}</p>
-
-            {/* Selector de cantidad */}
             <div className="flex items-center mb-6 justify-center sm:justify-start">
-              <button
-                onClick={handleDecrease}
-                className="px-4 py-2 bg-black text-white rounded-l-md text-xl hover:bg-gray-700 transition-colors"
-              >
-                <AiOutlineMinus />
-              </button>
+              <button onClick={handleDecrease} className="px-4 py-2 bg-black text-white rounded-l-md text-xl"> <AiOutlineMinus /></button>
               <input
                 type="number"
                 value={cantidad}
                 onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
                 className="w-16 text-center border-t border-b border-gray-300 text-xl mx-2 text-black"
               />
-              <button
-                onClick={handleIncrease}
-                className="px-4 py-2 bg-black text-white rounded-r-md text-xl hover:bg-gray-700 transition-colors"
-              >
-                <AiOutlinePlus />
-              </button>
+              <button onClick={handleIncrease} className="px-4 py-2 bg-black text-white rounded-r-md text-xl"> <AiOutlinePlus /></button>
             </div>
 
-            {/* Botón de agregar al carrito */}
             <button
-            onClick={handleAddToCart}
-            className={`w-full bg-black text-white py-3 rounded-md hover:bg-gray-700 transition-colors mt-4 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={loading}
-          >
-            {loading ? 'Agregando...' : 'Agregar al carrito'}
-          </button>
-
-
+              onClick={handleAddToCart}
+              className={`w-full bg-black text-white py-3 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading}
+            >
+              {loading ? 'Agregando...' : 'Agregar al carrito'}
+            </button>
           </div>
-
-          {/* Mensaje en caso de error */}
-          {!loading && error && (
-            <p className="text-red-500 text-center mt-4">
-              Error: {error}
-            </p>
-          )}
+          {!loading && error && <p className="text-red-500 text-center mt-4">Error: {error}</p>}
         </div>
       </div>
 
-      {/* Modal de inicio de sesión */}
-      {showModalLogin && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
-          <CheckLogin setShowModal={handleCloseModalLogin} />
-        </div>
-      )}
-
-      {/* Notificación */}
-      {notification && (
-        <Notification description={notification.message} bgColor={notification.color} />
-      )}
-
+      {showModalLogin && <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50"><CheckLogin setShowModal={handleCloseModalLogin} /></div>}
+      {notification && <Notification description={notification.message} bgColor={notification.color} />}
     </>
   );
 }
