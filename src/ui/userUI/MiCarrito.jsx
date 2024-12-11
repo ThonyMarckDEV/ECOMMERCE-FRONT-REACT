@@ -32,30 +32,30 @@ function Carrito() {
     try {
       await verificarYRenovarToken();
       setIsLoading(true);
-
+  
       const token = localStorage.getItem('jwt');
       const idUsuario = jwtUtils.getIdUsuario(token);
-
+  
       if (!idUsuario) {
         throw new Error("No se pudo obtener el ID del usuario.");
       }
-
+  
       console.log("IdUsuario:", idUsuario);
-
+  
       // Cambiamos la solicitud para enviar el idUsuario en el cuerpo
       const response = await fetch(`${API_BASE_URL}/api/carrito`, {
-        method: 'POST', // Cambia a POST para incluir un cuerpo
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ idUsuario }), // Enviamos el idUsuario en el cuerpo
+        body: JSON.stringify({ idUsuario }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setProductos(data.data);
+          setProductos(data.data); // Incluye el idDetalle como parte del estado de los productos
         } else {
           mostrarNotificacion('No se pudo cargar el carrito.', 'bg-red-500');
         }
@@ -224,26 +224,24 @@ function Carrito() {
     }
   };
 
-  // Función eliminarProducto modificada para llamar a obtenerCarrito después de eliminar
-  const eliminarProducto = async (idProducto) => {
+  const eliminarProducto = async (idDetalle) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('jwt');
-      
-      // Realizar la eliminación del producto
-      const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
+  
+      // Solicitud DELETE al backend
+      const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idDetalle}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          // Llamar a la función obtenerCarrito para actualizar los productos del carrito
-          obtenerCarrito();
+          obtenerCarrito(); // Actualizar el carrito
           setNotification({ description: 'Producto eliminado correctamente.', bgColor: 'bg-green-500' });
         } else {
           setNotification({ description: 'Error al eliminar el producto.', bgColor: 'bg-red-500' });
@@ -256,11 +254,10 @@ function Carrito() {
       setNotification({ description: 'Ocurrió un error al eliminar el producto.', bgColor: 'bg-red-500' });
     } finally {
       setIsLoading(false);
-       // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
-       updateCartCount(); // Ahora funciona correctamente
+      updateCartCount(); // Actualizar cantidad en el contexto
     }
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-800">
       <NavBarHome />

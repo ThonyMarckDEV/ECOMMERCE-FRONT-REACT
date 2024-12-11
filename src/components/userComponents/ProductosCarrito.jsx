@@ -35,7 +35,7 @@ function ProductosCarrito({ productos, actualizarCantidad, eliminarProducto, isL
               <div className="flex items-center">
                 <button
                   className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                  onClick={() => actualizarCantidad(producto.idProducto, producto.cantidad - 1)}
+                  onClick={() => actualizarCantidad(producto.idDetalle, producto.cantidad - 1)}
                   disabled={isLoading}
                 >
                   -
@@ -44,7 +44,7 @@ function ProductosCarrito({ productos, actualizarCantidad, eliminarProducto, isL
                   type="number"
                   value={producto.cantidad}
                   onChange={(e) =>
-                    actualizarCantidad(producto.idProducto, parseInt(e.target.value) || 1)
+                    actualizarCantidad(producto.idDetalle, parseInt(e.target.value) || 1)
                   }
                   className="mx-2 w-16 text-center border-2 border-gray-300 rounded-lg"
                   min="1"
@@ -52,7 +52,7 @@ function ProductosCarrito({ productos, actualizarCantidad, eliminarProducto, isL
                 />
                 <button
                   className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                  onClick={() => actualizarCantidad(producto.idProducto, producto.cantidad + 1)}
+                  onClick={() => actualizarCantidad(producto.idDetalle, producto.cantidad + 1)}
                   disabled={isLoading}
                 >
                   +
@@ -62,7 +62,7 @@ function ProductosCarrito({ productos, actualizarCantidad, eliminarProducto, isL
             <div className="flex justify-between items-center mt-4">
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                onClick={() => eliminarProducto(producto.idProducto)}
+                onClick={() => eliminarProducto(producto.idDetalle)} // Usamos idDetalle aquí
                 disabled={isLoading}
               >
                 Eliminar
