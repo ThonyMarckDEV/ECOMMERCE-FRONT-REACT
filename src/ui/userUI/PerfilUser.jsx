@@ -257,9 +257,9 @@ function Perfil() {
               ))}
             </div>
     
-            {/* Fila de 2 elementos: Correo, Dirección, Edad */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
-              {[{ label: 'Correo', name: 'correo', type: 'email' }, { label: 'Dirección', name: 'direccion' }].map(({ label, name, type = 'text' }) => (
+             {/* Fila de 3 elementos: Correo, Edad,Fecha de nacimiento */}
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+              {[{ label: 'Correo', name: 'correo', type: 'email' }].map(({ label, name, type = 'text' }) => (
                 <div key={name} className="flex flex-col space-y-2">
                   <label className="font-semibold text-gray-700">{label}</label>
                   <input
@@ -283,10 +283,6 @@ function Perfil() {
                   className="border bg-gray-100 text-gray-900 p-2 rounded-md"
                 />
               </div>
-            </div>
-    
-            {/* Fila de 2 elementos: Fecha de nacimiento, Sexo y Departamento */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               <div className="flex flex-col space-y-2">
                 <label className="font-semibold text-gray-700">Fecha de Nacimiento</label>
                 <input
@@ -298,7 +294,10 @@ function Perfil() {
                   className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
                 />
               </div>
-      
+            </div>
+    
+            {/* Fila de 2 elementos: Sexo y Departamento */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               <div className="flex flex-col space-y-2">
                 <label className="font-semibold text-gray-700">Sexo</label>
                 <select
@@ -308,14 +307,13 @@ function Perfil() {
                   disabled={!isEditing}
                   className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
                 >
-                  {sexos.map((sexo, index) => (
-                    <option key={index} value={sexo}>
+                  {sexos.map((sexo) => (
+                    <option key={sexo} value={sexo}>
                       {sexo}
                     </option>
                   ))}
                 </select>
               </div>
-    
               <div className="flex flex-col space-y-2">
                 <label className="font-semibold text-gray-700">Departamento</label>
                 <select
@@ -325,15 +323,15 @@ function Perfil() {
                   disabled={!isEditing}
                   className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
                 >
-                  {departamentos.map((departamento, index) => (
-                    <option key={index} value={departamento}>
+                  {departamentos.map((departamento) => (
+                    <option key={departamento} value={departamento}>
                       {departamento}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-    
+            
             {/* Campo para seleccionar la nueva foto de perfil */}
             {isEditing && (
               <div className="flex flex-col space-y-2 mb-6">
@@ -379,3 +377,11 @@ function Perfil() {
     );
   }
 export default Perfil;
+
+
+
+
+
+
+
+

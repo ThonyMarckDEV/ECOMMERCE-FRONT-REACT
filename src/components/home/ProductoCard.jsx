@@ -36,7 +36,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
 
   return (
     <div
-      className="bg-white rounded-lg border-2 border-gray shadow-xl p-3 hover:shadow-2xl transition-shadow flex flex-col w-full cursor-pointer"
+      className="bg-white rounded-lg border-2 border-gray shadow-xl p-3 hover:shadow-2xl transition-shadow flex flex-col w-full cursor-pointer overflow-hidden"
       onClick={() => onClick(producto.idProducto)}
     >
       <div className="w-full h-48 mb-3 relative bg-white flex items-center justify-center">
@@ -57,7 +57,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
 
       <div className="mt-3">
         <h3 className="text-sm font-semibold text-gray-700">Modelo: {selectedModelo.nombreModelo}</h3>
-        <div className="flex gap-2 mt-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {producto.modelos.map((modelo) => (
             <button
               key={modelo.nombreModelo}
@@ -86,5 +86,4 @@ const ProductoCard = memo(({ producto, onClick }) => {
   );
 });
 
-// Exportación por defecto
 export default ProductoCard;

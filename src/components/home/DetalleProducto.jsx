@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import { useNavigate } from 'react-router-dom';
 import CheckLogin from '../home/CheckLogin'; 
-import { AiOutlineMinus, AiOutlinePlus,AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { AiOutlineMinus, AiOutlinePlus, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import LoadingScreen from './LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
 import Notification from '../../components/home/Notificacion';
@@ -18,7 +18,8 @@ function DetalleProducto({ productoId, onClose }) {
   const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
   const [imagenIndex, setImagenIndex] = useState(0);
   const [imageTransitioning, setImageTransitioning] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(true); // Estado de carga para la imagen
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [tallaSeleccionada, setTallaSeleccionada] = useState(null);  // Nuevo estado para la talla seleccionada
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,7 +60,8 @@ function DetalleProducto({ productoId, onClose }) {
   const handleModeloChange = (modelo) => {
     setModeloSeleccionado(modelo);
     setImagenIndex(0);
-    setIsImageLoading(true); // Muestra el loader cuando cambia el modelo
+    setIsImageLoading(true);
+    setTallaSeleccionada(null);  // Reiniciar la talla seleccionada cuando cambie el modelo
   };
 
   const handleAddToCart = () => {
@@ -68,27 +70,36 @@ function DetalleProducto({ productoId, onClose }) {
       setShowModalLogin(true);
       return;
     }
-
+  
     const idCarrito = jwtUtils.getIdCarrito(token);
     const idUsuario = jwtUtils.getIdUsuario(token);
-    const precio = producto?.precio || 0;
-
-    if (!idCarrito || !idUsuario) {
-      console.error('No se pudo obtener el idCarrito o idUsuario desde el token');
+    
+    // Aseguramos que el precio sea un número flotante
+    const precio = parseFloat(producto?.precio) || 0;
+  
+    if (!idCarrito || !idUsuario || !tallaSeleccionada) {
+      setNotification({
+        message: 'Por favor selecciona una talla antes de agregar al carrito',
+        color: 'bg-red-400'
+      });
       return;
     }
-
+  
     const data = {
       idProducto: productoId,
       cantidad: cantidad,
       idCarrito: idCarrito,
       idUsuario: idUsuario,
-      precio: precio
+      idModelo: modeloSeleccionado.idModelo,
+      idTalla: tallaSeleccionada.idTalla,
     };
-
+  
+    // Log de los datos antes de enviarlos
+    console.log("Datos enviados al servidor:", data);
+  
     setLoading(true);
     verificarYRenovarToken();
-
+  
     fetch(`${API_BASE_URL}/api/agregarCarrito`, {
       method: 'POST',
       headers: {
@@ -97,8 +108,14 @@ function DetalleProducto({ productoId, onClose }) {
       },
       body: JSON.stringify(data)
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+      })
       .then((data) => {
+        console.log('Respuesta del servidor:', data); // Log de la respuesta
         if (data.success) {
           setNotification({
             message: 'Producto agregado al carrito',
@@ -129,7 +146,7 @@ function DetalleProducto({ productoId, onClose }) {
     setTimeout(() => {
       setImagenIndex((prevIndex) => (prevIndex + 1) % modeloSeleccionado.imagenes.length);
       setImageTransitioning(false);
-      setIsImageLoading(true); // Activa el loader cuando se cambia de imagen
+      setIsImageLoading(true);
     }, 300);
   };
 
@@ -138,12 +155,12 @@ function DetalleProducto({ productoId, onClose }) {
     setTimeout(() => {
       setImagenIndex((prevIndex) => (prevIndex - 1 + modeloSeleccionado.imagenes.length) % modeloSeleccionado.imagenes.length);
       setImageTransitioning(false);
-      setIsImageLoading(true); // Activa el loader cuando se cambia de imagen
+      setIsImageLoading(true);
     }, 300);
   };
 
   const handleImageLoad = () => {
-    setIsImageLoading(false); // Desactiva el loader una vez que la imagen se haya cargado
+    setIsImageLoading(false);
   };
 
   const handleImageError = (e) => {
@@ -184,11 +201,11 @@ function DetalleProducto({ productoId, onClose }) {
                     </button>
                   )}
                   <div className={`transition-opacity duration-300 ${imageTransitioning ? 'opacity-0' : 'opacity-100'} w-full h-full`}>
-                  {isImageLoading && (
-                    <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
-                      <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
-                    </div>
-                  )}
+                    {isImageLoading && (
+                      <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
+                        <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
+                      </div>
+                    )}
                     <img
                       src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen || '/img/default-product.png')}
                       alt={modeloSeleccionado.nombreModelo}
@@ -209,11 +226,20 @@ function DetalleProducto({ productoId, onClose }) {
 
                 <div className="text-center">
                   <p className="text-lg font-semibold">Tallas disponibles:</p>
-                  <ul className="list-disc list-inside">
+                  <div className="space-y-2">
                     {modeloSeleccionado.tallas.map((talla, index) => (
-                      <li key={index}>{talla.nombreTalla} - {talla.cantidad} unidades</li>
+                      <label key={index} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          value={talla.nombreTalla}
+                          checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
+                          onChange={() => setTallaSeleccionada(talla)} // Actualizar la talla seleccionada
+                          className="text-black"
+                        />
+                        <span>{talla.nombreTalla} - {talla.cantidad} unidades</span>
+                      </label>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </div>
             )}
