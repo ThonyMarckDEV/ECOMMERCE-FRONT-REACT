@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import Notification from '../../components/home/Notificacion';
+import ProductosCarrito from '../../components/userComponents/ProductosCarrito';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
+import jwtUtils from '../../utilities/jwtUtils';
 
 function Carrito() {
   const [productos, setProductos] = useState([]);
@@ -15,19 +17,29 @@ function Carrito() {
       try {
         await verificarYRenovarToken();
         setIsLoading(true);
+  
         const token = localStorage.getItem('jwt');
+        const idUsuario = jwtUtils.getIdUsuario(token);
+  
+        if (!idUsuario) {
+          throw new Error("No se pudo obtener el ID del usuario.");
+        }
+  
+        console.log("IdUsuario:", idUsuario);
+  
+        // Cambiamos la solicitud para enviar el idUsuario en el cuerpo
         const response = await fetch(`${API_BASE_URL}/api/carrito`, {
-          method: 'GET',
+          method: 'POST', // Cambia a POST para incluir un cuerpo
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
+          body: JSON.stringify({ idUsuario }), // Enviamos el idUsuario en el cuerpo
         });
-
+  
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            console.log('Datos del carrito:', data.data); // Log para depuración
             setProductos(data.data);
           } else {
             setNotification({
@@ -42,7 +54,6 @@ function Carrito() {
           });
         }
       } catch (error) {
-        console.error('Error al obtener el carrito:', error);
         setNotification({
           description: 'Ocurrió un error al obtener los productos.',
           bgColor: 'bg-red-500',
@@ -51,12 +62,18 @@ function Carrito() {
         setIsLoading(false);
       }
     };
-
+  
     obtenerCarrito();
   }, []);
 
   const calcularTotal = () => {
-    return productos.reduce((total, producto) => total + producto.subtotal, 0);
+    // Asegurarse de que el valor de cada subtotal es un número
+    const total = productos.reduce((total, producto) => {
+      const subtotal = producto.subtotal || 0;  // En caso de que el subtotal sea undefined o null, se asigna 0
+      return total + parseFloat(subtotal);  // Aseguramos que el subtotal sea un número
+    }, 0);
+  
+    return total;
   };
 
   const verificarDireccionUsuario = async () => {
@@ -237,67 +254,13 @@ function Carrito() {
         {productos.length === 0 ? (
           <div className="text-center text-xl text-gray-600">Tu carrito está vacío.</div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-6">
-           {productos.map((producto) => (
-              <div key={producto.idProducto} className="bg-white p-4 rounded-lg shadow-md w-full sm:w-80 md:w-96">
-                <img
-                  src={`${API_BASE_URL}/storage/${producto.imagen}`}
-                  alt={producto.nombreProducto}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <h2 className="text-xl font-semibold text-black">{producto.nombreProducto}</h2>
-                <p className="text-gray-600 text-sm mb-2">{producto.descripcion}</p>
-                <p className="text-sm text-gray-600 mb-2">Modelo: {producto.nombreModelo}</p> {/* Mostrar nombre del modelo */}
-                <p className="text-sm text-gray-600 mb-2">Talla: {producto.nombreTalla}</p> {/* Mostrar nombre de la talla */}
-                <div className="flex justify-between items-center mb-4">
-                  {/* Mostrar el precio correctamente */}
-                  <span className="text-lg font-medium text-black">S/.{producto.precio.toFixed(2)}</span>
-                  <span className="text-sm text-gray-500">
-                    x {producto.cantidad} = S/.{producto.subtotal.toFixed(2)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center mt-4">
-                  <div className="flex items-center">
-                    <button
-                      className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                      onClick={() => actualizarCantidad(producto.idProducto, producto.cantidad - 1)}
-                      disabled={isLoading}
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      value={producto.cantidad}
-                      onChange={(e) =>
-                        actualizarCantidad(producto.idProducto, parseInt(e.target.value) || 1)
-                      }
-                      className="mx-2 w-16 text-center border-2 border-gray-300 rounded-lg"
-                      min="1"
-                      disabled={isLoading}
-                    />
-                    <button
-                      className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                      onClick={() => actualizarCantidad(producto.idProducto, producto.cantidad + 1)}
-                      disabled={isLoading}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center mt-4">
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                    onClick={() => eliminarProducto(producto.idProducto)}
-                    disabled={isLoading}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProductosCarrito
+            productos={productos}
+            actualizarCantidad={actualizarCantidad}
+            eliminarProducto={eliminarProducto}
+            isLoading={isLoading}
+            API_BASE_URL={API_BASE_URL}
+          />
         )}
       </div>
 
@@ -305,7 +268,7 @@ function Carrito() {
         <div className="fixed bottom-0 left-0 w-full bg-gray-900 p-4 text-white flex justify-between items-center">
           <div className="text-xl font-semibold">
             <span>Total: </span>
-            <span>S/.{calcularTotal().toFixed(2)}</span>
+            <span>S/.{calcularTotal().toFixed(2)}</span> {/* Aquí se usa toFixed con la validación previa */}
           </div>
           <button
             className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
@@ -316,10 +279,6 @@ function Carrito() {
           </button>
         </div>
       )}
-
-      <div className="bg-gray-100 p-4 text-center text-gray-600">
-        <p>&copy; 2024 - Todos los derechos reservados</p>
-      </div>
     </div>
   );
 }
