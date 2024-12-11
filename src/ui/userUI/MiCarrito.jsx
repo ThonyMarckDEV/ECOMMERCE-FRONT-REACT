@@ -238,7 +238,7 @@ function Carrito() {
           <div className="text-center text-xl text-gray-600">Tu carrito está vacío.</div>
         ) : (
           <div className="flex flex-wrap justify-center gap-6">
-            {productos.map((producto) => (
+           {productos.map((producto) => (
               <div key={producto.idProducto} className="bg-white p-4 rounded-lg shadow-md w-full sm:w-80 md:w-96">
                 <img
                   src={`${API_BASE_URL}/storage/${producto.imagen}`}
@@ -247,6 +247,8 @@ function Carrito() {
                 />
                 <h2 className="text-xl font-semibold text-black">{producto.nombreProducto}</h2>
                 <p className="text-gray-600 text-sm mb-2">{producto.descripcion}</p>
+                <p className="text-sm text-gray-600 mb-2">Modelo: {producto.nombreModelo}</p> {/* Mostrar nombre del modelo */}
+                <p className="text-sm text-gray-600 mb-2">Talla: {producto.nombreTalla}</p> {/* Mostrar nombre de la talla */}
                 <div className="flex justify-between items-center mb-4">
                   {/* Mostrar el precio correctamente */}
                   <span className="text-lg font-medium text-black">S/.{producto.precio.toFixed(2)}</span>

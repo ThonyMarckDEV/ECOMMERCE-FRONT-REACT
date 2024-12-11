@@ -94,9 +94,6 @@ function DetalleProducto({ productoId, onClose }) {
       idTalla: tallaSeleccionada.idTalla,
     };
   
-    // Log de los datos antes de enviarlos
-    console.log("Datos enviados al servidor:", data);
-  
     setLoading(true);
     verificarYRenovarToken();
   
@@ -115,7 +112,6 @@ function DetalleProducto({ productoId, onClose }) {
         return response.json();
       })
       .then((data) => {
-        console.log('Respuesta del servidor:', data); // Log de la respuesta
         if (data.success) {
           setNotification({
             message: 'Producto agregado al carrito',
