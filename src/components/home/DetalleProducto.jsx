@@ -7,6 +7,7 @@ import LoadingScreen from './LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
 import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
+import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -21,7 +22,8 @@ function DetalleProducto({ productoId, onClose }) {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [tallaSeleccionada, setTallaSeleccionada] = useState(null);  // Nuevo estado para la talla seleccionada
   const navigate = useNavigate();
-
+  const { updateCartCount } = useCart(); // Usamos el contexto de carrito
+  
   useEffect(() => {
     document.body.style.overflow = 'hidden';
 
@@ -73,7 +75,7 @@ function DetalleProducto({ productoId, onClose }) {
   
     const idCarrito = jwtUtils.getIdCarrito(token);
     const idUsuario = jwtUtils.getIdUsuario(token);
-    
+  
     // Aseguramos que el precio sea un número flotante
     const precio = parseFloat(producto?.precio) || 0;
   
@@ -117,6 +119,9 @@ function DetalleProducto({ productoId, onClose }) {
             message: 'Producto agregado al carrito',
             color: 'bg-green-400'
           });
+  
+          // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
+          updateCartCount(); // Ahora funciona correctamente
         } else {
           setNotification({
             message: 'Error al agregar al carrito',

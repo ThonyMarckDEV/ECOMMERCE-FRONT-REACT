@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate , Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../../js/logout'; // Cambiar a importación nombrada
 import jwtUtils from '../../utilities/jwtUtils'; // Importar las utilidades JWT
-import API_BASE_URL from '../../js/urlHelper'; // Asegúrate de tener la URL base de tu API
+import { useCart } from '../../context/CartContext'; // Usar el contexto del carrito
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Verificación de autenticación
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Verificar si el menú de perfil está abierto
   const navigate = useNavigate(); // Inicializamos useNavigate
-  const [cantidadCarrito, setCantidadCarrito] = useState(0);
-  const [loading, setLoading] = useState(false);
-  
-  // Estado para la foto de perfil
-  const [profileImage, setProfileImage] = useState('');
+  const { cantidadCarrito, updateCartCount } = useCart(); // Obtener cantidadCarrito y la función updateCartCount desde el contexto
+  const [profileImage, setProfileImage] = useState(''); // Foto de perfil
 
   // Verificar si hay token en el localStorage al cargar el componente
   useEffect(() => {
@@ -26,35 +23,6 @@ const Navbar = () => {
       setIsAuthenticated(false); // Si no hay token, no está autenticado
     }
   }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      const token = localStorage.getItem('jwt');
-      if (!token) return;
-  
-      const idUsuario = jwtUtils.getIdUsuario(token);
-      if (!idUsuario) return;
-  
-      setLoading(true);
-  
-      fetch(`${API_BASE_URL}/api/carrito/cantidad?idUsuario=${idUsuario}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        setCantidadCarrito(data.cantidad || 0);
-      })
-      .catch(err => {
-        console.error('Error al obtener cantidad del carrito:', err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    }
-  }, [isAuthenticated]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

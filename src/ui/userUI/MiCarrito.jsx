@@ -12,57 +12,57 @@ function Carrito() {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  useEffect(() => {
-    const obtenerCarrito = async () => {
-      try {
-        await verificarYRenovarToken();
-        setIsLoading(true);
-  
-        const token = localStorage.getItem('jwt');
-        const idUsuario = jwtUtils.getIdUsuario(token);
-  
-        if (!idUsuario) {
-          throw new Error("No se pudo obtener el ID del usuario.");
-        }
-  
-        console.log("IdUsuario:", idUsuario);
-  
-        // Cambiamos la solicitud para enviar el idUsuario en el cuerpo
-        const response = await fetch(`${API_BASE_URL}/api/carrito`, {
-          method: 'POST', // Cambia a POST para incluir un cuerpo
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({ idUsuario }), // Enviamos el idUsuario en el cuerpo
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setProductos(data.data);
-          } else {
-            setNotification({
-              description: 'No se pudo cargar el carrito.',
-              bgColor: 'bg-red-500',
-            });
-          }
+  const obtenerCarrito = async () => {
+    try {
+      await verificarYRenovarToken();
+      setIsLoading(true);
+
+      const token = localStorage.getItem('jwt');
+      const idUsuario = jwtUtils.getIdUsuario(token);
+
+      if (!idUsuario) {
+        throw new Error("No se pudo obtener el ID del usuario.");
+      }
+
+      console.log("IdUsuario:", idUsuario);
+
+      // Cambiamos la solicitud para enviar el idUsuario en el cuerpo
+      const response = await fetch(`${API_BASE_URL}/api/carrito`, {
+        method: 'POST', // Cambia a POST para incluir un cuerpo
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ idUsuario }), // Enviamos el idUsuario en el cuerpo
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setProductos(data.data);
         } else {
           setNotification({
-            description: 'Error al obtener los productos del carrito.',
+            description: 'No se pudo cargar el carrito.',
             bgColor: 'bg-red-500',
           });
         }
-      } catch (error) {
+      } else {
         setNotification({
-          description: 'Ocurrió un error al obtener los productos.',
+          description: 'Error al obtener los productos del carrito.',
           bgColor: 'bg-red-500',
         });
-      } finally {
-        setIsLoading(false);
       }
-    };
-  
+    } catch (error) {
+      setNotification({
+        description: 'Ocurrió un error al obtener los productos.',
+        bgColor: 'bg-red-500',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     obtenerCarrito();
   }, []);
 
@@ -72,7 +72,7 @@ function Carrito() {
       const subtotal = producto.subtotal || 0;  // En caso de que el subtotal sea undefined o null, se asigna 0
       return total + parseFloat(subtotal);  // Aseguramos que el subtotal sea un número
     }, 0);
-  
+
     return total;
   };
 
@@ -167,7 +167,7 @@ function Carrito() {
         setNotification({ description: 'La cantidad no puede ser menor a 1.', bgColor: 'bg-red-500' });
         return;
       }
-  
+
       setIsLoading(true);
       const token = localStorage.getItem('jwt');
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
@@ -178,7 +178,7 @@ function Carrito() {
         },
         body: JSON.stringify({ cantidad }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -208,10 +208,13 @@ function Carrito() {
     }
   };
 
+  // Función eliminarProducto modificada para llamar a obtenerCarrito después de eliminar
   const eliminarProducto = async (idProducto) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('jwt');
+      
+      // Realizar la eliminación del producto
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
         method: 'DELETE',
         headers: {
@@ -223,9 +226,8 @@ function Carrito() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setProductos((prevProductos) =>
-            prevProductos.filter((producto) => producto.idProducto !== idProducto)
-          );
+          // Llamar a la función obtenerCarrito para actualizar los productos del carrito
+          obtenerCarrito();
           setNotification({ description: 'Producto eliminado correctamente.', bgColor: 'bg-green-500' });
         } else {
           setNotification({ description: 'Error al eliminar el producto.', bgColor: 'bg-red-500' });

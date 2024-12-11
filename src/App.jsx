@@ -2,34 +2,30 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation ,Navigate } from 'react-router-dom';
 import './index.css';
 
-//ComponentesHome
-import Home from './ui/Home'; // Cambia './Home' al camino correcto si está en otra carpeta
-import Productos from './ui/Productos'; // Cambia './Home' al camino correcto si está en otra carpeta
-import Login from './ui/Login'; // Asegúrate de tener el componente Login
-import Register from './ui/Register'; // Asegúrate de tener el componente Login
+// ComponentesHome
+import Home from './ui/Home'; 
+import Productos from './ui/Productos'; 
+import Login from './ui/Login'; 
+import Register from './ui/Register'; 
 
-//UIS
-//=====================================================================================================================
-//UserUI
-import Carrito from './ui/userUI/MiCarrito'; // Asegúrate de tener el componente Login
+// UIS
+import Carrito from './ui/userUI/MiCarrito'; 
 import MenuUser from './ui/userUI/MenuUser';
 import Pedidos from './ui/userUI/MisPedidos';
 
-//utilities
-import ProtectedRouteHome from './utilities/ProtectedRouteHome'; // Importar el componente ProtectedRoute
-
+// Utilities
+import ProtectedRouteHome from './utilities/ProtectedRouteHome';
 import ProtectedRouteRol from './utilities/ProtectedRouteRol';
 
-// Scripts para actividad y token
+// Scripts
 import { updateLastActivity } from './js/lastActivity';
 import { checkStatus} from './js/checkUserStatus';
 
+// Context del carrito
+import { CartProvider } from './context/CartContext'; // Importar el CartProvider
 
-
-
-// Componente para manejar la lógica con useLocation
 function AppContent() {
-   const location = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('jwt');
@@ -39,34 +35,24 @@ function AppContent() {
 
       const intervalId = setInterval(() => {
         updateLastActivity();
-      }, 30000); // Ejecutar cada 30 segundos
+      }, 30000);
 
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [location.pathname]); // Ejecutar cada vez que cambie la ruta
+  }, [location.pathname]);
 
   return (
     <Routes>
-
       <Route path="/" element={<Home />} />
-
-       {/* Usar ProtectedRouteHome para login y registro */}
-       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
-       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
-       {/* Usar ProtectedRouteHome para login y registro */}
-
-       <Route path="/productos" element={<Productos />} />
-
-
-
-      {/* Usar ProtectedRoute para UIUSER POR ROL cliente */}
-       <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
-       <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
-       <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
-      {/* Ruta no definida - Redirigir a la página principal */}
-      <Route path="*" element={<Navigate to="/" replace />} /> {/* Redirige a '/' */}
+      <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
+      <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
+      <Route path="/productos" element={<Productos />} />
+      <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
+      <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
+      <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
@@ -74,10 +60,11 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <CartProvider> {/* Proveedor de contexto */}
+        <AppContent />
+      </CartProvider>
     </Router>
   );
 }
 
 export default App;
-
