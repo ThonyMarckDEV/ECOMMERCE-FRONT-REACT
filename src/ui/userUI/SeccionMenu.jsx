@@ -73,7 +73,7 @@ const Sidebar = () => {
       </button>
 
       {/* Contenido principal */}
-      <div className="flex-1 p-6 bg-white">
+      <div className="flex-1 bg-white ">
         {/* Mostrar contenido según la sección seleccionada */}
         {selectedSection === 'MiPerfil' && <MiPerfil />}
         {selectedSection === 'AgregarDireccion' && <AgregarDireccion />}
@@ -86,6 +86,7 @@ const Sidebar = () => {
           </div>
         )}
       </div>
+      
     </div>
   );
 };

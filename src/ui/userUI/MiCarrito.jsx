@@ -260,27 +260,33 @@ function Carrito() {
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-800">
       <NavBarHome />
     
-      {isLoading && <LoadingScreen />}
+      {isLoading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <LoadingScreen /> {/* Asegúrate de que LoadingScreen esté centrado */}
+        </div>
+      )}
+    
       {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}
     
       <div className="flex-grow px-6 py-8">
         <h1 className="text-3xl font-semibold text-center text-black mb-6">Carrito de Compras</h1>
     
         {productos.length === 0 ? (
-            <div className="flex flex-col justify-start items-center h-screen pt-16">
-              <div className="text-center">
-                <img 
-                  src={carritoVacio} 
-                  alt="Carrito vacío" 
-                  className="mx-auto mb-8 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96" 
-                />
-                <div className="text-3xl sm:text-4xl text-gray-600 font-semibold">
-                  Tu carrito está vacío.
-                </div>
+          <div className="flex flex-col justify-center items-center pt-16">
+            <div className="text-center">
+              <img
+                src={carritoVacio}
+                alt="Carrito vacío"
+                className="mx-auto mb-8 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"
+              />
+              <div className="text-3xl sm:text-4xl text-gray-600 font-semibold">
+                Tu carrito está vacío.
               </div>
             </div>
-          ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"> {/* Añadido mb-16 para separar los productos del botón */}
+          </div>
+        ) : (
+          // Cambiar grid por flex
+          <div className="flex flex-wrap justify-start gap-6 mb-16">
             <ProductosCarrito
               productos={productos}
               actualizarCantidad={actualizarCantidad}
@@ -291,24 +297,24 @@ function Carrito() {
           </div>
         )}
       </div>
-    
+  
       {productos.length > 0 && (
-      <div className="fixed bottom-0 left-0 w-full bg-white p-6 text-black flex justify-between items-center shadow-xl rounded-tl-3xl rounded-tr-3xl border-t-4 border-gray-200">
-        <div className="text-xl font-semibold flex items-center space-x-4">
-          <span className="text-lg font-medium text-gray-600">Total:</span>
-          <span className="text-2xl font-bold text-black">
-            S/.{calcularTotal().toFixed(2)}
-          </span>
+        <div className="fixed bottom-0 left-0 w-full bg-white p-4 sm:p-6 text-black flex justify-between items-center shadow-xl rounded-tl-3xl rounded-tr-3xl border-t-4 border-gray-200">
+          <div className="text-lg sm:text-xl font-semibold flex items-center space-x-4">
+            <span className="text-sm sm:text-lg font-medium text-gray-600">Total:</span>
+            <span className="text-xl sm:text-2xl font-bold text-black">
+              S/.{calcularTotal().toFixed(2)}
+            </span>
+          </div>
+          <button
+            className="bg-gradient-to-r from-black to-gray-800 text-white px-6 py-2 sm:px-8 sm:py-3 rounded-lg shadow-lg hover:from-gray-800 hover:to-black transform transition duration-300 ease-in-out focus:outline-none"
+            onClick={verificarDireccionUsuario}
+            disabled={isLoading}
+          >
+            Realizar pedido
+          </button>
         </div>
-        <button
-          className="bg-gradient-to-r from-black to-gray-800 text-white px-8 py-3 rounded-lg shadow-lg hover:from-gray-800 hover:to-black transform transition duration-300 ease-in-out focus:outline-none"
-          onClick={verificarDireccionUsuario}
-          disabled={isLoading}
-        >
-          Realizar pedido
-        </button>
-      </div>
-    )}
+      )}
     </div>
   );
 }

@@ -97,7 +97,7 @@ function FiltradoProductos({ onFilter }) {
       {/* Botón para abrir/cerrar el filtro solo en móviles */}
       <button
         onClick={toggleFilter}
-        className="lg:hidden block absolute top-20 left-4 z-40 p-2 bg-black text-white rounded-full shadow-md hover:bg-gray-800"
+        className="lg:hidden block absolute top-20 left-4 z-30 p-2 bg-black text-white rounded-full shadow-md hover:bg-gray-800"
       >
         {isOpen ? <AiOutlineClose size={24} /> : <AiOutlineFilter size={24} />}
       </button>

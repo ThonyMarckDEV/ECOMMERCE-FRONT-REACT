@@ -1,5 +1,3 @@
-// src/pages/home/Pedidos.jsx
-
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../js/urlHelper.js';
 import { verificarYRenovarToken } from '../../js/authToken.js';
@@ -7,6 +5,7 @@ import NavbarHome from '../../components/home/NavBarHome.jsx';
 import DetalleProducto from '../../components/userComponents/DetallePedido.jsx';
 import Estado from '../../components/userComponents/EstadoPedido.jsx';
 import PedidoCard from '../../components/userComponents/PedidoCard.jsx';
+import nopedidos from '../../img/nopedidos.png'; // Asegúrate de que la ruta sea correcta
 
 const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
@@ -20,7 +19,6 @@ const Pedidos = () => {
     const [estadoActual, setEstadoActual] = useState('');
     const [detallesPedido, setDetallesPedido] = useState([]);
 
-    // Funciones para manejar el modal de estado
     const abrirEstadoModal = (estado) => {
         setEstadoActual(estado);
         setEstadoModalVisible(true);
@@ -31,7 +29,6 @@ const Pedidos = () => {
         setEstadoModalVisible(false);
     };
 
-    // Funciones para manejar el modal de detalles
     const abrirDetalleModal = (detalles) => {
         setDetallesPedido(detalles);
         setDetalleModalVisible(true);
@@ -44,7 +41,6 @@ const Pedidos = () => {
 
     useEffect(() => {
         fetchPedidos();
-        // Verificar el estado del pago al cargar la página
         const urlParams = new URLSearchParams(window.location.search);
         const paymentStatus = urlParams.get('status');
         const externalReference = urlParams.get('external_reference');
@@ -141,7 +137,6 @@ const Pedidos = () => {
         }
     };
 
-    // Función para determinar el color según el estado
     const getEstadoColor = (estado) => {
         const estadoNormalized = estado.trim().toLowerCase();
         switch (estadoNormalized) {
@@ -160,7 +155,6 @@ const Pedidos = () => {
         }
     };
 
-    // Función para capitalizar la primera letra
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
@@ -169,7 +163,6 @@ const Pedidos = () => {
         return (
             <div className="flex flex-wrap gap-6 justify-center">
                 {pedidos.map((pedido) => {
-                    // URLs de retorno para MercadoPago
                     const currentUrlBase = window.location.origin;
                     const backUrls = {
                         success: `${currentUrlBase}/pedidos?status=approved&external_reference=${pedido.idPedido}`,
@@ -216,6 +209,19 @@ const Pedidos = () => {
             {/* Contenido Principal */}
             {loading ? (
                 <div className="flex justify-center items-center py-10">Cargando...</div>
+            ) : pedidos.length === 0 ? (
+                <div className="flex flex-col justify-center items-center pt-16">
+                    <div className="text-center">
+                        <img
+                           src={nopedidos}
+                            alt="No tienes pedidos"
+                            className="mx-auto mb-8 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"
+                        />
+                        <div className="text-3xl sm:text-4xl text-gray-600 font-semibold">
+                            No tienes pedidos.
+                        </div>
+                    </div>
+                </div>
             ) : (
                 <div className="max-w-7xl mx-auto py-10 px-4">
                     {renderPedidos()}

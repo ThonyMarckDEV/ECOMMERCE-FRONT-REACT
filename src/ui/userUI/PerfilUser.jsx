@@ -206,21 +206,24 @@ function Perfil() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans text-gray-200">
-    
+    <div className="flex flex-col min-h-screen font-sans p-6 text-gray-200">
       {/* Pantalla de carga */}
-      {isLoading && <LoadingScreen />}
-    
+      {isLoading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <LoadingScreen /> {/* Asegúrate de que LoadingScreen esté centrado */}
+        </div>
+      )}
+  
       {/* Notificación */}
       {notification && (
         <Notification description={notification.description} bgColor={notification.bgColor} />
       )}
-    
+  
       <div className="flex flex-grow justify-center items-start py-4 px-4"> {/* Ajusté el padding superior */}
         <div
           ref={perfilRef}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl flex flex-col items-center"
-          style={{ minHeight: '650px' }} 
+          style={{ minHeight: '650px' }}
         >
           {/* Foto de perfil */}
           <div className="flex justify-center items-center mb-6">
@@ -236,11 +239,11 @@ function Perfil() {
               loading="eager"
             />
           </div>
-    
+  
           {/* Información del usuario */}
           <div className="w-full">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">{perfilData.username}</h2>
-    
+  
             {/* Fila de 3 elementos no editables */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }].map(({ label, name }) => (
@@ -256,9 +259,9 @@ function Perfil() {
                 </div>
               ))}
             </div>
-    
-             {/* Fila de 3 elementos: Correo, Edad,Fecha de nacimiento */}
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+  
+            {/* Fila de 3 elementos: Correo, Edad, Fecha de nacimiento */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               {[{ label: 'Correo', name: 'correo', type: 'email' }].map(({ label, name, type = 'text' }) => (
                 <div key={name} className="flex flex-col space-y-2">
                   <label className="font-semibold text-gray-700">{label}</label>
@@ -295,7 +298,7 @@ function Perfil() {
                 />
               </div>
             </div>
-    
+  
             {/* Fila de 2 elementos: Sexo y Departamento */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
               <div className="flex flex-col space-y-2">
@@ -331,7 +334,7 @@ function Perfil() {
                 </select>
               </div>
             </div>
-            
+  
             {/* Campo para seleccionar la nueva foto de perfil */}
             {isEditing && (
               <div className="flex flex-col space-y-2 mb-6">
@@ -343,7 +346,7 @@ function Perfil() {
                 />
               </div>
             )}
-    
+  
             {/* Botones para editar y guardar */}
             <div className="flex justify-center md:justify-start space-x-4">
               {!isEditing ? (
@@ -373,8 +376,9 @@ function Perfil() {
           </div>
         </div>
       </div>
-      </div>
-    );
+    </div>
+  );
+  
   }
 export default Perfil;
 

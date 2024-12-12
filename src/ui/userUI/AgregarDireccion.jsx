@@ -154,7 +154,7 @@ function AgregarDirecciones() {
     <div className="flex flex-col min-h-screen font-sans text-gray-800">
 
       <div className="flex-1 p-6 sm:p-8 md:p-10">
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6"> {/* Reducir el padding aquí */}
+      <div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Detalles de la Dirección</h2>
 
           {notification && (
