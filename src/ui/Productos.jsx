@@ -11,7 +11,6 @@ function Productos() {
   const [filtro, setFiltro] = useState({ texto: '', categoria: '' });
 
   const handleFilterChange = (nuevoFiltro) => {
-    console.log("Filtro actualizado:", nuevoFiltro); // Verifica que el filtro esté cambiando
     setFiltro(nuevoFiltro);
   };
 

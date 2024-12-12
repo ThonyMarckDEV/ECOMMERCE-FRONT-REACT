@@ -7,6 +7,7 @@ import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
 import { getIdUsuario } from '../../utilities/jwtUtils'; 
 import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
+import carritoVacio from '../../img/carritovacio.png'; // Asegúrate de que la ruta sea correcta
 
 function Carrito() {
   const [productos, setProductos] = useState([]);
@@ -266,8 +267,19 @@ function Carrito() {
         <h1 className="text-3xl font-semibold text-center text-black mb-6">Carrito de Compras</h1>
     
         {productos.length === 0 ? (
-          <div className="text-center text-xl text-gray-600">Tu carrito está vacío.</div>
-        ) : (
+            <div className="flex flex-col justify-start items-center h-screen pt-16">
+              <div className="text-center">
+                <img 
+                  src={carritoVacio} 
+                  alt="Carrito vacío" 
+                  className="mx-auto mb-8 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96" 
+                />
+                <div className="text-3xl sm:text-4xl text-gray-600 font-semibold">
+                  Tu carrito está vacío.
+                </div>
+              </div>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"> {/* Añadido mb-16 para separar los productos del botón */}
             <ProductosCarrito
               productos={productos}
