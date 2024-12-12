@@ -5,23 +5,18 @@ import Notification from '../../components/home/Notificacion';
 import ProductosCarrito from '../../components/userComponents/ProductosCarrito';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
-import jwtUtils from '../../utilities/jwtUtils';
+import { getIdUsuario } from '../../utilities/jwtUtils'; 
 import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
 
 function Carrito() {
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [lastAction, setLastAction] = useState(null); // Variable para evitar notificaciones repetidas
   const { updateCartCount } = useCart(); // Usamos el contexto de carrito
 
   const mostrarNotificacion = (descripcion, color) => {
-    // Si ya se ha mostrado la misma notificación, no mostrarla de nuevo
-    if (lastAction === descripcion) return;
-  
+
     setNotification({ description: descripcion, bgColor: color });
-    setLastAction(descripcion); // Registrar la última acción
-  
     // Ocultar la notificación después de 3 segundos
     setTimeout(() => {
       setNotification(null); // Limpiar la notificación
@@ -34,13 +29,11 @@ function Carrito() {
       setIsLoading(true);
   
       const token = localStorage.getItem('jwt');
-      const idUsuario = jwtUtils.getIdUsuario(token);
+      const idUsuario = getIdUsuario(token);
   
       if (!idUsuario) {
         throw new Error("No se pudo obtener el ID del usuario.");
       }
-  
-      console.log("IdUsuario:", idUsuario);
   
       // Cambiamos la solicitud para enviar el idUsuario en el cuerpo
       const response = await fetch(`${API_BASE_URL}/api/carrito`, {
@@ -60,19 +53,12 @@ function Carrito() {
           mostrarNotificacion('No se pudo cargar el carrito.', 'bg-red-500');
         }
       } else {
-        setNotification({
-          description: 'Error al obtener los productos del carrito.',
-          bgColor: 'bg-red-500',
-        });
+        mostrarNotificacion('Error al obtener los productos del carrito.', 'bg-red-500');
       }
     } catch (error) {
-      setNotification({
-        description: 'Ocurrió un error al obtener los productos.',
-        bgColor: 'bg-red-500',
-      });
+      mostrarNotificacion('Ocurrió un error al obtener los productos.', 'bg-red-500');
     } finally {
       setIsLoading(false);
-      setNotification(null);
     }
   };
 
@@ -113,13 +99,13 @@ function Carrito() {
       if (direccionUsando) {
         await proceedToCheckout(direccionUsando.idDireccion);
       } else {
-        setNotification({ description: 'No tienes una dirección válida.', bgColor: 'bg-red-500' });
-        setIsLoading(false); // Desactiva el loader si no hay dirección válida
+        mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
-      setNotification({ description: 'Error al verificar la dirección.', bgColor: 'bg-red-500' });
-      setIsLoading(false); // Desactiva el loader si ocurre un error
+      mostrarNotificacion('Error al verificar la dirección.', 'bg-red-500');
+      setIsLoading(false);
     }
   };
 
@@ -135,7 +121,7 @@ function Carrito() {
     const idUsuario = payload.idUsuario;
 
     if (!idCarrito || !idUsuario) {
-      setNotification({ description: 'Carrito o usuario no encontrados.', bgColor: 'bg-red-500' });
+      mostrarNotificacion('Carrito o usuario no encontrados.', 'bg-red-500');
       setIsLoading(false);
       return;
     }
@@ -160,37 +146,47 @@ function Carrito() {
       const data = await response.json();
       if (data.success) {
         clearCartUI();
-        setNotification({ description: 'Pedido realizado con éxito.', bgColor: 'bg-green-500' });
+        mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
         setTimeout(() => {
           window.location.reload(); // Recarga la página
         }, 2000);
       } else {
-        setNotification({ description: 'Error al realizar el pedido.', bgColor: 'bg-red-500' });
-        setIsLoading(false); // Desactiva el loader si ocurre un error
+        mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error(error);
-      setNotification({ description: 'Error al proceder con el pedido.', bgColor: 'bg-red-500' });
-      setIsLoading(false); // Desactiva el loader si ocurre un error
+      mostrarNotificacion('Error al proceder con el pedido.', 'bg-red-500');
+      setIsLoading(false);
     }
   };
 
-  const actualizarCantidad = async (idProducto, cantidad) => {
+  
+  const actualizarCantidad = async (idDetalle, cantidad) => {
     try {
-      if (cantidad < 1) {
-        setNotification({ description: 'La cantidad no puede ser menor a 1.', bgColor: 'bg-red-500' });
+      if (isNaN(cantidad) || cantidad < 1) {
+        mostrarNotificacion('La cantidad debe ser un número mayor que 0.', 'bg-red-500');
         return;
       }
 
       setIsLoading(true);
+
       const token = localStorage.getItem('jwt');
-      const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idProducto}`, {
+      const idUsuario = getIdUsuario(token);
+
+      if (!token || !idUsuario) {
+        mostrarNotificacion('Usuario no autenticado o token inválido.', 'bg-red-500');
+        return;
+      }
+
+      const requestBody = { cantidad, idUsuario };
+
+      const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idDetalle}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ cantidad }),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
@@ -198,38 +194,33 @@ function Carrito() {
         if (data.success) {
           setProductos((prevProductos) =>
             prevProductos.map((producto) =>
-              producto.idProducto === idProducto
-                ? { 
-                    ...producto, 
-                    cantidad, 
-                    subtotal: producto.precio * cantidad  // Actualizamos el subtotal correctamente
-                  }
+              producto.idDetalle === idDetalle
+                ? { ...producto, cantidad, subtotal: producto.precio * cantidad }
                 : producto
             )
           );
-          setNotification({ description: 'Cantidad y precio actualizados correctamente.', bgColor: 'bg-green-500' });
+          mostrarNotificacion('Cantidad y precio actualizados correctamente.', 'bg-green-500');
         } else {
-          setNotification({ description: data.message || 'Error al actualizar la cantidad.', bgColor: 'bg-red-500' });
+          mostrarNotificacion(data.message || 'Error al actualizar la cantidad.', 'bg-red-500');
         }
       } else {
-        setNotification({ description: 'Error al conectar con el servidor.', bgColor: 'bg-red-500' });
+        const errorData = await response.json();
+        mostrarNotificacion(errorData.message || 'Error al conectar con el servidor.', 'bg-red-500');
       }
     } catch (error) {
-      console.error('Error al actualizar la cantidad:', error);
-      setNotification({ description: 'Ocurrió un error al actualizar la cantidad.', bgColor: 'bg-red-500' });
+      mostrarNotificacion('Ocurrió un error al actualizar la cantidad.', 'bg-red-500');
     } finally {
       setIsLoading(false);
-       // Llamada a updateCartCount para actualizar la cantidad del carrito en el contexto
-       updateCartCount(); // Ahora funciona correctamente
+      updateCartCount();
     }
   };
+
 
   const eliminarProducto = async (idDetalle) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('jwt');
-  
-      // Solicitud DELETE al backend
+
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idDetalle}`, {
         method: 'DELETE',
         headers: {
@@ -237,65 +228,69 @@ function Carrito() {
           'Authorization': `Bearer ${token}`,
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          obtenerCarrito(); // Actualizar el carrito
-          setNotification({ description: 'Producto eliminado correctamente.', bgColor: 'bg-green-500' });
+          obtenerCarrito();
+          mostrarNotificacion('Producto eliminado correctamente.', 'bg-green-500');
         } else {
-          setNotification({ description: 'Error al eliminar el producto.', bgColor: 'bg-red-500' });
+          mostrarNotificacion('Error al eliminar el producto.', 'bg-red-500');
         }
       } else {
-        setNotification({ description: 'Error al conectar con el servidor.', bgColor: 'bg-red-500' });
+        mostrarNotificacion('Error al conectar con el servidor.', 'bg-red-500');
       }
     } catch (error) {
-      console.error('Error al eliminar el producto:', error);
-      setNotification({ description: 'Ocurrió un error al eliminar el producto.', bgColor: 'bg-red-500' });
+      mostrarNotificacion('Ocurrió un error al eliminar el producto.', 'bg-red-500');
     } finally {
       setIsLoading(false);
-      updateCartCount(); // Actualizar cantidad en el contexto
+      updateCartCount();
     }
   };
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-800">
       <NavBarHome />
-
+    
       {isLoading && <LoadingScreen />}
       {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}
-
+    
       <div className="flex-grow px-6 py-8">
         <h1 className="text-3xl font-semibold text-center text-black mb-6">Carrito de Compras</h1>
-
+    
         {productos.length === 0 ? (
           <div className="text-center text-xl text-gray-600">Tu carrito está vacío.</div>
         ) : (
-          <ProductosCarrito
-            productos={productos}
-            actualizarCantidad={actualizarCantidad}
-            eliminarProducto={eliminarProducto}
-            isLoading={isLoading}
-            API_BASE_URL={API_BASE_URL}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"> {/* Añadido mb-16 para separar los productos del botón */}
+            <ProductosCarrito
+              productos={productos}
+              actualizarCantidad={actualizarCantidad}
+              eliminarProducto={eliminarProducto}
+              isLoading={isLoading}
+              API_BASE_URL={API_BASE_URL}
+            />
+          </div>
         )}
       </div>
-
+    
       {productos.length > 0 && (
-        <div className="fixed bottom-0 left-0 w-full bg-gray-900 p-4 text-white flex justify-between items-center">
-          <div className="text-xl font-semibold">
-            <span>Total: </span>
-            <span>S/.{calcularTotal().toFixed(2)}</span> {/* Aquí se usa toFixed con la validación previa */}
-          </div>
-          <button
-            className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
-            onClick={verificarDireccionUsuario}
-            disabled={isLoading}
-          >
-            Realizar pedido
-          </button>
+      <div className="fixed bottom-0 left-0 w-full bg-white p-6 text-black flex justify-between items-center shadow-xl rounded-tl-3xl rounded-tr-3xl border-t-4 border-gray-200">
+        <div className="text-xl font-semibold flex items-center space-x-4">
+          <span className="text-lg font-medium text-gray-600">Total:</span>
+          <span className="text-2xl font-bold text-black">
+            S/.{calcularTotal().toFixed(2)}
+          </span>
         </div>
-      )}
+        <button
+          className="bg-gradient-to-r from-black to-gray-800 text-white px-8 py-3 rounded-lg shadow-lg hover:from-gray-800 hover:to-black transform transition duration-300 ease-in-out focus:outline-none"
+          onClick={verificarDireccionUsuario}
+          disabled={isLoading}
+        >
+          Realizar pedido
+        </button>
+      </div>
+    )}
     </div>
   );
 }

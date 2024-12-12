@@ -1,10 +1,9 @@
-// src/components/Register.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
 import Notification from '../components/home/Notificacion'; // Importar el componente de notificación
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import LoadingScreen from '../components/home/LoadingScreen'; // Importar la pantalla de carga
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -19,6 +18,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState(null); // Estado para manejar la notificación
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado para manejar la carga
 
   const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const Register = () => {
         setAge(age);
       }
     }
-  }, [birthDate]); // Solo recalcular cuando cambie la fecha de nacimiento
+  }, [birthDate]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -44,7 +44,6 @@ const Register = () => {
       newErrors.name = 'El nombre es obligatorio.';
     }
 
-     // Validación de los apellidos: deben estar separados por un espacio
     if (!apellidos || apellidos.split(' ').length < 2) {
       newErrors.apellidos = 'Debe ingresar al menos dos apellidos separados por un espacio.';
     }
@@ -87,6 +86,8 @@ const Register = () => {
 
       const generatedUsername = `${firstName.substring(0, 2)}${firstLastName}${secondLastName.charAt(0)}`;
 
+      setLoading(true); // Mostrar la pantalla de carga
+
       try {
         const response = await fetch(`${API_BASE_URL}/api/registerUser`, {
           method: 'POST',
@@ -123,6 +124,8 @@ const Register = () => {
         }
       } catch (error) {
         console.error('Error al registrar el usuario:', error);
+      } finally {
+        setLoading(false); // Ocultar la pantalla de carga
       }
     }
   };
@@ -130,6 +133,8 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-sm relative">
+        {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
+
         <h2 className="text-2xl font-bold mb-4 text-center">Regístrate</h2>
 
         {/* Mostrar notificación si existe */}
@@ -200,7 +205,7 @@ const Register = () => {
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
               className="w-full p-2 mt-1 border border-gray-300 rounded-md"
-              min="1970-01-01" // Establece la fecha mínima
+              min="1970-01-01"
             />
             {errors.birthDate && <p className="text-xs text-red-500">{errors.birthDate}</p>}
           </div>
@@ -212,18 +217,18 @@ const Register = () => {
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md pr-12"  // Espacio extra a la derecha para el ícono
+              className="w-full p-2 mt-1 border border-gray-300 rounded-md pr-12"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"  // Ajustado para mover hacia abajo
+              className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"
             >
               {showPassword ? (
-                <AiFillEyeInvisible className="text-2xl" />  // Ícono más grande
+                <AiFillEyeInvisible className="text-2xl" />
               ) : (
-                <AiFillEye className="text-2xl" />  // Ícono más grande
+                <AiFillEye className="text-2xl" />
               )}
             </button>
             {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
@@ -236,18 +241,18 @@ const Register = () => {
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md pr-12"  // Espacio extra a la derecha para el ícono
+              className="w-full p-2 mt-1 border border-gray-300 rounded-md pr-12"
               required
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"  // Ajustado para mover hacia abajo
+              className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"
             >
               {showConfirmPassword ? (
-                <AiFillEyeInvisible className="text-2xl" />  // Ícono más grande
+                <AiFillEyeInvisible className="text-2xl" />
               ) : (
-                <AiFillEye className="text-2xl" />  // Ícono más grande
+                <AiFillEye className="text-2xl" />
               )}
             </button>
             {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
@@ -261,12 +266,11 @@ const Register = () => {
           </button>
 
           <button
-            onClick={() => navigate('/')} // Redirige a la página principal
+            onClick={() => navigate('/')}
             className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition-colors mt-4"
           >
             Regresar
           </button>
-
         </form>
       </div>
     </div>

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import LoadingScreen from '../components/home/LoadingScreen'; // Importa el componente LoadingScreen
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Inicializamos useNavigate
+  const [loading, setLoading] = useState(false); // Estado para controlar la carga
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -16,11 +18,11 @@ const Login = ({ closeLoginModal }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null); // Resetear el error antes de hacer la solicitud
+    setError(null);
+    setLoading(true); // Mostrar la pantalla de carga
 
     try {
-      // Realizar la solicitud a la API para iniciar sesión
-      const response = await fetch(`${API_BASE_URL}/api/login`, { // Asegúrate de que la URL corresponda a tu API
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,24 +36,24 @@ const Login = ({ closeLoginModal }) => {
       const result = await response.json();
 
       if (response.ok) {
-        // Si la autenticación fue exitosa, guardamos el token en localStorage
         localStorage.setItem('jwt', result.token);
-        
-        // Redirigir a la página principal
         window.location.href = '/';
       } else {
-        // Mostrar error si las credenciales son incorrectas o hubo algún problema
         setError(result.error || 'Hubo un error al iniciar sesión.');
       }
     } catch (error) {
       setError('Error en la conexión con el servidor.');
       console.error('Error al intentar iniciar sesión:', error);
+    } finally {
+      setLoading(false); // Ocultar la pantalla de carga después de completar la solicitud
     }
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
       <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg transform transition-all">
+        {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
+
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Iniciar sesión</h2>
 
         <form onSubmit={handleLogin}>
@@ -81,15 +83,15 @@ const Login = ({ closeLoginModal }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Escribe tu contraseña"
                 required
-                autoComplete="new-password" // Importante para evitar autocompletado
-                className="w-full p-4 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-16 appearance-none" // Aumentamos el espacio en pr-16 para que el ícono encaje mejor
+                autoComplete="new-password"
+                className="w-full p-4 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-16 appearance-none"
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
                 className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 focus:outline-none"
               >
-                {showPassword ? <AiFillEyeInvisible size={28} /> : <AiFillEye size={28} />} {/* Aumentamos el tamaño del ícono a 28 */}
+                {showPassword ? <AiFillEyeInvisible size={28} /> : <AiFillEye size={28} />}
               </button>
             </div>
           </div>
@@ -110,7 +112,7 @@ const Login = ({ closeLoginModal }) => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">¿Nuevo en ECOMMERCE? 
             <span 
-              onClick={() => navigate('/register')} // Redirigir a la página de registro
+              onClick={() => navigate('/register')}
               className="text-blue-600 cursor-pointer"
             >
               Regístrate aquí
@@ -121,7 +123,7 @@ const Login = ({ closeLoginModal }) => {
         {/* Botón de regresar */}
         <div className="mt-4 text-center">
           <button
-            onClick={() => navigate('/')} // Redirige a la página principal
+            onClick={() => navigate('/')}
             className="w-full py-3 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           >
             Regresar
