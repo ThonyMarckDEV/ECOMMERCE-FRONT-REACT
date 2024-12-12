@@ -68,75 +68,83 @@ function DetalleProducto({ productoId, onClose }) {
   const handleAddToCart = () => {
     const token = localStorage.getItem('jwt');
     if (!token) {
-      setShowModalLogin(true);
-      return;
+        setShowModalLogin(true);
+        return;
     }
-  
+
     const idCarrito = jwtUtils.getIdCarrito(token);
     const idUsuario = jwtUtils.getIdUsuario(token);
-  
+
     const precio = parseFloat(producto?.precio) || 0;
-  
+
     if (!idCarrito || !idUsuario || !tallaSeleccionada) {
-      setNotification({
-        message: 'Por favor selecciona una talla antes de agregar al carrito',
-        color: 'bg-red-400'
-      });
-      return;
+        setNotification({
+            message: 'Por favor selecciona una talla antes de agregar al carrito',
+            color: 'bg-red-400'
+        });
+        return;
     }
-  
+
     const data = {
-      idProducto: productoId,
-      cantidad: cantidad,
-      idCarrito: idCarrito,
-      idUsuario: idUsuario,
-      idModelo: modeloSeleccionado.idModelo,
-      idTalla: tallaSeleccionada.idTalla,
+        idProducto: productoId,
+        cantidad: cantidad,
+        idCarrito: idCarrito,
+        idUsuario: idUsuario,
+        idModelo: modeloSeleccionado.idModelo,
+        idTalla: tallaSeleccionada.idTalla,
     };
-  
+
     setLoading(true);
     verificarYRenovarToken();
-  
+
     fetch(`${API_BASE_URL}/api/agregarCarrito`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error en la respuesta del servidor');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          setNotification({
-            message: 'Producto agregado al carrito',
-            color: 'bg-green-400'
-          });
-  
-          updateCartCount(); 
-  
-          setCantidad(1); 
-          setTallaSeleccionada(null);
-        } else {
-          setNotification({
-            message: 'Error al agregar al carrito',
-            color: 'bg-red-400'
-          });
-        }
-      })
-      .catch((error) => {
-        console.error('Error al agregar al carrito:', error);
-      })
-      .finally(() => {
-        setLoading(false);
-        setTimeout(() => setNotification(null), 1500);
-      });
-  };
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((data) => {
+                    // Si la respuesta no es exitosa, lanzamos el mensaje de error
+                    throw new Error(data.message || 'Error en la respuesta del servidor');
+                });
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.success) {
+                setNotification({
+                    message: 'Producto agregado al carrito',
+                    color: 'bg-green-400'
+                });
+
+                updateCartCount(); 
+
+                setCantidad(1); 
+                setTallaSeleccionada(null);
+            } else {
+                // Si hay un error en la respuesta, mostramos el mensaje adecuado
+                setNotification({
+                    message: data.message || 'Error al agregar al carrito',
+                    color: 'bg-red-400'
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Error al agregar al carrito:', error);
+            setNotification({
+                message: error.message || 'Error al conectar con el servidor',
+                color: 'bg-red-400'
+            });
+        })
+        .finally(() => {
+            setLoading(false);
+            setTimeout(() => setNotification(null), 1500);
+        });
+};
 
   const handleCloseModalLogin = () => {
     setShowModalLogin(false);

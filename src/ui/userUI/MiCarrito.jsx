@@ -77,36 +77,42 @@ function Carrito() {
   };
 
   const verificarDireccionUsuario = async () => {
-    setIsLoading(true);
-    try {
-      await verificarYRenovarToken();
-      const token = localStorage.getItem('jwt');
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const idUsuario = payload.idUsuario;
+      setIsLoading(true);
+      try {
+          await verificarYRenovarToken();
+          const token = localStorage.getItem('jwt');
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const idUsuario = payload.idUsuario;
 
-      const response = await fetch(`${API_BASE_URL}/api/listarDireccion/${idUsuario}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+          const response = await fetch(`${API_BASE_URL}/api/listarDireccion/${idUsuario}`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+              },
+          });
 
-      if (!response.ok) throw new Error('Error al verificar la dirección');
-      const direcciones = await response.json();
-      const direccionUsando = direcciones.find((d) => d.estado === 'usando');
+          // Si la respuesta no es exitosa
+          if (!response.ok) {
+              const data = await response.json();
+              mostrarNotificacion(data.message || 'Error al verificar la dirección', 'bg-red-500');
+              setIsLoading(false);
+              return;
+          }
 
-      if (direccionUsando) {
-        await proceedToCheckout(direccionUsando.idDireccion);
-      } else {
-        mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
-        setIsLoading(false);
+          const direccionUsando = await response.json();
+
+          if (direccionUsando) {
+              await proceedToCheckout(direccionUsando.idDireccion);
+          } else {
+              mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
+              setIsLoading(false);
+          }
+      } catch (error) {
+          console.error(error);
+          mostrarNotificacion('Error al verificar la dirección.', 'bg-red-500');
+          setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      mostrarNotificacion('Error al verificar la dirección.', 'bg-red-500');
-      setIsLoading(false);
-    }
   };
 
   const clearCartUI = () => {

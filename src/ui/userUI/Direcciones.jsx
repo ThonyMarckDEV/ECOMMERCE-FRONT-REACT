@@ -27,7 +27,7 @@ function Direcciones() {
       // Decodificar el token y obtener el idUsuario
       const decodedToken = JSON.parse(atob(userToken.split('.')[1]));
       const idUsuario = decodedToken.idUsuario;
-
+  
       const response = await fetch(`${API_BASE_URL}/api/listarDireccion/${idUsuario}`, {
         method: 'GET',
         headers: {
@@ -35,7 +35,7 @@ function Direcciones() {
           'Content-Type': 'application/json',
         },
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         setDirecciones(data);
@@ -54,6 +54,7 @@ function Direcciones() {
       setLoading(false); // Detener loader cuando la solicitud termine
     }
   };
+  
 
   const setDireccionUsando = async (idDireccion) => {
     setLoading(true); // Iniciar loader antes de la solicitud
@@ -65,14 +66,14 @@ function Direcciones() {
           'Content-Type': 'application/json',
         },
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         setNotification({
           description: data.message || 'Dirección marcada como en uso.',
           bgColor: 'bg-green-500',
         });
-
+  
         // Optimizar: Actualizar localmente sin hacer un nuevo fetch
         setDirecciones(prevDirecciones =>
           prevDirecciones.map(direccion =>
@@ -81,6 +82,9 @@ function Direcciones() {
               : direccion
           )
         );
+  
+        // Llamar nuevamente a fetchDirecciones para actualizar las direcciones
+        fetchDirecciones(); // Aseguramos que las direcciones estén actualizadas
       } else {
         setNotification({
           description: data.error || 'Error al cambiar la dirección.',
