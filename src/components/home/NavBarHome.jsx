@@ -98,30 +98,32 @@ const Navbar = () => {
         {/* Contenedor Flex para los íconos del carrito y perfil */}
         <div className="flex items-center space-x-2 md:space-x-6">
           
-         {/* Carrito de compras */}
+        {/* Carrito de compras */}
           <div className="relative">
-            <Link to="/carrito">
-              <button
-                className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
-                aria-label="Carrito de compras"
-                title="Carrito de compras"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-12 h-12 md:w-10 md:h-10"
+            {isAuthenticated && (
+              <Link to="/carrito">
+                <button
+                  className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
+                  aria-label="Carrito de compras"
+                  title="Carrito de compras"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
-                  />
-                </svg>
-              </button>
-            </Link>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-12 h-12 md:w-10 md:h-10"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
+                    />
+                  </svg>
+                </button>
+              </Link>
+            )}
 
             {/* Mostrar el indicador si hay token y cantidadCarrito > 0 */}
             {isAuthenticated && cantidadCarrito > 0 && (
@@ -172,7 +174,7 @@ const Navbar = () => {
                       onClick={goToProfile}
                       className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
                     >
-                      Mi Menu
+                      Mi Perfil
                     </button>
                   </li>
                   <li>

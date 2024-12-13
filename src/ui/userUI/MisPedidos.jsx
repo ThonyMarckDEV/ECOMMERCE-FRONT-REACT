@@ -215,7 +215,7 @@ const Pedidos = () => {
                         <img
                            src={nopedidos}
                             alt="No tienes pedidos"
-                            className="mx-auto mb-8 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"
+                            className="mx-auto mb-8 w-80 h-80 sm:w-80 sm:h-80 md:w-80 md:h-80 lg:w-96 lg:h-96"
                         />
                         <div className="text-3xl sm:text-4xl text-gray-600 font-semibold">
                             No tienes pedidos.
