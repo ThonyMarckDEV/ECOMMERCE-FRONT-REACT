@@ -1,8 +1,6 @@
-// src/components/home/DetalleProducto.jsx
-
 import React from 'react';
 
-const DetalleProducto = ({ detalles, onClose }) => {
+const DetalleProducto = ({ detalles, direccion, total, onClose }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-3xl overflow-auto">
@@ -24,6 +22,8 @@ const DetalleProducto = ({ detalles, onClose }) => {
                                 <th className="py-2 px-4 text-left">ID Detalle</th>
                                 <th className="py-2 px-4 text-left">ID Producto</th>
                                 <th className="py-2 px-4 text-left">Producto</th>
+                                <th className="py-2 px-4 text-left">Modelo</th>
+                                <th className="py-2 px-4 text-left">Talla</th>
                                 <th className="py-2 px-4 text-left">Cantidad</th>
                                 <th className="py-2 px-4 text-left">Precio Unitario</th>
                                 <th className="py-2 px-4 text-left">Subtotal</th>
@@ -35,6 +35,8 @@ const DetalleProducto = ({ detalles, onClose }) => {
                                     <td className="py-2 px-4">{detalle.idDetallePedido}</td>
                                     <td className="py-2 px-4">{detalle.idProducto}</td>
                                     <td className="py-2 px-4">{detalle.nombreProducto}</td>
+                                    <td className="py-2 px-4">{detalle.nombreModelo}</td>
+                                    <td className="py-2 px-4">{detalle.nombreTalla}</td>
                                     <td className="py-2 px-4">{detalle.cantidad}</td>
                                     <td className="py-2 px-4">S/{Number(detalle.precioUnitario).toFixed(2)}</td>
                                     <td className="py-2 px-4">S/{Number(detalle.subtotal).toFixed(2)}</td>

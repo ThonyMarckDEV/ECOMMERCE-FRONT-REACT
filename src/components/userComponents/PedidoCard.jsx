@@ -1,5 +1,3 @@
-// src/components/home/PedidoCard.jsx
-
 import React from 'react';
 import MercadoPago from '../../components/home/MercadoPago.jsx';
 
@@ -35,11 +33,12 @@ const PedidoCard = ({
             {/* Dirección del Pedido */}
             <div className="p-4 border-t">
                 <h3 className="text-sm font-medium text-gray-700">Dirección:</h3>
-                {pedido.direccion ? (
+                {pedido.direccionEnvio ? (
                     <div className="text-sm text-gray-600 mt-1">
-                        <p><strong>Región:</strong> {pedido.direccion.region}</p>
-                        <p><strong>Provincia:</strong> {pedido.direccion.provincia}</p>
-                        <p><strong>Dirección:</strong> {pedido.direccion.direccion}</p>
+                        <p><strong>Departamento:</strong> {pedido.direccionEnvio.departamento}</p>
+                        <p><strong>Distrito:</strong> {pedido.direccionEnvio.distrito}</p>
+                        <p><strong>Provincia:</strong> {pedido.direccionEnvio.provincia}</p>
+                        <p><strong>Dirección:</strong> {pedido.direccionEnvio.direccion}</p>
                     </div>
                 ) : (
                     <p className="text-gray-500">No se ha proporcionado una dirección.</p>

@@ -6,12 +6,14 @@ import DetalleProducto from '../../components/userComponents/DetallePedido.jsx';
 import Estado from '../../components/userComponents/EstadoPedido.jsx';
 import PedidoCard from '../../components/userComponents/PedidoCard.jsx';
 import nopedidos from '../../img/nopedidos.png'; // Asegúrate de que la ruta sea correcta
+import LoadingScreen from '../../components/home/LoadingScreen'; // Asegúrate de importar el componente
 
 const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [notification, setNotification] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('jwt'));
+    const [isLoading, setIsLoading] = useState(false);
 
     // Estados para manejar los modales
     const [estadoModalVisible, setEstadoModalVisible] = useState(false);
@@ -196,24 +198,33 @@ const Pedidos = () => {
                     {notification.message}
                 </div>
             )}
-
+    
             {/* Modales */}
             {estadoModalVisible && (
                 <Estado estadoActual={estadoActual} onClose={cerrarEstadoModal} />
             )}
-
+    
             {detalleModalVisible && (
                 <DetalleProducto detalles={detallesPedido} onClose={cerrarDetalleModal} />
             )}
-
+    
+            {/* Pantalla de Carga */}
+            {isLoading && (
+                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <LoadingScreen /> {/* Asegúrate de que LoadingScreen esté centrado */}
+                </div>
+            )}
+    
             {/* Contenido Principal */}
             {loading ? (
-                <div className="flex justify-center items-center py-10">Cargando...</div>
+                <div className="flex justify-center items-center py-10">
+                    <LoadingScreen /> {/* Reemplazamos "Cargando..." con el componente LoadingScreen */}
+                </div>
             ) : pedidos.length === 0 ? (
                 <div className="flex flex-col justify-center items-center pt-16">
                     <div className="text-center">
                         <img
-                           src={nopedidos}
+                            src={nopedidos}
                             alt="No tienes pedidos"
                             className="mx-auto mb-8 w-80 h-80 sm:w-80 sm:h-80 md:w-80 md:h-80 lg:w-96 lg:h-96"
                         />
@@ -228,7 +239,7 @@ const Pedidos = () => {
                 </div>
             )}
         </div>
-    );
+    );    
 };
 
 export default Pedidos;

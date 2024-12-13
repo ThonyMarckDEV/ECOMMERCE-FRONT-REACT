@@ -102,9 +102,10 @@ function Carrito() {
           }
 
           const direccionUsando = await response.json();
+          console.log('Dirección Usando:', direccionUsando);  // Asegúrate de ver la respuesta completa
 
-          if (direccionUsando) {
-              await proceedToCheckout(direccionUsando.idDireccion);
+          if (direccionUsando && direccionUsando[0] && direccionUsando[0].idDireccion) {
+              await proceedToCheckout(direccionUsando[0].idDireccion);  // Ahora se está extrayendo correctamente el idDireccion
           } else {
               mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
               setIsLoading(false);
@@ -128,44 +129,47 @@ function Carrito() {
     const idUsuario = payload.idUsuario;
 
     if (!idCarrito || !idUsuario) {
-      mostrarNotificacion('Carrito o usuario no encontrados.', 'bg-red-500');
-      setIsLoading(false);
-      return;
+        mostrarNotificacion('Carrito o usuario no encontrados.', 'bg-red-500');
+        setIsLoading(false);
+        return;
     }
+
+    // Verificar el valor de idDireccion
+    console.log('ID Dirección:', idDireccion);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/pedido`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          total,
-          idCarrito,
-          idUsuario,
-          idDireccion,
-        }),
-      });
+        const response = await fetch(`${API_BASE_URL}/api/pedido`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                total,
+                idCarrito,
+                idUsuario,
+                idDireccion,  // Aquí se está enviando el idDireccion
+            }),
+        });
 
-      if (!response.ok) throw new Error('Error al proceder al pedido');
+        if (!response.ok) throw new Error('Error al proceder al pedido');
 
-      const data = await response.json();
-      if (data.success) {
-        clearCartUI();
-        mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
-        setTimeout(() => {
-          window.location.reload(); // Recarga la página
-        }, 2000);
-      } else {
-        mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
-        setIsLoading(false);
-      }
+        const data = await response.json();
+        if (data.success) {
+            clearCartUI();
+            mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
+            setTimeout(() => {
+                window.location.reload(); // Recarga la página
+            }, 2000);
+        } else {
+            mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
+            setIsLoading(false);
+        }
     } catch (error) {
-      mostrarNotificacion('Error al proceder con el pedido.', 'bg-red-500');
-      setIsLoading(false);
+        mostrarNotificacion('Error al proceder con el pedido.', 'bg-red-500');
+        setIsLoading(false);
     }
-  };
+};
 
   
   const actualizarCantidad = async (idDetalle, cantidad) => {
