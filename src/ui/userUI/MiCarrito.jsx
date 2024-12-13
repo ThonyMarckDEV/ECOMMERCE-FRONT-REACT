@@ -85,7 +85,7 @@ function Carrito() {
           const payload = JSON.parse(atob(token.split('.')[1]));
           const idUsuario = payload.idUsuario;
 
-          const response = await fetch(`${API_BASE_URL}/api/listarDireccion/${idUsuario}`, {
+          const response = await fetch(`${API_BASE_URL}/api/listarDireccionPedido/${idUsuario}`, {
               method: 'GET',
               headers: {
                   'Authorization': `Bearer ${token}`,
