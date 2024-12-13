@@ -174,7 +174,7 @@ const Navbar = () => {
                       onClick={goToProfile}
                       className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
                     >
-                      Mi Perfil
+                      Mi Cuenta
                     </button>
                   </li>
                   <li>

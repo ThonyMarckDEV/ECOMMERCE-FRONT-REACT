@@ -161,7 +161,8 @@ function Direcciones() {
               <table className="table-auto w-full border-collapse">
                 <thead>
                   <tr className="border-b">
-                    <th className="px-4 py-2">Región</th>
+                    <th className="px-4 py-2">Departamento</th>
+                    <th className="px-4 py-2">Distrito</th>
                     <th className="px-4 py-2">Provincia</th>
                     <th className="px-4 py-2">Dirección</th>
                     <th className="px-4 py-2">Estado</th>
@@ -171,7 +172,8 @@ function Direcciones() {
                 <tbody>
                   {direcciones.map((direccion) => (
                     <tr key={direccion.idDireccion} className="border-b">
-                      <td className="px-4 py-2">{direccion.region}</td>
+                      <td className="px-4 py-2">{direccion.departamento}</td>
+                      <td className="px-4 py-2">{direccion.distrito}</td>
                       <td className="px-4 py-2">{direccion.provincia}</td>
                       <td className="px-4 py-2">{direccion.direccion}</td>
                       <td className="px-4 py-2">{direccion.estado}</td>
