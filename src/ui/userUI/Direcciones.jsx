@@ -140,10 +140,14 @@ function Direcciones() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen  font-sans text-gray-800">
-
+    <div className="flex flex-col min-h-screen font-sans text-gray-800">
+    
       {/* Mostrar el loader mientras se hace una solicitud */}
-      {loading && <LoadingScreen />}
+      {loading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <LoadingScreen />
+        </div>
+      )}
       
       {/* Mostrar notificación si existe */}
       {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}

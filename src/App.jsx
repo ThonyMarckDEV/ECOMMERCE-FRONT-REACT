@@ -37,6 +37,10 @@ function AppContent() {
         updateLastActivity();
       }, 30000);
 
+      // const intervalId = setInterval(() => {
+      //   updateLastActivity();
+      // }, 10000);  // 10 segundos
+
       return () => {
         clearInterval(intervalId);
       };
