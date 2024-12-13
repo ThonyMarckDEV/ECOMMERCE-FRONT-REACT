@@ -1,4 +1,3 @@
-// FiltradoProductos.jsx
 import React, { useEffect, useState } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import { AiOutlineFilter, AiOutlineClose } from 'react-icons/ai';
@@ -11,15 +10,7 @@ function FiltradoProductos({ onFilter }) {
   // Estado para almacenar los filtros actuales que el usuario está seleccionando
   const [filtro, setFiltro] = useState({
     texto: '',
-    categoria: '',
-    precioInicial: 0,
-    precioFinal: 500
-  });
-
-  // Estado para manejar los filtros que han sido aplicados
-  const [appliedFiltro, setAppliedFiltro] = useState({
-    texto: '',
-    categoria: '',
+    categoria: '', // Categoria del filtro
     precioInicial: 0,
     precioFinal: 500
   });
@@ -43,20 +34,6 @@ function FiltradoProductos({ onFilter }) {
       });
   }, []);
 
-  useEffect(() => {
-    // Bloquear o permitir el scroll del body según si el filtro está abierto
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-
-    // Limpiar el estilo al desmontar el componente
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isOpen]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFiltro((prevFiltro) => ({ ...prevFiltro, [name]: value }));
@@ -73,8 +50,7 @@ function FiltradoProductos({ onFilter }) {
 
   // Función para aplicar los filtros
   const handleApplyFilters = () => {
-    setAppliedFiltro(filtro);
-    onFilter(filtro);
+    onFilter(filtro); // Enviar el filtro al componente principal
     setIsOpen(false); // Cerrar el panel de filtros en móviles después de aplicar
   };
 
@@ -87,7 +63,6 @@ function FiltradoProductos({ onFilter }) {
       precioFinal: 500
     };
     setFiltro(resetFiltro);
-    setAppliedFiltro(resetFiltro);
     onFilter(resetFiltro);
     setIsOpen(false); // Cerrar el panel de filtros en móviles después de reiniciar
   };
