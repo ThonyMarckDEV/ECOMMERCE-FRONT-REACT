@@ -151,27 +151,27 @@ function AgregarDirecciones() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans text-gray-800">
-
-      <div className="flex-1 p-6 sm:p-8 md:p-10">
-      <div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Detalles de la Dirección</h2>
-
+    <div className="flex flex-col min-h-screen p-0 font-sans text-gray-800">
+      <div className="flex-1 p-0 sm:p-2 md:p-4"> {/* Reducimos aún más el padding general */}
+        <div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-2"> {/* Ajustamos el padding dentro del contenedor */}
+          <h2 className="text-2xl font-semibold mb-2 text-center text-gray-800">Detalles de la Dirección</h2>
+  
           {notification && (
-            <div className={`px-4 py-2 text-white font-semibold text-center ${notification.bgColor} rounded-md shadow-md mb-4`}>
+            <div className={`px-4 py-2 text-white font-semibold text-center ${notification.bgColor} rounded-md shadow-md mb-2`}>
               {notification.description}
             </div>
           )}
-
+  
           {/* Mostrar loader mientras cargamos la información */}
           {loading && (
-            <div className="absolute inset-0 z-30 flex items-center justify-center bg-opacity-50 bg-gray-700">
+            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex items-center justify-center">
               <LoadingScreen />
             </div>
           )}
-
-          <form onSubmit={handleSubmit} className="space-y-4 relative"> {/* Reducir espacio entre elementos */}
-            <div>
+  
+          <form onSubmit={handleSubmit} className="space-y-2 relative"> {/* Reducimos aún más el espacio entre los elementos */}
+            {/* Reducimos el margen superior aún más */}
+            <div className="mt-0"> {/* Eliminamos el margen superior aquí */}
               <label className="block text-gray-700 text-sm">Región:</label>
               <input
                 type="text"
@@ -182,8 +182,8 @@ function AgregarDirecciones() {
                 required
               />
             </div>
-
-            <div>
+  
+            <div className="mt-0"> {/* Eliminamos el margen superior aquí también */}
               <label className="block text-gray-700 text-sm">Provincia:</label>
               <input
                 type="text"
@@ -194,8 +194,8 @@ function AgregarDirecciones() {
                 required
               />
             </div>
-
-            <div>
+  
+            <div className="mt-0"> {/* Eliminamos el margen superior aquí también */}
               <label className="block text-gray-700 text-sm">Dirección:</label>
               <input
                 type="text"
@@ -206,33 +206,38 @@ function AgregarDirecciones() {
                 required
               />
             </div>
-
-            <div className="my-6 z-10 relative"> {/* Reducir el espacio de abajo */}
-              <MapContainer
-                center={latitud ? [latitud, longitud] : [-12.04318, -77.02824]}
-                zoom={13}
-                style={{ height: '250px', width: '100%' }} 
-                scrollWheelZoom={true}
+  
+            <div className="my-4 z-20 relative flex flex-col h-full">
+              {/* Contenedor del mapa con altura fija */}
+              <div className="flex-grow" style={{ height: '400px' }}>
+                <MapContainer
+                  center={latitud ? [latitud, longitud] : [-12.04318, -77.02824]}
+                  zoom={13}
+                  style={{ height: '100%', width: '100%' }} 
+                  scrollWheelZoom={true}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Map latitud={latitud} longitud={longitud} setLatitud={setLatitud} setLongitud={setLongitud} />
+                </MapContainer>
+              </div>
+  
+              {/* Botón abajo con margen superior */}
+              <button
+                type="submit"
+                className="w-full bg-black text-white p-3 rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+                disabled={loading}
               >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Map latitud={latitud} longitud={longitud} setLatitud={setLatitud} setLongitud={setLongitud} />
-              </MapContainer>
+                {loading ? 'Cargando...' : 'Agregar Dirección'}
+              </button>
             </div>
-
-            <button
-              type="submit"
-              className="w-full bg-black text-white p-3 rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
-            >
-              {loading ? 'Cargando...' : 'Agregar Dirección'}
-            </button>
+  
           </form>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default AgregarDirecciones;
