@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // Usamos useLocation para obtener los parámetros de la URL
 import API_BASE_URL from '../../js/urlHelper';
 import DetalleProducto from './DetalleProducto';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
@@ -9,6 +10,10 @@ function ListarProductos({ filtro }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const location = useLocation(); // Usamos useLocation para obtener los parámetros de la URL
+
+  // Extraemos el parámetro 'categoria' de la URL
+  const categoriaURL = new URLSearchParams(location.search).get('categoria');
 
   useEffect(() => {
     let isMounted = true; // Para evitar actualizaciones de estado en componentes desmontados
@@ -18,7 +23,7 @@ function ListarProductos({ filtro }) {
     // Construir la URL con los filtros
     const filtroQuery = new URLSearchParams();
     if (filtro.texto) filtroQuery.append('texto', filtro.texto);
-    if (filtro.categoria) filtroQuery.append('categoria', filtro.categoria);
+    if (filtro.categoria || categoriaURL) filtroQuery.append('categoria', filtro.categoria || categoriaURL);
     if (filtro.precioInicial !== undefined) filtroQuery.append('precioInicial', filtro.precioInicial);
     if (filtro.precioFinal !== undefined) filtroQuery.append('precioFinal', filtro.precioFinal);
 
@@ -47,7 +52,7 @@ function ListarProductos({ filtro }) {
     return () => {
       isMounted = false;
     };
-  }, [filtro]);
+  }, [filtro, categoriaURL]); // El efecto se vuelve a ejecutar cuando cambia cualquiera de los filtros o la categoría de la URL
 
   if (loading)
     return (
