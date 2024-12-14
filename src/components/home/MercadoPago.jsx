@@ -23,7 +23,7 @@ const MercadoPago = ({ pedido }) => {
         // Crea e inserta el script si no existe
         const script = document.createElement('script');
         script.id = scriptId;
-        script.src = 'https://sdk.mercadopago.com/js/v2';
+        script.src = 'https://sdk.mercadopago.com/js/v1';
         script.onload = () => {
             if (window.MercadoPago) {
                 setMercadoPago(new window.MercadoPago('APP_USR-16bfab99-27e9-443e-952f-0f1935aecf51', { locale: 'es-PE' })); //Public Key
