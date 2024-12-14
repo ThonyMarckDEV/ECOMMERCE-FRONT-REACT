@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API_BASE_URL from '../../js/urlHelper.js';
+import LoadingScreen from './LoadingScreen'; // Ajusta la ruta si es necesario
 
 const MercadoPago = ({ pedido }) => {
     const [loading, setLoading] = useState(false);
@@ -7,51 +8,50 @@ const MercadoPago = ({ pedido }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Cargar el SDK de MercadoPago dinámicamente
+        const scriptId = "mercadoPagoScript";
+        const existingScript = document.getElementById(scriptId);
+
+        if (existingScript) {
+            // Si el script ya existe, inicializa MercadoPago
+            if (window.MercadoPago) {
+               // setMercadoPago(new window.MercadoPago('TEST-75c3d6ce-fc69-4586-9056-e98a32568883', { locale: 'es-PE' }));
+                setMercadoPago(new window.MercadoPago('APP_USR-16bfab99-27e9-443e-952f-0f1935aecf51', { locale: 'es-PE' }));
+            }
+            return;
+        }
+
+        // Crea e inserta el script si no existe
         const script = document.createElement('script');
+        script.id = scriptId;
         script.src = 'https://sdk.mercadopago.com/js/v2';
         script.onload = () => {
-            // Verificar que el SDK esté disponible después de cargarlo
             if (window.MercadoPago) {
-                const mp = new window.MercadoPago('TEST-75c3d6ce-fc69-4586-9056-e98a32568883', {
-                    locale: 'es-PE', // Cambia a tu región si es necesario
-                });
-                setMercadoPago(mp);
+                setMercadoPago(new window.MercadoPago('APP_USR-16bfab99-27e9-443e-952f-0f1935aecf51', { locale: 'es-PE' })); //Public Key
             } else {
-                console.error("MercadoPago SDK no cargado correctamente");
-                setError("Error al cargar el SDK de MercadoPago.");
+                setError('Error al cargar el SDK de MercadoPago.');
             }
         };
-        script.onerror = () => {
-            console.error("Error al cargar el SDK de MercadoPago");
-            setError("Error al cargar el SDK de MercadoPago.");
-        };
-
+        script.onerror = () => setError('Error al cargar el SDK de MercadoPago.');
         document.body.appendChild(script);
 
-        // Cleanup al desmontar el componente (eliminar el script cargado)
         return () => {
-            document.body.removeChild(script);
+            // Verifica y elimina el script al desmontar
+            const loadedScript = document.getElementById(scriptId);
+            if (loadedScript) {
+                document.body.removeChild(loadedScript);
+            }
         };
     }, []);
 
     const handlePago = async () => {
         if (!mercadoPago) {
-            console.error("MercadoPago no está disponible");
             setError("MercadoPago no está disponible.");
             return;
         }
 
-        // Mostrar la pantalla de carga
         setLoading(true);
-        setError(null);  // Resetear el error
+        setError(null);
 
-        // Obtener detalles del pedido
-        const pedidoId = pedido.idPedido;
-        const detallesPedido = pedido.detalles;
-        const totalPedido = pedido.total;
-
-        // Obtener el correo del usuario desde el token JWT
         const token = localStorage.getItem('jwt');
         const decodedToken = decodeJWT(token);
         const correoUsuario = decodedToken ? decodedToken.correo : null;
@@ -70,9 +70,9 @@ const MercadoPago = ({ pedido }) => {
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    idPedido: pedidoId,
-                    detalles: detallesPedido,
-                    total: totalPedido,
+                    idPedido: pedido.idPedido,
+                    detalles: pedido.detalles,
+                    total: pedido.total,
                     correo: correoUsuario,
                 }),
             });
@@ -80,12 +80,9 @@ const MercadoPago = ({ pedido }) => {
             const data = await response.json();
 
             if (data.success) {
-                // Usa el SDK de MercadoPago para abrir el modal
                 mercadoPago.checkout({
-                    preference: {
-                        id: data.preference_id, // Usar el ID de la preferencia desde el back-end
-                    },
-                    autoOpen: true, // Abre el modal automáticamente
+                    preference: { id: data.preference_id },
+                    autoOpen: true,
                 });
             } else {
                 setError(data.message || 'Error al crear la preferencia de pago.');
@@ -111,17 +108,9 @@ const MercadoPago = ({ pedido }) => {
 
     return (
         <div>
-            {loading && (
-                <div className="py-2 text-center text-white bg-blue-500 rounded-lg">Cargando...</div>
-            )}
-
-            {error && (
-                <div className="py-2 text-center text-white bg-red-500 rounded-lg">
-                    {error}
-                </div>
-            )}
-
-            {!loading && !error && (
+            {loading && <LoadingScreen />}
+            {error && <div className="py-2 text-center text-white bg-red-500 rounded-lg">{error}</div>}
+            {!loading && (
                 <button
                     onClick={handlePago}
                     className="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all"
