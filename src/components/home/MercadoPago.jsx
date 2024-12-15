@@ -14,9 +14,7 @@ const MercadoPago = ({ pedido }) => {
         if (existingScript) {
             // Si el script ya existe, inicializa MercadoPago
             if (window.MercadoPago) {
-                //setMercadoPago(new window.MercadoPago('TEST-75c3d6ce-fc69-4586-9056-e98a32568883', { locale: 'es-PE' }));
-               // setMercadoPago(new window.MercadoPago('APP_USR-16bfab99-27e9-443e-952f-0f1935aecf51', { locale: 'es-PE' }));
-               setMercadoPago(new window.MercadoPago('APP_USR-191bf4cc-dd05-419c-87b5-d6a7773f181e', { locale: 'es-PE' })); //Public Key Checkout Pro
+                setMercadoPago(new window.MercadoPago('TEST-75c3d6ce-fc69-4586-9056-e98a32568883', { locale: 'es-PE' }));
             }
             return;
         }
@@ -27,9 +25,7 @@ const MercadoPago = ({ pedido }) => {
         script.src = 'https://sdk.mercadopago.com/js/v2';
         script.onload = () => {
             if (window.MercadoPago) {
-               // setMercadoPago(new window.MercadoPago('TEST-75c3d6ce-fc69-4586-9056-e98a32568883', { locale: 'es-PE' }));
-               // setMercadoPago(new window.MercadoPago('APP_USR-16bfab99-27e9-443e-952f-0f1935aecf51', { locale: 'es-PE' })); //Public Key Checkout Api
-                setMercadoPago(new window.MercadoPago('APP_USR-191bf4cc-dd05-419c-87b5-d6a7773f181e', { locale: 'es-PE' })); //Public Key Checkout Pro
+                setMercadoPago(new window.MercadoPago('TEST-75c3d6ce-fc69-4586-9056-e98a32568883', { locale: 'es-PE' }));
             } else {
                 setError('Error al cargar el SDK de MercadoPago.');
             }
