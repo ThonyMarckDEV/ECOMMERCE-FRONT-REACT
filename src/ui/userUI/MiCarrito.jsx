@@ -161,6 +161,7 @@ function Carrito() {
             clearCartUI();
             mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
             updateCartCount(); 
+            setIsLoading(false);
         } else {
             mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
             setIsLoading(false);
