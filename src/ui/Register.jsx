@@ -4,7 +4,7 @@ import API_BASE_URL from '../js/urlHelper';
 import Notification from '../components/home/Notificacion'; // Importar el componente de notificación
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importar la pantalla de carga
-import { GoogleLogin } from 'react-google-login'; // Importar Google Login
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // Cambiar a la nueva librería
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -79,8 +79,7 @@ const Register = () => {
   };
 
   const handleGoogleSuccess = async (response) => {
-    const { profileObj, tokenId } = response;
-
+    const tokenId = response.credential; // Obtén el token desde el nuevo flujo de Google
     try {
       const res = await fetch(`${API_BASE_URL}/api/registerUserGoogle`, {
         method: 'POST',
@@ -88,8 +87,6 @@ const Register = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: profileObj.givenName + profileObj.familyName,
-          correo: profileObj.email,
           googleToken: tokenId, // El token generado por Google
         }),
       });
@@ -180,6 +177,7 @@ const Register = () => {
   };
 
   return (
+    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
     <div className="min-h-screen bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-sm relative">
         {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
@@ -354,6 +352,7 @@ const Register = () => {
         </form>
       </div>
     </div>
+    </GoogleOAuthProvider>
   );
 };
 
