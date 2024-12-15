@@ -1,6 +1,7 @@
 // jwtUtils.jsx
 
 import API_BASE_URL from '../js/urlHelper';
+// jwtUtils.jsx
 
 // Función para decodificar el payload de un JWT manualmente
 const decodeToken = (token) => {
@@ -17,14 +18,22 @@ const decodeToken = (token) => {
   }
 };
 
-// Función para obtener el perfil (imagen de perfil) con la URL base concatenada
+
+// Función para obtener si el correo está verificado
+export const getEmailVerified = (token) => {
+  const decodedToken = decodeToken(token);
+  // Imprimir el valor de emailVerified para depuración
+  console.log("Email Verified:", decodedToken ? decodedToken.emailVerified : "Token inválido o sin emailVerified");
+  
+  // Devolver el valor tal cual está en el token
+  return decodedToken ? decodedToken.emailVerified : 0; // Devuelve 0 si no está definido
+};
+
+// Otras funciones (como getPerfil, getIdUsuario, etc.)
 export const getPerfil = (token) => {
   const decodedToken = decodeToken(token);
-  if (decodedToken) {
-    const baseUrl = `${API_BASE_URL}/storage/`;
-    return decodedToken.perfil ? `${baseUrl}${decodedToken.perfil}` : ''; // Concatenamos la URL base con el perfil
-  }
-  return '';
+  const baseUrl = `${API_BASE_URL}/storage/`;
+  return decodedToken?.perfil ? `${baseUrl}${decodedToken.perfil}` : '';
 };
 
 // Función para obtener el ID del usuario
@@ -65,10 +74,8 @@ export const verifyToken = (token) => {
   return { valid: true, message: "Token válido" };
 };
 
-
-export const getIdCarrito = (token) => decodeToken(token)?.idCarrito ?? null;
-
 export default {
+  getEmailVerified,
   getPerfil,
   getIdUsuario,
   getUsername,
@@ -76,5 +83,4 @@ export default {
   isTokenExpired,
   getTokenExpirationDate,
   verifyToken,
-  getIdCarrito  // Exportamos la nueva función
 };

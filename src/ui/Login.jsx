@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importa el componente LoadingScreen
+import jwtUtils from '../utilities/jwtUtils'; // Asegúrate de importar el archivo correctamente
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
@@ -37,7 +38,14 @@ const Login = ({ closeLoginModal }) => {
 
       if (response.ok) {
         localStorage.setItem('jwt', result.token);
-        window.location.href = '/';
+
+        // Verificar si el correo ha sido verificado usando jwtUtils
+        const emailVerified = jwtUtils.getEmailVerified(result.token);
+        if (!emailVerified) {
+          navigate('/verificar-correo'); // Redirigir al componente de verificación de correo
+        } else {
+          window.location.href = '/'; // Redirigir a la página principal
+        }
       } else {
         setError(result.error || 'Hubo un error al iniciar sesión.');
       }
@@ -51,7 +59,7 @@ const Login = ({ closeLoginModal }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
-      <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg transform transition-all">
+      <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg">
         {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
 
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Iniciar sesión</h2>

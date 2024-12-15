@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation ,Navigate } from 'react-router-dom';
 import './index.css';
+import VerificarCorreo from './ui/VerificarCorreo';  // Asegúrate de que la ruta sea la correcta
 
 // ComponentesHome
 import Home from './ui/Home'; 
@@ -49,10 +50,11 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<ProtectedRouteHome element={<Home />} />} />
       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
-      <Route path="/productos" element={<Productos />} />
+      <Route path="/verificar-correo" element={<VerificarCorreo />} />
+      <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
       <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
       <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
       <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
