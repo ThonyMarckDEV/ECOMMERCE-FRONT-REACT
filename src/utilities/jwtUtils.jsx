@@ -22,9 +22,6 @@ const decodeToken = (token) => {
 // Función para obtener si el correo está verificado
 export const getEmailVerified = (token) => {
   const decodedToken = decodeToken(token);
-  // Imprimir el valor de emailVerified para depuración
-  console.log("Email Verified:", decodedToken ? decodedToken.emailVerified : "Token inválido o sin emailVerified");
-  
   // Devolver el valor tal cual está en el token
   return decodedToken ? decodedToken.emailVerified : 0; // Devuelve 0 si no está definido
 };
