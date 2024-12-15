@@ -186,9 +186,16 @@ const Register = () => {
               id="dni"
               type="text"
               value={dni}
-              onChange={(e) => setDni(e.target.value)}
+              onChange={(e) => {
+                // Solo permitir números y limitar a 8 caracteres
+                const value = e.target.value;
+                if (/^\d{0,8}$/.test(value)) {
+                  setDni(value);
+                }
+              }}
               className="w-full p-2 mt-1 border border-gray-300 rounded-md"
               required
+              maxLength={8} // Limita el máximo de caracteres
             />
             {errors.dni && <p className="text-xs text-red-500">{errors.dni}</p>}
           </div>
