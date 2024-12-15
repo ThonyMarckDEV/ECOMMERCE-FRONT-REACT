@@ -81,6 +81,7 @@ const Register = () => {
   const handleGoogleSuccess = async (response) => {
     const tokenId = response.credential; // Obtén el token desde el nuevo flujo de Google
     try {
+      // Registrar al usuario con el token de Google
       const res = await fetch(`${API_BASE_URL}/api/registerUserGoogle`, {
         method: 'POST',
         headers: {
@@ -90,21 +91,40 @@ const Register = () => {
           googleToken: tokenId, // El token generado por Google
         }),
       });
-
+  
       const result = await res.json();
       if (res.ok) {
         setNotification({
           message: 'Usuario registrado exitosamente con Google',
           color: 'bg-green-400',
         });
-        setTimeout(() => {
-          navigate('/login');
-        }, 1200);
+  
+        // Ahora que el usuario está registrado, realizar login automáticamente
+        const loginResponse = await fetch(`${API_BASE_URL}/api/login-google`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            googleToken: tokenId, // Enviar el token para realizar login
+          }),
+        });
+  
+        const loginResult = await loginResponse.json();
+  
+        if (loginResponse.ok) {
+          localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
+  
+          // Redirigir a la página principal después de iniciar sesión correctamente
+          window.location.href = '/';
+        } else {
+          setErrors(loginResult.errors || {});
+        }
       } else {
         setErrors(result.errors || {});
       }
     } catch (error) {
-      console.error('Error al registrar con Google:', error);
+      console.error('Error al registrar e iniciar sesión con Google:', error);
     }
   };
 
