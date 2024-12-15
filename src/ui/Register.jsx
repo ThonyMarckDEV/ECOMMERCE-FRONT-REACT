@@ -4,6 +4,7 @@ import API_BASE_URL from '../js/urlHelper';
 import Notification from '../components/home/Notificacion'; // Importar el componente de notificación
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importar la pantalla de carga
+import { GoogleLogin } from 'react-google-login'; // Importar Google Login
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -75,6 +76,43 @@ const Register = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleGoogleSuccess = async (response) => {
+    const { profileObj, tokenId } = response;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/registerUserGoogle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: profileObj.givenName + profileObj.familyName,
+          correo: profileObj.email,
+          googleToken: tokenId, // El token generado por Google
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        setNotification({
+          message: 'Usuario registrado exitosamente con Google',
+          color: 'bg-green-400',
+        });
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200);
+      } else {
+        setErrors(result.errors || {});
+      }
+    } catch (error) {
+      console.error('Error al registrar con Google:', error);
+    }
+  };
+
+  const handleGoogleFailure = (error) => {
+    console.error('Error en la autenticación de Google:', error);
   };
 
   const handleRegister = async (e) => {
@@ -301,6 +339,17 @@ const Register = () => {
           >
             Regresar
           </button>
+
+        <div className="mt-4">
+          <GoogleLogin
+            clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"
+            buttonText="Registrarse con Google"
+            onSuccess={handleGoogleSuccess}
+            onFailure={handleGoogleFailure}
+            cookiePolicy={'single_host_origin'}
+          />
+        </div>
+
         </form>
       </div>
     </div>
