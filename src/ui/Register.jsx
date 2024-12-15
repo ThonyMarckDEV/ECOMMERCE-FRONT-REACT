@@ -347,6 +347,7 @@ const Register = () => {
             onSuccess={handleGoogleSuccess}
             onFailure={handleGoogleFailure}
             cookiePolicy={'single_host_origin'}
+            responseType="code"
           />
         </div>
 
