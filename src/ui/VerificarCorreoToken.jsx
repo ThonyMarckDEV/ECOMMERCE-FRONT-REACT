@@ -1,90 +1,92 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
-import Notification from '../components/home/Notificacion'; // Importar el componente de notificación
-import { logout } from '../js/logout'; // Cambiar a importación nombrada
-import LoadingScreen from '../components/home/LoadingScreen'; // Importar la pantalla de carga
-import verificarCorreo from '../img/verificar_correo.png'; // Imagen de correo no verificado
+import Notification from '../components/home/Notificacion';
+import LoadingScreen from '../components/home/LoadingScreen';
+import verificarCorreo from '../img/verificar_correo.png';
 
 const VerificarCorreo = () => {
-  const [notification, setNotification] = useState(null); // Estado para manejar notificaciones
-  const [loading, setLoading] = useState(true); // Mostrar pantalla de carga inicialmente
-  const [searchParams] = useSearchParams(); // Obtener parámetros de la URL
+  const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const verifyAndRefreshToken = async () => {
+      const token_veririficador = searchParams.get('token_veririficador');
+      const token = localStorage.getItem('jwt'); // Verificar si existe JWT en localStorage
 
-    if (token) {
-      // Llamada a la API para verificar el token
-      const verifyEmail = async () => {
+      if (token_veririficador) {
         try {
-          const response = await fetch(`${API_BASE_URL}/api/verificar-token`, {
+          // Verificar el token de la URL
+          const verifyResponse = await fetch(`${API_BASE_URL}/api/verificar-token`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ token }),
+            body: JSON.stringify({ token_veririficador }),
           });
 
-          const result = await response.json();
+          const verifyResult = await verifyResponse.json();
 
-          if (response.ok && result.success) {
+          if (verifyResponse.ok && verifyResult.success) {
             setNotification({
               message: 'Correo verificado exitosamente. Redirigiendo...',
               color: 'bg-green-400',
             });
-            setTimeout(() => navigate('/'), 3000);
-            logout();
+
+            // Guardar el nuevo token en localStorage
+            if (verifyResult.token) {
+              localStorage.setItem('jwt', verifyResult.token); // Guardar el nuevo token
+
+              // Redirigir a la página principal o donde desees
+               setTimeout(() => navigate('/'), 3000);
+            }
           } else {
             setNotification({
-              message: result.message || 'Error verificando el correo.',
+              message: verifyResult.message || 'Error verificando el correo.',
               color: 'bg-red-400',
             });
           }
         } catch (error) {
-   
-        } finally {
-          setLoading(false);
+          console.error('Error al verificar el correo:', error);
+          setNotification({
+            message: 'Error al comunicarse con el servidor.',
+            color: 'bg-red-400',
+          });
         }
-      };
+      } else {
+        setNotification({
+          message: 'Token no proporcionado en la URL.',
+          color: 'bg-red-400',
+        });
+      }
 
-      verifyEmail();
-    } else {
-      setNotification({
-        message: 'Token no proporcionado en la URL.',
-        color: 'bg-red-400',
-      });
       setLoading(false);
-    }
-  }, [searchParams, navigate]);
+    };
 
+    verifyAndRefreshToken();
+  }, [searchParams, navigate]);
 
   return (
     <div className="bg-white text-gray-800 min-h-screen flex flex-col justify-between">
-      {/* Navbar en la parte superior */}
       <div>
         <h2 className="text-center text-2xl font-bold p-4">Verificar Correo</h2>
       </div>
 
-      {/* Contenido principal */}
       <div className="flex-1 flex flex-col justify-center items-center text-center p-6">
         {loading ? (
-          <LoadingScreen /> // Pantalla de carga mientras verifica el token
+          <LoadingScreen />
         ) : (
           <>
-            {/* Imagen de correo no verificado */}
             <img
               src={verificarCorreo}
               alt="Correo no verificado"
               className="w-80 h-80 mb-6 sm:w-60 sm:h-60 md:w-72 md:h-72 lg:w-80 lg:h-80"
             />
-
-            {/* Notificación */}
             {notification && (
               <Notification description={notification.message} bgColor={notification.color} />
             )}
-
           </>
         )}
       </div>

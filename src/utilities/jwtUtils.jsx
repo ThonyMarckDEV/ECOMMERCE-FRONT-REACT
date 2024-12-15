@@ -24,7 +24,7 @@ export const getEmailVerified = (token) => {
   
   // Imprimir el valor de emailVerified
   if (decodedToken) {
-    console.log("emailVerified:", decodedToken.emailVerified);
+   // console.log("emailVerified:", decodedToken.emailVerified);
   }
 
   // Devolver el valor tal cual está en el token
