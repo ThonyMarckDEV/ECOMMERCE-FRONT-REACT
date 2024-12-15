@@ -160,16 +160,16 @@ function Carrito() {
         if (data.success) {
             clearCartUI();
             mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
-            setTimeout(() => {
-                window.location.reload(); // Recarga la página
-            }, 2000);
+            updateCartCount(); 
         } else {
             mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
             setIsLoading(false);
+            updateCartCount(); 
         }
     } catch (error) {
         mostrarNotificacion('Error al proceder con el pedido.', 'bg-red-500');
         setIsLoading(false);
+        updateCartCount(); 
     }
 };
 
