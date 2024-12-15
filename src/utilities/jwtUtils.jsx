@@ -46,6 +46,10 @@ export const getUsername = (token) => decodeToken(token)?.username ?? null;
 // Función para obtener el rol del usuario
 export const getUserRole = (token) => decodeToken(token)?.rol ?? null;
 
+export const getIdRole = (token) => decodeToken(token)?.rol ?? null;
+
+export const getIdCarrito = (token) => decodeToken(token)?.idCarrito ?? null;
+
 // Función para verificar si el token está expirado
 export const isTokenExpired = (token) => {
   const decodedToken = decodeToken(token);
@@ -84,4 +88,5 @@ export default {
   isTokenExpired,
   getTokenExpirationDate,
   verifyToken,
+  getIdCarrito,
 };
