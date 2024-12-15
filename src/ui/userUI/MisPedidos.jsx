@@ -117,10 +117,10 @@ const Pedidos = () => {
             });
 
             if (response.ok) {
-                alert('Pedido cancelado exitosamente');
+                showNotification(`Pedido cancelado exitosamente`, 'bg-green-500');
                 fetchPedidos(); // Refrescar los pedidos
             } else {
-                alert('Error al cancelar el pedido');
+                showNotification(`Error al cancelar el pedido`, 'bg-red-500');
             }
         } catch (error) {
             console.error('Error:', error);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import Notification from '../../components/home/Notificacion';
@@ -9,11 +10,13 @@ import { getIdUsuario } from '../../utilities/jwtUtils';
 import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
 import carritoVacio from '../../img/carritovacio.png'; // Asegúrate de que la ruta sea correcta
 
+
 function Carrito() {
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const { updateCartCount } = useCart(); // Usamos el contexto de carrito
+  const navigate = useNavigate();
 
   const mostrarNotificacion = (descripcion, color) => {
 
@@ -162,6 +165,10 @@ function Carrito() {
             mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
             updateCartCount(); 
             setIsLoading(false);
+             // Navegar después de 2 segundos
+              setTimeout(() => {
+                navigate('/pedidos');
+            }, 1200);
         } else {
             mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
             setIsLoading(false);
