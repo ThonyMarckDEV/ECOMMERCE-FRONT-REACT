@@ -154,31 +154,44 @@ const Register = () => {
         )}
 
         <form onSubmit={handleRegister}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre completo</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md"
-              required
-            />
-            {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
-          </div>
+          
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre completo</label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => {
+              // Solo permitir letras y espacios
+              const value = e.target.value;
+              if (/^[A-Za-z\s]*$/.test(value)) {  // Acepta solo letras y espacios
+                setName(value);
+              }
+            }}
+            className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+            required
+          />
+          {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
+        </div>
 
-          <div className="mb-4">
-            <label htmlFor="apellidos" className="block text-sm font-medium text-gray-700">Apellidos</label>
-            <input
-              id="apellidos"
-              type="text"
-              value={apellidos}
-              onChange={(e) => setApellidos(e.target.value)}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md"
-              required
-            />
-            {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos}</p>}
-          </div>
+        <div className="mb-4">
+          <label htmlFor="apellidos" className="block text-sm font-medium text-gray-700">Apellidos</label>
+          <input
+            id="apellidos"
+            type="text"
+            value={apellidos}
+            onChange={(e) => {
+              // Solo permitir letras y espacios
+              const value = e.target.value;
+              if (/^[A-Za-z\s]*$/.test(value)) {  // Acepta solo letras y espacios
+                setApellidos(value);
+              }
+            }}
+            className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+            required
+          />
+          {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos}</p>}
+        </div>
 
           <div className="mb-4">
             <label htmlFor="dni" className="block text-sm font-medium text-gray-700">DNI</label>
