@@ -53,9 +53,13 @@ function AppContent() {
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
       <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
 
+      {/* <Route path="/admin" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['admin']} />} /> */}
+
+
       <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
       <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
       <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
+
 
       <Route path="/verificar-correo" element={<ProtectedRouteToken element={<VerificarCorreo />} />} />
       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
