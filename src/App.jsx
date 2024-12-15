@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation ,Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import './index.css';
-import VerificarCorreo from './ui/VerificarCorreo';  // Asegúrate de que la ruta sea la correcta
-import VerificarCorreoToken from './ui/VerificarCorreoToken';  // Asegúrate de que la ruta sea la correcta
+import VerificarCorreo from './ui/VerificarCorreo';
+import VerificarCorreoToken from './ui/VerificarCorreoToken';
+import Mantenimiento from './components/home/Mantenimiento'; // Componente de mantenimiento
+import API_BASE_URL from './js/urlHelper';
 
-// ComponentesHome
-import Home from './ui/Home'; 
-import Productos from './ui/Productos'; 
-import Login from './ui/Login'; 
-import Register from './ui/Register'; 
+// Componentes Home
+import Home from './ui/Home';
+import Productos from './ui/Productos';
+import Login from './ui/Login';
+import Register from './ui/Register';
 
 // UIS
-import Carrito from './ui/userUI/MiCarrito'; 
+import Carrito from './ui/userUI/MiCarrito';
 import MenuUser from './ui/userUI/MenuUser';
 import Pedidos from './ui/userUI/MisPedidos';
 
@@ -22,29 +24,60 @@ import ProtectedRouteToken from './utilities/ProtectedRouteToken';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
-import { checkStatus} from './js/checkUserStatus';
+import { checkStatus } from './js/checkUserStatus';
 
 // Context del carrito
-import { CartProvider } from './context/CartContext'; // Importar el CartProvider
+import { CartProvider } from './context/CartContext';
 
 function AppContent() {
+  const [enMantenimiento, setEnMantenimiento] = useState(false);
+  const [mensajeMantenimiento, setMensajeMantenimiento] = useState('');
   const location = useLocation();
 
+  // Verificar estado de mantenimiento al cargar
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
-    if (token) {
-      updateLastActivity();
-      checkStatus();
+    const verificarMantenimiento = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/status-mantenimiento`); // Ruta de tu API Laravel
+        if (response.ok) {
+          const data = await response.json();
+          if (data.estado === 1) {
+            setEnMantenimiento(true);
+            setMensajeMantenimiento(data.mensaje);
+          } else {
+            setEnMantenimiento(false);
+          }
+        } else {
+          console.error('Error al obtener el estado de mantenimiento.');
+        }
+      } catch (error) {
+        console.error('Error en la solicitud de mantenimiento:', error);
+      }
+    };
 
-      const intervalId = setInterval(() => {
-        updateLastActivity();
-      }, 30000);
-
-      return () => {
-        clearInterval(intervalId);
-      };
-    }
+    verificarMantenimiento();
   }, [location.pathname]);
+
+  // Actualizar la actividad del usuario si no está en mantenimiento
+  useEffect(() => {
+    if (!enMantenimiento) {
+      const token = localStorage.getItem('jwt');
+      if (token) {
+        updateLastActivity();
+        checkStatus();
+
+        const intervalId = setInterval(() => {
+          updateLastActivity();
+        }, 10000); // Cada 10 segundos
+
+        return () => clearInterval(intervalId);
+      }
+    }
+  }, [location.pathname, enMantenimiento]);
+
+  if (enMantenimiento) {
+    return <Mantenimiento mensaje={mensajeMantenimiento} />;
+  }
 
   return (
     <Routes>
@@ -53,13 +86,9 @@ function AppContent() {
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
       <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
 
-      {/* <Route path="/admin" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['admin']} />} /> */}
-
-
       <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
       <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
       <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
-
 
       <Route path="/verificar-correo" element={<ProtectedRouteToken element={<VerificarCorreo />} />} />
       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
@@ -72,7 +101,7 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <CartProvider> {/* Proveedor de contexto */}
+      <CartProvider>
         <AppContent />
       </CartProvider>
     </Router>
