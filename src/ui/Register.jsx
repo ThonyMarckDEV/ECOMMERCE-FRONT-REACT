@@ -177,7 +177,7 @@ const Register = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+    <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com">
     <div className="min-h-screen bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-sm relative">
         {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
