@@ -58,7 +58,7 @@ function AppContent() {
       <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
 
       <Route path="/verificar-correo" element={<ProtectedRouteToken element={<VerificarCorreo />} />} />
-      <Route path="/verificar-correo-token" element={<ProtectedRouteToken element={<VerificarCorreoToken />} />} />
+      <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

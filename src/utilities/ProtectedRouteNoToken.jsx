@@ -5,7 +5,7 @@ const ProtectedRoute = ({ element }) => {
   // Obtener el JWT desde localStorage
   const token = localStorage.getItem('jwt');
 
-  if (!token) {
+  if (token) {
       return <Navigate to="/" />;
   }
   // Si no hay token, se muestra el elemento original
