@@ -14,7 +14,6 @@ const ProtectedRoute = ({ element }) => {
       // Si el correo no está verificado (email_verified es 0), redirigir a la página de verificación
       return <Navigate to="/verificar-correo" />;
     }
-    return <Navigate to="/" />;
   }
 
   // Si no hay token, se muestra el elemento original

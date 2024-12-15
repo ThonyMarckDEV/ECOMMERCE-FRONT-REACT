@@ -79,15 +79,15 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     if (validateForm()) {
       const [firstName, secondName] = name.split(' ');
       const [firstLastName, secondLastName] = apellidos.split(' ');
-
+  
       const generatedUsername = `${firstName.substring(0, 2)}${firstLastName}${secondLastName.charAt(0)}`;
-
+  
       setLoading(true); // Mostrar la pantalla de carga
-
+  
       try {
         const response = await fetch(`${API_BASE_URL}/api/registerUser`, {
           method: 'POST',
@@ -106,21 +106,32 @@ const Register = () => {
             nacimiento: birthDate,
           }),
         });
-
+  
         const result = await response.json();
-
-        if (result.success) {
+  
+        if (response.ok) {
           setNotification({
             message: 'Usuario registrado exitosamente',
             color: 'bg-green-400', // Color de la notificación (verde claro)
           });
-
+  
+          // Limpiar los campos después de un registro exitoso
+          setName('');
+          setApellidos('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setDni('');
+          setAge('');
+          setBirthDate('1990-01-01');
+          setErrors({}); // Limpiar errores
+  
           // Después de 3 segundos, redirigimos al login
           setTimeout(() => {
             navigate('/login');
-          }, 3000);
+          }, 1200);
         } else {
-          setErrors(result.errors);
+          setErrors(result.errors || {});
         }
       } catch (error) {
         console.error('Error al registrar el usuario:', error);
@@ -176,14 +187,13 @@ const Register = () => {
               type="text"
               value={dni}
               onChange={(e) => setDni(e.target.value)}
-              pattern="\d{8}"
-              maxLength="8"
               className="w-full p-2 mt-1 border border-gray-300 rounded-md"
               required
             />
             {errors.dni && <p className="text-xs text-red-500">{errors.dni}</p>}
           </div>
 
+  
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo electrónico</label>
             <input
@@ -194,7 +204,7 @@ const Register = () => {
               className="w-full p-2 mt-1 border border-gray-300 rounded-md"
               required
             />
-            {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
+            {errors.correo && <p className="text-xs text-red-500">{errors.correo}</p>}
           </div>
 
           <div className="mb-4">
