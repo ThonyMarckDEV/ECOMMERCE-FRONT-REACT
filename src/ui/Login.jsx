@@ -58,41 +58,42 @@ const Login = ({ closeLoginModal }) => {
     }
   };
 
-  const handleGoogleSuccess = async (response) => {
-    const tokenId = response.credential; // Usar `response.credential` en lugar de `tokenId`
-    setLoading(true);
+  const handleGoogleLogin = async (response) => {
+    if (response?.credential) {
+      const tokenId = response.credential; // Usar `response.credential` en lugar de `tokenId`
+      setLoading(true);
 
-    try {
-      const loginResponse = await fetch(`${API_BASE_URL}/api/login-google`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          googleToken: tokenId, // Enviar el token para realizar login
-        }),
-      });
+      try {
+        const loginResponse = await fetch(`${API_BASE_URL}/api/login-google`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            googleToken: tokenId, // Enviar el token para realizar login
+          }),
+        });
 
-      const loginResult = await loginResponse.json();
+        const loginResult = await loginResponse.json();
 
-      if (loginResponse.ok) {
-        localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
+        if (loginResponse.ok) {
+          localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
 
-        // Redirigir a la página principal después de iniciar sesión correctamente
-        window.location.href = '/';
-      } else {
-        setError(loginResult.errors || 'Hubo un error al iniciar sesión con Google.');
+          // Redirigir a la página principal después de iniciar sesión correctamente
+          window.location.href = '/';
+        } else {
+          setError(loginResult.errors || 'Hubo un error al iniciar sesión con Google.');
+        }
+      } catch (error) {
+        setError('Error al intentar iniciar sesión con Google.');
+        console.error('Error al intentar iniciar sesión con Google:', error);
+      } finally {
+        setLoading(false); // Ocultar la pantalla de carga
       }
-    } catch (error) {
-      setError('Error al intentar iniciar sesión con Google.');
-      console.error('Error al intentar iniciar sesión con Google:', error);
-    } finally {
-      setLoading(false); // Ocultar la pantalla de carga
     }
   };
 
   return (
-    <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"> {/* Proveer tu Client ID */}
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
       <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg">
         {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
@@ -174,19 +175,20 @@ const Login = ({ closeLoginModal }) => {
         </div>
 
         {/* Botón de login con Google */}
-        <div className="mt-6 text-center">       
+        <div className="mt-6 text-center">
+          <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID"> {/* Proveer tu Client ID */}
             <GoogleLogin
-              onSuccess={handleGoogleSuccess}  {/* Aquí aseguramos que la referencia está correcta */}
+              onSuccess={handleGoogleLogin}
               onError={() => setError('Error al intentar iniciar sesión con Google.')}
               useOneTap
               shape="pill" // Opcional, forma del botón
               text="signin_with" // Texto para el botón (opcional)
               theme="outline" // Estilo del botón
             />
+          </GoogleOAuthProvider>
         </div>
       </div>
     </div>
-    </GoogleOAuthProvider>
   );
 };
 
