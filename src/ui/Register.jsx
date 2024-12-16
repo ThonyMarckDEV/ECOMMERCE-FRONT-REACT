@@ -80,7 +80,9 @@ const Register = () => {
   };
 
   const handleGoogleSuccess = async (response) => {
+    setLoading(true); // Mostrar el loader mientras se realiza el registro e inicio de sesión con Google
     const tokenId = response.credential; // Obtén el token desde el nuevo flujo de Google
+    
     try {
       // Registrar al usuario con el token de Google
       const res = await fetch(`${API_BASE_URL}/api/registerUserGoogle`, {
@@ -117,6 +119,7 @@ const Register = () => {
           localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
   
           // Redirigir a la página principal después de iniciar sesión correctamente
+          setLoading(false); // Ocultar el loader antes de redirigir
           window.location.href = '/';
         } else {
           setErrors(loginResult.errors || {});
@@ -126,12 +129,17 @@ const Register = () => {
       }
     } catch (error) {
       console.error('Error al registrar e iniciar sesión con Google:', error);
+    } finally {
+      // No es necesario aquí, pero lo dejamos por si el flujo llega al bloque finally
+      // setLoading(false); // Ocultar el loader en caso de error
     }
   };
-
+  
   const handleGoogleFailure = (error) => {
     console.error('Error en la autenticación de Google:', error);
+    setLoading(false); // Asegúrate de ocultar el loader en caso de error
   };
+  
 
   const handleRegister = async (e) => {
     e.preventDefault();
