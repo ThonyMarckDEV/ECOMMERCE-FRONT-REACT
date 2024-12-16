@@ -4,7 +4,7 @@ import API_BASE_URL from '../js/urlHelper';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importa el componente LoadingScreen
 import jwtUtils from '../utilities/jwtUtils'; // Asegúrate de importar el archivo correctamente
-import { GoogleLogin } from 'react-google-login'; // Importar la librería de Google Login
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // Cambiar a la nueva librería
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
@@ -58,8 +58,8 @@ const Login = ({ closeLoginModal }) => {
     }
   };
 
-  const handleGoogleLogin = async (response) => {
-    const tokenId = response.tokenId;
+  const handleGoogleSuccess = async (response) => {
+    const tokenId = response.credential; // Usar `response.credential` en lugar de `tokenId`
     setLoading(true);
 
     try {
@@ -92,6 +92,7 @@ const Login = ({ closeLoginModal }) => {
   };
 
   return (
+    <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"> {/* Proveer tu Client ID */}
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
       <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg">
         {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
@@ -172,20 +173,20 @@ const Login = ({ closeLoginModal }) => {
           </button>
         </div>
 
-          {/* Botón de login con Google */}
-          <div className="mt-6 text-center">
-          <GoogleLogin
-            clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"  // Sustituye con tu Client ID de Google
-            buttonText="Iniciar sesión con Google"
-            onSuccess={handleGoogleLogin}
-            onFailure={(error) => setError('Error al iniciar sesión con Google')}
-            cookiePolicy={'single_host_origin'}
-            className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-          />
+        {/* Botón de login con Google */}
+        <div className="mt-6 text-center">       
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}  {/* Aquí aseguramos que la referencia está correcta */}
+              onError={() => setError('Error al intentar iniciar sesión con Google.')}
+              useOneTap
+              shape="pill" // Opcional, forma del botón
+              text="signin_with" // Texto para el botón (opcional)
+              theme="outline" // Estilo del botón
+            />
         </div>
-
       </div>
     </div>
+    </GoogleOAuthProvider>
   );
 };
 
