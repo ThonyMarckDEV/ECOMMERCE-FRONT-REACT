@@ -244,21 +244,22 @@ function Perfil() {
           <div className="w-full">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">{perfilData.username}</h2>
   
-            {/* Fila de 3 elementos no editables */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
-              {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }].map(({ label, name }) => (
-                <div key={name} className="flex flex-col space-y-2">
-                  <label className="font-semibold text-gray-700">{label}</label>
-                  <input
-                    type="text"
-                    name={name}
-                    value={perfilData[name] || ''}
-                    disabled
-                    className="border bg-gray-100 text-gray-900 p-2 rounded-md"
-                  />
-                </div>
-              ))}
-            </div>
+           {/* Fila de 3 elementos con el campo DNI editable si isEditing es true */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+            {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }].map(({ label, name }) => (
+              <div key={name} className="flex flex-col space-y-2">
+                <label className="font-semibold text-gray-700">{label}</label>
+                <input
+                  type="text"
+                  name={name}
+                  value={perfilData[name] || ''}
+                  onChange={handleChange} // Asegúrate de tener un manejador de cambios
+                  disabled={name !== 'dni' && !isEditing} // Solo el DNI es editable si isEditing es true
+                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
+                />
+              </div>
+            ))}
+          </div>
   
             {/* Fila de 3 elementos: Correo, Edad, Fecha de nacimiento */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
@@ -282,7 +283,7 @@ function Perfil() {
                   type="number"
                   name="edad"
                   value={perfilData.edad || ''}
-                  disabled={!isEditing}
+                  disabled
                   className="border bg-gray-100 text-gray-900 p-2 rounded-md"
                 />
               </div>
