@@ -176,7 +176,7 @@ const Login = ({ closeLoginModal }) => {
 
         {/* Botón de login con Google */}
         <div className="mt-6 text-center">
-          <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID"> {/* Proveer tu Client ID */}
+          <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"> {/* Proveer tu Client ID */}
             <GoogleLogin
               onSuccess={handleGoogleLogin}
               onError={() => setError('Error al intentar iniciar sesión con Google.')}
