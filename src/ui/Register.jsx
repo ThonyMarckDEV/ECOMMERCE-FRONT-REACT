@@ -6,6 +6,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importar la pantalla de carga
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // Cambiar a la nueva librería
 
+
 const Register = () => {
   const [name, setName] = useState('');
   const [apellidos, setApellidos] = useState('');

@@ -4,6 +4,7 @@ import API_BASE_URL from '../js/urlHelper';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importa el componente LoadingScreen
 import jwtUtils from '../utilities/jwtUtils'; // Asegúrate de importar el archivo correctamente
+import { GoogleLogin } from 'react-google-login'; // Importar la librería de Google Login
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
@@ -54,6 +55,39 @@ const Login = ({ closeLoginModal }) => {
       console.error('Error al intentar iniciar sesión:', error);
     } finally {
       setLoading(false); // Ocultar la pantalla de carga después de completar la solicitud
+    }
+  };
+
+  const handleGoogleLogin = async (response) => {
+    const tokenId = response.tokenId;
+    setLoading(true);
+
+    try {
+      const loginResponse = await fetch(`${API_BASE_URL}/api/login-google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          googleToken: tokenId, // Enviar el token para realizar login
+        }),
+      });
+
+      const loginResult = await loginResponse.json();
+
+      if (loginResponse.ok) {
+        localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
+
+        // Redirigir a la página principal después de iniciar sesión correctamente
+        window.location.href = '/';
+      } else {
+        setError(loginResult.errors || 'Hubo un error al iniciar sesión con Google.');
+      }
+    } catch (error) {
+      setError('Error al intentar iniciar sesión con Google.');
+      console.error('Error al intentar iniciar sesión con Google:', error);
+    } finally {
+      setLoading(false); // Ocultar la pantalla de carga
     }
   };
 
@@ -136,6 +170,18 @@ const Login = ({ closeLoginModal }) => {
           >
             Regresar
           </button>
+        </div>
+
+          {/* Botón de login con Google */}
+          <div className="mt-6 text-center">
+          <GoogleLogin
+            clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"  // Sustituye con tu Client ID de Google
+            buttonText="Iniciar sesión con Google"
+            onSuccess={handleGoogleLogin}
+            onFailure={(error) => setError('Error al iniciar sesión con Google')}
+            cookiePolicy={'single_host_origin'}
+            className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+          />
         </div>
 
       </div>
