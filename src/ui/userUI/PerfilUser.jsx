@@ -282,7 +282,7 @@ function Perfil() {
                   type="number"
                   name="edad"
                   value={perfilData.edad || ''}
-                  disabled
+                  disabled={!isEditing}
                   className="border bg-gray-100 text-gray-900 p-2 rounded-md"
                 />
               </div>
