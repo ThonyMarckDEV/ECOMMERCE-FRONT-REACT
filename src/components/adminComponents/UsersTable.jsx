@@ -1,4 +1,4 @@
-// components/adminComponents/UsersTable.jsx
+// UsersTable.jsx
 import React, { useState } from 'react';
 import { useTable } from 'react-table';
 
@@ -15,18 +15,12 @@ const UsersTable = () => {
 
   const [userData, setUserData] = useState(initialData);
 
-  // Función para cambiar el estado de Activo/Inactivo
   const toggleStatus = (id) => {
     setUserData((prevData) =>
       prevData.map((user) =>
         user.id === id ? { ...user, status: user.status === 'Activo' ? 'Inactivo' : 'Activo' } : user
       )
     );
-  };
-
-  // Función para botones de acción
-  const handleAction = (action, id) => {
-    alert(`Acción: ${action} para el usuario con ID: ${id}`);
   };
 
   const columns = React.useMemo(
@@ -55,13 +49,13 @@ const UsersTable = () => {
           <div className="space-x-2">
             <button
               className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-              onClick={() => handleAction('Editar', row.original.id)}
+              onClick={() => alert(`Editar usuario con ID: ${row.original.id}`)}
             >
               Editar
             </button>
             <button
               className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
-              onClick={() => handleAction('Actualizar', row.original.id)}
+              onClick={() => alert(`Actualizar usuario con ID: ${row.original.id}`)}
             >
               Actualizar
             </button>
@@ -78,39 +72,37 @@ const UsersTable = () => {
   });
 
   return (
-    <div className="overflow-x-auto max-w-full h-[400px] lg:h-auto shadow-md rounded-lg">
-      <div className="w-full md:w-auto"> {/* Contenedor deslizable en móviles */}
-        <table {...getTableProps()} className="min-w-full table-auto">
-          <thead className="bg-gray-200">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th
-                    {...column.getHeaderProps()}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase"
-                  >
-                    {column.render('Header')}
-                  </th>
+    <div className="overflow-x-auto">
+      <table {...getTableProps()} className="min-w-full table-auto border-collapse">
+        <thead className="bg-gray-200">
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th
+                  {...column.getHeaderProps()}
+                  className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase border-b"
+                >
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()} className="hover:bg-gray-100">
+                {row.cells.map((cell) => (
+                  <td {...cell.getCellProps()} className="px-4 py-2 text-sm text-gray-700 border-b whitespace-nowrap">
+                    {cell.render('Cell')}
+                  </td>
                 ))}
               </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()} className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
-                      {cell.render('Cell')}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
