@@ -35,16 +35,18 @@ export const checkUserStatus = async () => {
                 console.warn('Usuario desconectado');
                 logoutAndRedirect();  // Desloguear al usuario
             }
-        } else if (response.status === 403) {
-            // Manejar el 403 Forbidden (token inválido o expirado)
-            const errorData = await response.json();
-            console.error('Acceso prohibido: Token inválido o expirado');
-            logoutAndRedirect();  // Desloguear al usuario
         } else {
-            // Si la respuesta tiene otro error
             const errorData = await response.json();
-            console.warn('Error al verificar el estado del usuario', errorData.message);
-            logoutAndRedirect();  // Desloguear al usuario si hay error desconocido
+            if (response.status === 400) {
+                console.error('Error: ID de usuario no proporcionado');
+            } else if (response.status === 404) {
+                console.error('Error: Usuario no encontrado');
+            } else if (response.status === 403) {
+                console.error('Error: Usuario desconectado');
+                logoutAndRedirect();  // Desloguear al usuario si el estado es 'loggedOff'
+            } else {
+                console.error('Error al verificar el estado del usuario', errorData.message);
+            }
         }
     } catch (error) {
         console.error('Error en checkUserStatus:', error);

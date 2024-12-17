@@ -5,6 +5,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen'; // Importa el componente LoadingScreen
 import jwtUtils from '../utilities/jwtUtils'; // Asegúrate de importar el archivo correctamente
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // Cambiar a la nueva librería
+import { updateLastActivity } from '../js/lastActivity';
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
@@ -39,7 +40,7 @@ const Login = ({ closeLoginModal }) => {
 
       if (response.ok) {
         localStorage.setItem('jwt', result.token);
-
+        updateLastActivity();
         // Verificar si el correo ha sido verificado usando jwtUtils
         const emailVerified = jwtUtils.getEmailVerified(result.token);
         if (!emailVerified) {
