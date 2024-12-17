@@ -1,6 +1,7 @@
 import API_BASE_URL from './urlHelper.js';
 import { verificarYRenovarToken } from './authToken.js';
 import { jwtDecode } from 'jwt-decode'; // Asegúrate de importar jwtDecode correctamente
+import { checkStatus } from './js/checkUserStatus';
 
 export async function updateLastActivity() {
     // Verificar y renovar el token antes de cualquier solicitud
@@ -22,7 +23,7 @@ export async function updateLastActivity() {
                 body: JSON.stringify({ idUsuario: userId })
             });
 
-            const data = await response.json();
+            checkStatus();
            // console.log('Last activity updated:', data.message);
         } catch (error) {
            // console.error('Error updating last activity:', error);

@@ -32,7 +32,7 @@ import ProtectedRouteToken from './utilities/ProtectedRouteToken';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
-import { checkStatus } from './js/checkUserStatus';
+
 
 // Context del carrito
 import { CartProvider } from './context/CartContext';
@@ -75,7 +75,7 @@ function AppContent() {
         
         const intervalId = setInterval(() => {
           updateLastActivity();
-          checkStatus();
+        //  checkStatus();
         }, 10000);
 
         return () => clearInterval(intervalId);

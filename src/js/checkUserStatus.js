@@ -11,7 +11,7 @@ export const checkStatus= async () => {
     await checkUserStatus();
 
     // Verificar el estado del usuario cada 5 segundos
-    userStatusIntervalId = setInterval(checkUserStatus, checkUserStatusInterval); // Guardamos el intervalo del estado del usuario
+    // userStatusIntervalId = setInterval(checkUserStatus, checkUserStatusInterval); // Guardamos el intervalo del estado del usuario
 }
 
 // Función para verificar el estado del usuario en el servidor
