@@ -13,7 +13,8 @@ export async function logout() {
             await fetch(`${API_BASE_URL}/api/logout`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({ idUsuario: decodedToken.idUsuario }) // Enviar idUsuario en el cuerpo
             });
