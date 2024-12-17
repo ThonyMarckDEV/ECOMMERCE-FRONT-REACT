@@ -1,6 +1,4 @@
-// UsersTable.jsx
 import React, { useState } from 'react';
-import { useTable } from 'react-table';
 
 const UsersTable = () => {
   const initialData = [
@@ -23,81 +21,52 @@ const UsersTable = () => {
     );
   };
 
-  const columns = React.useMemo(
-    () => [
-      { Header: 'ID', accessor: 'id' },
-      { Header: 'Nombre', accessor: 'name' },
-      { Header: 'Correo Electrónico', accessor: 'email' },
-      { Header: 'Rol', accessor: 'role' },
-      {
-        Header: 'Estado',
-        accessor: 'status',
-        Cell: ({ row }) => (
-          <span
-            className={`cursor-pointer px-2 py-1 rounded-full text-white ${
-              row.original.status === 'Activo' ? 'bg-green-500' : 'bg-red-500'
-            }`}
-            onClick={() => toggleStatus(row.original.id)}
-          >
-            {row.original.status}
-          </span>
-        ),
-      },
-      {
-        Header: 'Acciones',
-        Cell: ({ row }) => (
-          <div className="space-x-2">
-            <button
-              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-              onClick={() => alert(`Editar usuario con ID: ${row.original.id}`)}
-            >
-              Editar
-            </button>
-            <button
-              className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
-              onClick={() => alert(`Actualizar usuario con ID: ${row.original.id}`)}
-            >
-              Actualizar
-            </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
-    columns,
-    data: userData,
-  });
-
   return (
     <div className="overflow-x-auto">
-      <table {...getTableProps()} className="min-w-full table-auto border-collapse">
+      <table className="min-w-full table-auto border-collapse">
         <thead className="bg-gray-200">
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()} className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase border-b">
-                  {column.render('Header')}
-                </th>
-              ))}
+          <tr>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">ID</th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Nombre</th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Correo Electrónico</th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Rol</th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Estado</th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Acciones</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {userData.map((user) => (
+            <tr key={user.id} className="hover:bg-gray-100">
+              <td className="px-4 py-2 text-sm text-gray-700 border-b">{user.id}</td>
+              <td className="px-4 py-2 text-sm text-gray-700 border-b">{user.name}</td>
+              <td className="px-4 py-2 text-sm text-gray-700 border-b">{user.email}</td>
+              <td className="px-4 py-2 text-sm text-gray-700 border-b">{user.role}</td>
+              <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                <span
+                  className={`cursor-pointer px-2 py-1 rounded-full text-white ${user.status === 'Activo' ? 'bg-green-500' : 'bg-red-500'}`}
+                  onClick={() => toggleStatus(user.id)}
+                >
+                  {user.status}
+                </span>
+              </td>
+              <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                <div className="space-x-2">
+                  <button
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    onClick={() => alert(`Editar usuario con ID: ${user.id}`)}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+                    onClick={() => alert(`Actualizar usuario con ID: ${user.id}`)}
+                  >
+                    Actualizar
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
-        </thead>
-        <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} className="hover:bg-gray-100">
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()} className="px-4 py-2 text-sm text-gray-700 border-b whitespace-nowrap">
-                    {cell.render('Cell')}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
         </tbody>
       </table>
     </div>
