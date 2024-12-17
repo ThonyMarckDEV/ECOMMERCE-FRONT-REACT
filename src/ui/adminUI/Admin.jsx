@@ -1,24 +1,17 @@
+// AdminUI.jsx
 import React from 'react';
-import '../../index.css';
-import { logout } from '../../js/logout'; // Cambiar a importación nombrada
+import Sidebar from '../../components/adminComponents/Sidebar';  // Importamos el sidebar
 
-function Admin() {
-
-  const handleLogout = () => {
-      logout(); // Cierra sesión
-    };
-
+function AdminUI() {
   return (
-    <div className="bg-gray-200 font-sans min-h-screen overflow-hidden flex justify-center items-center">
-      {/* Botón de cerrar sesión */}
-      <button
-        onClick={handleLogout} // Redirige al hacer clic
-        className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Cerrar sesión
-      </button>
+    <div className="flex h-screen"> {/* Asegura que el contenedor principal ocupe toda la altura */}
+      <Sidebar />  {/* Llamamos al Sidebar */}
+      <div className="flex-1 p-8 bg-gray-100"> {/* El contenido principal ocupa el espacio restante */}
+        <h2 className="text-3xl font-bold mb-6">¡Bienvenido al Panel de Administración!</h2>
+        <p>Contenido principal aquí...</p>
+      </div>
     </div>
   );
 }
 
-export default Admin;
+export default AdminUI;
