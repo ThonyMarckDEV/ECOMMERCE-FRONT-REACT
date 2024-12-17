@@ -8,7 +8,7 @@ function Sidebar() {
   const [openTallas, setOpenTallas] = useState(false);
   const [openCategorias, setOpenCategorias] = useState(false);
 
-  // Cierra la sidebar al hacer clic fuera
+  // Cierra la sidebar al hacer clic fuera (solo en móviles)
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (isSidebarOpen && !e.target.closest('.sidebar') && !e.target.closest('.menu-button')) {
@@ -21,9 +21,9 @@ function Sidebar() {
 
   return (
     <div>
-      {/* Botón de menú para dispositivos móviles */}
+      {/* Botón de menú solo visible en dispositivos móviles */}
       <button
-        className="menu-button fixed top-4 left-4 z-50 text-white bg-gray-900 p-2 rounded-lg focus:outline-none hover:bg-gray-700"
+        className="menu-button lg:hidden fixed top-4 left-4 z-50 text-white bg-gray-900 p-2 rounded-lg focus:outline-none hover:bg-gray-700"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
         <AiOutlineMenu className="text-2xl" />
@@ -31,9 +31,9 @@ function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`sidebar fixed top-0 left-0 h-full bg-gray-900 text-white shadow-lg p-6 w-64 transform ${
+        className={`sidebar fixed lg:relative top-0 left-0 h-full bg-gray-900 text-white shadow-lg p-6 w-64 transform lg:translate-x-0 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out`}
+        } lg:block transition-transform duration-300 ease-in-out`}
       >
         <div className="flex flex-col justify-between h-full">
           <div>
