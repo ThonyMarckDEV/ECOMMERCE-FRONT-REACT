@@ -75,7 +75,6 @@ function AppContent() {
         
         const intervalId = setInterval(() => {
           updateLastActivity();
-        //  checkStatus();
         }, 10000);
 
         return () => clearInterval(intervalId);
