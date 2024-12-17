@@ -2,7 +2,7 @@ import API_BASE_URL from './urlHelper.js';
 import { verificarYRenovarToken } from './authToken.js';
 import { jwtDecode } from 'jwt-decode';
 import { checkStatus } from './checkUserStatus';
-import { logout as logoutAndRedirect } from './logout.js';
+import { logout } from './logout'; // Cambiar a importación nombrada
 
 export async function updateLastActivity() {
     try {
@@ -12,7 +12,7 @@ export async function updateLastActivity() {
         const token = localStorage.getItem('jwt');
         if (!token) {
             console.error('No token found. Logging out...');
-         //    logoutAndRedirect();
+            logout();
             return;
         }
 
