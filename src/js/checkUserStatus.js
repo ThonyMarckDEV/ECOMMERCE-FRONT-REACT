@@ -12,7 +12,8 @@ export const checkUserStatus = async () => {
 
     if (!token || isTokenExpired(token)) {
         // Desloguear si no hay token o está expirado
-        logoutAndRedirect();
+        console.warn('no hay token o está expirado');
+        // logoutAndRedirect();
         return;
     }
 
@@ -31,15 +32,16 @@ export const checkUserStatus = async () => {
         if (response.ok) {
             const data = await response.json();
             if (data.status === 'loggedOff') {
-                logoutAndRedirect();
+                console.warn('usuario loggedoff');
+               //  logoutAndRedirect();
             }
         } else {
             // Manejo de respuestas no exitosas
             console.warn('Error al verificar el estado del usuario');
-            logoutAndRedirect();
+            // logoutAndRedirect();
         }
     } catch (error) {
         console.error('Error en checkUserStatus:', error);
-        logoutAndRedirect();
+        // logoutAndRedirect();
     }
 };

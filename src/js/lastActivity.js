@@ -12,7 +12,7 @@ export async function updateLastActivity() {
         const token = localStorage.getItem('jwt');
         if (!token) {
             console.error('No token found. Logging out...');
-            logoutAndRedirect();
+         //    logoutAndRedirect();
             return;
         }
 
