@@ -68,17 +68,16 @@ function AppContent() {
 
   // Actualizar la actividad del usuario si no está en mantenimiento
   useEffect(() => {
-    if (!enMantenimiento) {
-      const token = localStorage.getItem('jwt');
-      if (token) {
-        updateLastActivity();
+    const token = localStorage.getItem('jwt');
+    if (!enMantenimiento && token) {
+
+      updateLastActivity();
         
         const intervalId = setInterval(() => {
           updateLastActivity();
         }, 10000);
 
         return () => clearInterval(intervalId);
-      }
     }
   }, [location.pathname, enMantenimiento]);
 
