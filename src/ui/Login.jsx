@@ -79,7 +79,7 @@ const Login = ({ closeLoginModal }) => {
 
         if (loginResponse.ok) {
           localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
-
+          updateLastActivity();
           // Redirigir a la página principal después de iniciar sesión correctamente
           window.location.href = '/';
         } else {
