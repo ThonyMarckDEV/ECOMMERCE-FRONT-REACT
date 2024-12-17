@@ -67,7 +67,7 @@ function Sidebar() {
                       </a>
                     </li>
                     <li>
-                      <a href="/usuarios/editar" className="hover:text-green-400 transition-all duration-300">
+                      <a href="/admin/usuarios/editar" className="hover:text-green-400 transition-all duration-300">
                         Editar Usuarios
                       </a>
                     </li>
