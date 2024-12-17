@@ -13,13 +13,19 @@ import Login from './ui/Login';
 import Register from './ui/Register';
 
 // UIS
+//USERUI
 import Carrito from './ui/userUI/MiCarrito';
 import MenuUser from './ui/userUI/MenuUser';
 import Pedidos from './ui/userUI/MisPedidos';
 
+//ADMINUI
+import Admin from './ui/adminUI/Admin';
+
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
-import ProtectedRouteRol from './utilities/ProtectedRouteRol';
+import ProtectedRouteRolCliente from './utilities/ProtectedRouteRolCliente';
+import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
+import ProtectedRouteRolMarca from './utilities/ProtectedRouteRolMarca';
 import ProtectedRouteToken from './utilities/ProtectedRouteToken';
 
 // Scripts
@@ -86,10 +92,17 @@ function AppContent() {
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
       <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
 
-      <Route path="/menuUsuario" element={<ProtectedRouteRol element={<MenuUser />} allowedRoles={['cliente']} />} />
-      <Route path="/pedidos" element={<ProtectedRouteRol element={<Pedidos />} allowedRoles={['cliente']} />} />
-      <Route path="/carrito" element={<ProtectedRouteRol element={<Carrito />} allowedRoles={['cliente']} />} />
+      {/* RUTAS ROL ADMIN */}
+      <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
 
+      {/* RUTAS ROL MARCA*/}
+
+      {/* RUTAS ROL CLIENTE */}
+      <Route path="/menuUsuario" element={<ProtectedRouteRolCliente element={<MenuUser />} allowedRoles={['cliente']} />} />
+      <Route path="/pedidos" element={<ProtectedRouteRolCliente element={<Pedidos />} allowedRoles={['cliente']} />} />
+      <Route path="/carrito" element={<ProtectedRouteRolCliente element={<Carrito />} allowedRoles={['cliente']} />} />
+
+    
       <Route path="/verificar-correo" element={<ProtectedRouteToken element={<VerificarCorreo />} />} />
       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
 
