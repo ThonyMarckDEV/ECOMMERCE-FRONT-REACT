@@ -9,7 +9,7 @@ function EditarUsuario() {
       <div className="flex-1 p-8 bg-gray-100">
         <h2 className="text-2xl font-bold mb-4">Lista de Usuarios</h2>
         {/* Contenedor con scroll horizontal */}
-        <div className="overflow-auto" style={{ maxWidth: '100%' }}>
+        <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
           <UsersTable />
         </div>
       </div>
