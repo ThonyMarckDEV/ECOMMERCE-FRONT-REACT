@@ -1,7 +1,7 @@
 import API_BASE_URL from './urlHelper.js';
 import { verificarYRenovarToken } from './authToken.js';
 import { jwtDecode } from 'jwt-decode'; // Asegúrate de importar jwtDecode correctamente
-import { checkStatus } from './js/checkUserStatus';
+import { checkStatus } from './checkUserStatus';
 
 export async function updateLastActivity() {
     // Verificar y renovar el token antes de cualquier solicitud
