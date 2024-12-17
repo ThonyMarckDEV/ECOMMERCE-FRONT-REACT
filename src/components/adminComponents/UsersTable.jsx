@@ -78,10 +78,7 @@ const UsersTable = () => {
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps()}
-                  className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase border-b"
-                >
+                <th {...column.getHeaderProps()} className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase border-b">
                   {column.render('Header')}
                 </th>
               ))}
