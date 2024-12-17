@@ -5,7 +5,7 @@ import { checkStatus } from './js/checkUserStatus';
 
 export async function updateLastActivity() {
     // Verificar y renovar el token antes de cualquier solicitud
-     await verificarYRenovarToken();
+    await verificarYRenovarToken();
 
     const token = localStorage.getItem('jwt'); // Obtener el token actualizado
 
@@ -23,10 +23,21 @@ export async function updateLastActivity() {
                 body: JSON.stringify({ idUsuario: userId })
             });
 
-            checkStatus();
-           // console.log('Last activity updated:', data.message);
+            // Verificar si la respuesta fue exitosa
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Last activity updated:', data.message);
+            } else {
+                console.warn('Failed to update last activity. Response:', response.statusText);
+            }
         } catch (error) {
-           // console.error('Error updating last activity:', error);
+            console.error('Error updating last activity:', error);
+        } finally {
+            // Llamar a checkStatus() independientemente del resultado
+            checkStatus();
         }
+    } else {
+        console.error('No token found in localStorage.');
+        checkStatus(); // Llamar a checkStatus si no hay token
     }
 }
