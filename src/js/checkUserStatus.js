@@ -1,52 +1,52 @@
 import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
-import { getIdUsuario, isTokenExpired } from '../utilities/jwtUtils.jsx'; // Importamos la función getIdUsuario
+import { getIdUsuario, isTokenExpired } from '../utilities/jwtUtils.jsx';
 
-const checkUserStatusInterval = 10000; // Verificación de estado de usuario cada 10 segundos
-let userStatusIntervalId; // Declaramos la variable fuera de la función
-
-export const checkStatus= async () => {
-
-    // Verificación del estado del usuario
+export const checkStatus = async () => {
     await checkUserStatus();
-
-    // Verificar el estado del usuario cada 5 segundos
-    // userStatusIntervalId = setInterval(checkUserStatus, checkUserStatusInterval); // Guardamos el intervalo del estado del usuario
-}
+};
 
 // Función para verificar el estado del usuario en el servidor
 export const checkUserStatus = async () => {
+    const token = localStorage.getItem('jwt'); // Obtener el token del localStorage
 
-    const token = localStorage.getItem('jwt'); // Asegúrate de obtener el token de localStorage
+    // Si no hay token, desloguear inmediatamente
+    if (!token) {
+        logoutAndRedirect();
+        return;
+    }
 
-    const idUsuario = getIdUsuario(token); // Usamos la función getIdUsuario importada
+    const idUsuario = getIdUsuario(token); // Extraer el ID del usuario desde el token
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/check-status`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` // Envía el token en el header
+                "Authorization": `Bearer ${token}` // Enviar el token en el header
             },
             body: JSON.stringify({ idUsuario })
         });
 
         if (response.ok) {
             const data = await response.json();
-          //  console.log("Respuesta de estado recibida:", data);
 
-            if (data.status === 'loggedOff' || (data.status === 'loggedOnInvalidToken' && !data.isTokenValid)) {
-               // console.log("Estado del usuario/token inválido. Redirigiendo al login...");
+            if (data.status === 'loggedOff') {
+                // Si el servidor dice 'loggedOff' o el token ha expirado, desloguear
                 logoutAndRedirect();
-            } else if (data.status === 'loggedOn' && data.isTokenValid) {
-              // console.log("Estado del usuario activo y token válido.");
+            } else if (data.status === 'loggedOn') {
+                // Si el servidor dice 'loggedOn' pero el token está expirado, también desloguear
+                if (isTokenExpired(token)) {
+                    logoutAndRedirect();
+                }
+                // Si está loggedOn y el token no está expirado, no hacer nada
             }
         } else {
-           // console.log("Error en la respuesta al verificar el estado, redirigiendo...");
+            // Si hay un error en la respuesta del servidor, desloguear
             logoutAndRedirect();
         }
     } catch (error) {
-        //console.error("Error en la solicitud de verificación del estado del usuario:", error);
+        // Si ocurre un error en la solicitud, desloguear
         logoutAndRedirect();
     }
-}
+};
