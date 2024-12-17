@@ -24,7 +24,6 @@ export const checkUserStatus = async () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Se manda el token como Authorization Header
             },
             body: JSON.stringify({ idUsuario })
         });
