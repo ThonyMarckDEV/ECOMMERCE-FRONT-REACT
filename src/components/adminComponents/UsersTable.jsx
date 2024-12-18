@@ -22,8 +22,8 @@ const UsersTable = () => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border-collapse">
+    <div className="overflow-auto"> {/* Contenedor que permite scroll horizontal */}
+      <table className="w-full min-w-max table-auto border-collapse">
         <thead className="bg-gray-200">
           <tr>
             <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">ID</th>
@@ -43,7 +43,9 @@ const UsersTable = () => {
               <td className="px-4 py-2 text-sm text-gray-700 border-b">{user.role}</td>
               <td className="px-4 py-2 text-sm text-gray-700 border-b">
                 <span
-                  className={`cursor-pointer px-2 py-1 rounded-full text-white ${user.status === 'Activo' ? 'bg-green-500' : 'bg-red-500'}`}
+                  className={`cursor-pointer px-2 py-1 rounded-full text-white ${
+                    user.status === 'Activo' ? 'bg-green-500' : 'bg-red-500'
+                  }`}
                   onClick={() => toggleStatus(user.id)}
                 >
                   {user.status}
