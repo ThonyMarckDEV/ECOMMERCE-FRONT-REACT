@@ -9,7 +9,7 @@ const DashboardCard = () => {
   ];
 
   return (
-    <>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 relative z-10">
       {dashboardData.map((item, index) => (
         <div
           key={index}
@@ -20,7 +20,7 @@ const DashboardCard = () => {
           <p className="text-sm">{item.description}</p>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

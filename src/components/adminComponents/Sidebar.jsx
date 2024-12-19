@@ -33,7 +33,7 @@ function Sidebar() {
       <div
         className={`sidebar fixed lg:relative top-0 left-0 h-full bg-gray-900 text-white shadow-lg p-6 w-64 transform lg:translate-x-0 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:block transition-transform duration-300 ease-in-out`}
+        } lg:block transition-transform duration-300 ease-in-out z-40`}
       >
         <div className="flex flex-col justify-between h-full">
           <div>
@@ -67,64 +67,8 @@ function Sidebar() {
                       </a>
                     </li>
                     <li>
-                      <a href="/admin/usuarios/editar" className="hover:text-green-400 transition-all duration-300">
+                      <a href="/usuarios/editar" className="hover:text-green-400 transition-all duration-300">
                         Editar Usuarios
-                      </a>
-                    </li>
-                  </ul>
-                )}
-              </li>
-
-              {/* Tallas */}
-              <li className="mb-4">
-                <div
-                  className="flex items-center justify-between text-lg hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition-all duration-300"
-                  onClick={() => setOpenTallas(!openTallas)}
-                >
-                  <div className="flex items-center">
-                    <AiOutlineFileText className="mr-4 text-xl" />
-                    <span>Tallas</span>
-                  </div>
-                  <AiOutlineDown className={`transition-transform ${openTallas ? 'rotate-180' : ''}`} />
-                </div>
-                {openTallas && (
-                  <ul className="ml-8 mt-2 space-y-2">
-                    <li>
-                      <a href="/tallas/agregar" className="hover:text-green-400 transition-all duration-300">
-                        Agregar Tallas
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/tallas/editar" className="hover:text-green-400 transition-all duration-300">
-                        Editar Tallas
-                      </a>
-                    </li>
-                  </ul>
-                )}
-              </li>
-
-              {/* Categorías */}
-              <li className="mb-4">
-                <div
-                  className="flex items-center justify-between text-lg hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition-all duration-300"
-                  onClick={() => setOpenCategorias(!openCategorias)}
-                >
-                  <div className="flex items-center">
-                    <AiFillSetting className="mr-4 text-xl" />
-                    <span>Categorías</span>
-                  </div>
-                  <AiOutlineDown className={`transition-transform ${openCategorias ? 'rotate-180' : ''}`} />
-                </div>
-                {openCategorias && (
-                  <ul className="ml-8 mt-2 space-y-2">
-                    <li>
-                      <a href="/categorias/agregar" className="hover:text-green-400 transition-all duration-300">
-                        Agregar Categorías
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/categorias/editar" className="hover:text-green-400 transition-all duration-300">
-                        Editar Categorías
                       </a>
                     </li>
                   </ul>
@@ -139,9 +83,6 @@ function Sidebar() {
                 </a>
               </li>
             </ul>
-          </div>
-          <div className="mt-auto">
-            <LogoutButton />
           </div>
         </div>
       </div>
