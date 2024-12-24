@@ -70,16 +70,32 @@ function Carrito() {
     obtenerCarrito();
   }, []);
 
+  // const calcularTotal = () => {
+  //   // Asegurarse de que el valor de cada subtotal es un número
+  //   const total = productos.reduce((total, producto) => {
+  //     const subtotal = producto.subtotal || 0;  // En caso de que el subtotal sea undefined o null, se asigna 0
+  //     return total + parseFloat(subtotal);  // Aseguramos que el subtotal sea un número
+  //   }, 0);
+
+  //   return total;
+  // };
+
   const calcularTotal = () => {
     // Asegurarse de que el valor de cada subtotal es un número
-    const total = productos.reduce((total, producto) => {
+    const totalSinIGV = productos.reduce((total, producto) => {
       const subtotal = producto.subtotal || 0;  // En caso de que el subtotal sea undefined o null, se asigna 0
       return total + parseFloat(subtotal);  // Aseguramos que el subtotal sea un número
     }, 0);
-
-    return total;
+  
+    // Calcular el IGV (18%)
+    const igv = totalSinIGV * 0.18;
+  
+    // Calcular el total incluyendo el IGV
+    const totalConIGV = totalSinIGV + igv;
+  
+    return totalConIGV;
   };
-
+  
   const verificarDireccionUsuario = async () => {
     setIsLoading(true);
     try {
