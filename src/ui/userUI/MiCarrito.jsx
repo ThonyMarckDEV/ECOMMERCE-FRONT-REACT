@@ -315,7 +315,7 @@ function Carrito() {
       {productos.length > 0 && (
         <div className="fixed bottom-0 left-0 w-full bg-white p-4 sm:p-6 text-black flex justify-between items-center shadow-xl rounded-tl-3xl rounded-tr-3xl border-t-4 border-gray-200">
           <div className="text-lg sm:text-xl font-semibold flex items-center space-x-4">
-            <span className="text-sm sm:text-lg font-medium text-gray-600">Total:</span>
+            <span className="text-sm sm:text-lg font-medium text-gray-600">Total (IGV 18%):</span>
             <span className="text-xl sm:text-2xl font-bold text-black">
               S/.{calcularTotal().toFixed(2)}
             </span>
@@ -327,8 +327,10 @@ function Carrito() {
           >
             Realizar pedido
           </button>
+
         </div>
       )}
+
     </div>
   );
 }
