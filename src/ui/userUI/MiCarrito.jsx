@@ -86,6 +86,49 @@ function Carrito() {
     return totalConIGV;
   };
 
+  // const verificarDireccionUsuario = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     await verificarYRenovarToken();
+  //     const token = localStorage.getItem('jwt');
+  //     const payload = JSON.parse(atob(token.split('.')[1]));
+  //     const idUsuario = payload.idUsuario;
+  
+  //     const response = await fetch(`${API_BASE_URL}/api/listarDireccionPedido/${idUsuario}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  
+  //     // Si la respuesta no es exitosa
+  //     if (!response.ok) {
+  //       const data = await response.json();
+  //       mostrarNotificacion(data.message || 'Error al verificar la dirección', 'bg-red-500');
+  //       setIsLoading(false);
+  //       return;
+  //     }
+  
+  //     const direccionUsando = await response.json();
+  //     console.log('Dirección Usando:', direccionUsando);  // Asegúrate de ver la respuesta completa
+  
+  //     // Verifica si se encontró la dirección 'usando'
+  //     if (direccionUsando && direccionUsando.idDireccion) {
+  //       // La respuesta ya es un objeto, no es necesario usar [0]
+  //       await proceedToCheckout(direccionUsando.idDireccion);  // Ahora se está extrayendo correctamente el idDireccion
+  //     } else {
+  //       mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
+  //       setIsLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     mostrarNotificacion('Error al verificar la dirección.', 'bg-red-500');
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
   const verificarDireccionUsuario = async () => {
     setIsLoading(true);
     try {
@@ -94,7 +137,8 @@ function Carrito() {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const idUsuario = payload.idUsuario;
   
-      const response = await fetch(`${API_BASE_URL}/api/listarDireccionPedido/${idUsuario}`, {
+      // Obtener datos del perfil
+      const perfilResponse = await fetch(`${API_BASE_URL}/api/perfilCliente`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -102,21 +146,43 @@ function Carrito() {
         },
       });
   
-      // Si la respuesta no es exitosa
-      if (!response.ok) {
-        const data = await response.json();
+      if (!perfilResponse.ok) {
+        const data = await perfilResponse.json();
+        mostrarNotificacion(data.message || 'Error al obtener datos del perfil', 'bg-red-500');
+        setIsLoading(false);
+        return;
+      }
+  
+      const perfilData = await perfilResponse.json();
+      const dni = perfilData?.data?.dni;
+  
+      // Validar DNI
+      if (!dni || dni.length < 8 || /^[0]+$/.test(dni)) {
+        mostrarNotificacion('Por favor, actualiza tu DNI a uno válido antes de realizar un pedido.', 'bg-red-500');
+        setIsLoading(false);
+        return;
+      }
+  
+      // Verificar dirección
+      const direccionResponse = await fetch(`${API_BASE_URL}/api/listarDireccionPedido/${idUsuario}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!direccionResponse.ok) {
+        const data = await direccionResponse.json();
         mostrarNotificacion(data.message || 'Error al verificar la dirección', 'bg-red-500');
         setIsLoading(false);
         return;
       }
   
-      const direccionUsando = await response.json();
-      console.log('Dirección Usando:', direccionUsando);  // Asegúrate de ver la respuesta completa
+      const direccionUsando = await direccionResponse.json();
   
-      // Verifica si se encontró la dirección 'usando'
       if (direccionUsando && direccionUsando.idDireccion) {
-        // La respuesta ya es un objeto, no es necesario usar [0]
-        await proceedToCheckout(direccionUsando.idDireccion);  // Ahora se está extrayendo correctamente el idDireccion
+        await proceedToCheckout(direccionUsando.idDireccion);
       } else {
         mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
         setIsLoading(false);
