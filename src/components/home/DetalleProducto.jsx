@@ -239,7 +239,7 @@ const handleMouseLeave = () => {
 
 return (
     <>
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-30 p-0 sm:p-4">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[50] p-0 sm:p-4">
             <div className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl max-w-4xl relative overflow-y-auto">
                 {/* Close button - adjusted for mobile */}
                 <button 

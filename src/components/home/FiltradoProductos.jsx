@@ -65,6 +65,7 @@ function FiltradoProductos({ onFilter }) {
 
   return (
     <>
+      {/* Botón de filtro */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed right-4 bottom-4 md:hidden z-50 bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
@@ -73,6 +74,7 @@ function FiltradoProductos({ onFilter }) {
         <AiOutlineFilter className="w-6 h-6" />
       </button>
 
+      {/* Overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
@@ -80,6 +82,7 @@ function FiltradoProductos({ onFilter }) {
         />
       )}
 
+      {/* Filter Sidebar */}
       <div className={`
         fixed md:relative top-0 right-0 h-full md:h-auto w-80 md:w-64
         bg-white md:bg-transparent z-50 transform transition-transform duration-300
@@ -87,6 +90,7 @@ function FiltradoProductos({ onFilter }) {
         overflow-y-auto
       `}>
         <div className="p-6 space-y-6">
+          {/* Mobile Header */}
           <div className="flex justify-between items-center md:hidden">
             <h2 className="text-xl font-semibold">Filtrar Productos</h2>
             <button onClick={() => setIsOpen(false)}>
@@ -94,6 +98,7 @@ function FiltradoProductos({ onFilter }) {
             </button>
           </div>
 
+          {/* Search Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Buscar por nombre</label>
             <div className="relative">
@@ -109,6 +114,7 @@ function FiltradoProductos({ onFilter }) {
             </div>
           </div>
 
+          {/* Category Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Categoría</label>
             <select
@@ -117,7 +123,7 @@ function FiltradoProductos({ onFilter }) {
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option key="all" value="">Todas las categorías</option>
+              <option value="">Todas las categorías</option>
               {categorias.map((categoria) => (
                 <option key={categoria.idCategoria} value={categoria.idCategoria}>
                   {categoria.nombreCategoria}
@@ -126,6 +132,7 @@ function FiltradoProductos({ onFilter }) {
             </select>
           </div>
 
+          {/* Price Range Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Rango de Precio</label>
             <div className="space-y-4">
@@ -143,6 +150,7 @@ function FiltradoProductos({ onFilter }) {
             </div>
           </div>
 
+          {/* Action Buttons */}
           <div className="space-y-3">
             <button
               onClick={handleApplyFilters}
