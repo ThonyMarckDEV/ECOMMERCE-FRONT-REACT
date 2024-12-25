@@ -21,7 +21,7 @@ import Pedidos from './ui/userUI/MisPedidos';
 //ADMINUI
 import Admin from './ui/adminUI/Admin';
 import EditarUsuario from './ui/adminUI/EditarUsuario';
-
+import AgregarCategoria from './ui/adminUI/AgregarCategoria';
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
@@ -95,7 +95,7 @@ function AppContent() {
       {/* RUTAS ROL ADMIN */}
       <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
       <Route path="/admin/usuarios/editar" element={<ProtectedRouteRolAdmin element={<EditarUsuario />} />} />
-
+      <Route path="/admin/categorias/agregar" element={<ProtectedRouteRolAdmin element={<AgregarCategoria />} />} />
 
 
       {/* RUTAS ROL MARCA*/}

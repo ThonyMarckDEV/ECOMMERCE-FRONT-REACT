@@ -128,7 +128,7 @@ function Sidebar() {
                 {openCategorias && (
                   <ul className="ml-8 mt-2 space-y-2">
                     <li>
-                      <a href="/categorias/agregar" className="hover:text-green-400 transition-all duration-300">
+                      <a href="/admin/categorias/agregar" className="hover:text-green-400 transition-all duration-300">
                         Agregar Categorías
                       </a>
                     </li>

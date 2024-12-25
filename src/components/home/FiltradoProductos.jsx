@@ -3,10 +3,11 @@ import API_BASE_URL from '../../js/urlHelper';
 import { AiOutlineFilter, AiOutlineClose } from 'react-icons/ai';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'; // Importar estilos de rc-slider
+import { useNavigate } from 'react-router-dom';
 
 function FiltradoProductos({ onFilter }) {
   const [categorias, setCategorias] = useState([]);
-  
+  const navigate = useNavigate(); // Usar el hook en el componente, no dentro de la función de manejo
   // Estado para almacenar los filtros actuales que el usuario está seleccionando
   const [filtro, setFiltro] = useState({
     texto: '',
@@ -54,7 +55,20 @@ function FiltradoProductos({ onFilter }) {
     setIsOpen(false); // Cerrar el panel de filtros en móviles después de aplicar
   };
 
-  // Función para reiniciar los filtros a sus valores predeterminados
+  // // Función para reiniciar los filtros a sus valores predeterminados
+  // const handleResetFilters = () => {
+  //   const resetFiltro = {
+  //     texto: '',
+  //     categoria: '',
+  //     precioInicial: 0,
+  //     precioFinal: 500
+  //   };
+  //   setFiltro(resetFiltro);
+  //   onFilter(resetFiltro);
+  //   setIsOpen(false); // Cerrar el panel de filtros en móviles después de reiniciar
+  // };
+
+
   const handleResetFilters = () => {
     const resetFiltro = {
       texto: '',
@@ -65,8 +79,10 @@ function FiltradoProductos({ onFilter }) {
     setFiltro(resetFiltro);
     onFilter(resetFiltro);
     setIsOpen(false); // Cerrar el panel de filtros en móviles después de reiniciar
-  };
 
+    navigate('/productos');
+  };
+  
   return (
     <>
       {/* Botón para abrir/cerrar el filtro solo en móviles */}
