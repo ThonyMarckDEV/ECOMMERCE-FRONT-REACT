@@ -9,8 +9,12 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true; // Flag para verificar si el componente está montado
     const token = localStorage.getItem('jwt');
-    if (token) {
+    const location = window.location.pathname; // Obtener la ruta actual
+
+    // No realizar la solicitud si estamos en la ruta /admin
+    if (token && !location.startsWith('/admin')) {
       const idUsuario = jwtUtils.getIdUsuario(token);
       if (!idUsuario) return;
 
@@ -23,20 +27,31 @@ export const CartProvider = ({ children }) => {
       })
       .then(res => res.json())
       .then(data => {
-        setCantidadCarrito(data.cantidad || 0);
+        if (isMounted) { // Solo actualizar si el componente sigue montado
+          setCantidadCarrito(data.cantidad || 0);
+        }
       })
       .catch(err => {
         console.error('Error al obtener cantidad del carrito:', err);
       })
       .finally(() => {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       });
     }
-  }, []);
+
+    return () => {
+      isMounted = false; // Limpiar el flag cuando el componente se desmonte
+    };
+  }, []); // Solo se ejecuta una vez al montar el componente
 
   const updateCartCount = () => {
     const token = localStorage.getItem('jwt');
-    if (token) {
+    const location = window.location.pathname;
+
+    // No realizar la solicitud si estamos en la ruta /admin
+    if (token && !location.startsWith('/admin') && !location.startsWith('/marca') ) {
       const idUsuario = jwtUtils.getIdUsuario(token);
       fetch(`${API_BASE_URL}/api/carrito/cantidad?idUsuario=${idUsuario}`, {
         method: 'GET',
