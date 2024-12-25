@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AiOutlineFilter, AiOutlineClose, AiOutlineDown, AiOutlineSearch } from 'react-icons/ai';
+import { AiOutlineFilter, AiOutlineClose, AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -65,16 +65,14 @@ function FiltradoProductos({ onFilter }) {
 
   return (
     <>
-      {/* Mobile Filter Button */}
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg"
+        className="fixed right-4 bottom-4 md:hidden z-50 bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+        aria-label="Toggle filters"
       >
-        <span>Filtros</span>
-        <AiOutlineDown className={`w-4 h-4 transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <AiOutlineFilter className="w-6 h-6" />
       </button>
 
-      {/* Overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
@@ -82,7 +80,6 @@ function FiltradoProductos({ onFilter }) {
         />
       )}
 
-      {/* Filter Sidebar */}
       <div className={`
         fixed md:relative top-0 right-0 h-full md:h-auto w-80 md:w-64
         bg-white md:bg-transparent z-50 transform transition-transform duration-300
@@ -90,7 +87,6 @@ function FiltradoProductos({ onFilter }) {
         overflow-y-auto
       `}>
         <div className="p-6 space-y-6">
-          {/* Mobile Header */}
           <div className="flex justify-between items-center md:hidden">
             <h2 className="text-xl font-semibold">Filtrar Productos</h2>
             <button onClick={() => setIsOpen(false)}>
@@ -98,7 +94,6 @@ function FiltradoProductos({ onFilter }) {
             </button>
           </div>
 
-          {/* Search Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Buscar por nombre</label>
             <div className="relative">
@@ -114,7 +109,6 @@ function FiltradoProductos({ onFilter }) {
             </div>
           </div>
 
-          {/* Category Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Categoría</label>
             <select
@@ -123,16 +117,15 @@ function FiltradoProductos({ onFilter }) {
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">Todas las categorías</option>
+              <option key="all" value="">Todas las categorías</option>
               {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.idCategoria}>
+                <option key={categoria.idCategoria} value={categoria.idCategoria}>
                   {categoria.nombreCategoria}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Price Range Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Rango de Precio</label>
             <div className="space-y-4">
@@ -150,7 +143,6 @@ function FiltradoProductos({ onFilter }) {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="space-y-3">
             <button
               onClick={handleApplyFilters}
