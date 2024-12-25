@@ -332,7 +332,7 @@ return (
                                                     }`}
                                             >
                                                 <span className="font-medium text-sm sm:text-base">{talla.nombreTalla}</span>
-                                                <span className="text-xs sm:text-sm opacity-75">{talla.cantidad}</span>
+                                                <span className="text-xs sm:text-sm opacity-75">Stock: {talla.cantidad}</span>
                                                 <input
                                                     type="radio"
                                                     value={talla.nombreTalla}
