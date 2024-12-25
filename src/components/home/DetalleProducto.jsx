@@ -184,109 +184,169 @@ function DetalleProducto({ productoId, onClose }) {
     return `${API_BASE_URL}/storage/${relativePath}`;
   };
 
-  return (
+  const handleMouseMove = (e) => {
+    const zoomOverlay = document.querySelector('.zoom-overlay');
+    const imageContainer = e.target;
+    
+    // Get image container dimensions and position
+    const { left, top, width, height } = imageContainer.getBoundingClientRect();
+    
+    // Calculate mouse position relative to image
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    
+    // Calculate zoom position in percentage
+    const zoomX = (x / width) * 100;
+    const zoomY = (y / height) * 100;
+
+    // Set zoom overlay dimensions
+    const zoomWidth = 200;
+    const zoomHeight = 150;
+    
+    // Calculate zoom overlay position to center mouse
+    let zoomOverlayX = e.pageX - (zoomWidth / 2);
+    let zoomOverlayY = e.pageY - (zoomHeight / 2);
+    
+    // Get modal boundaries
+    const modalRect = imageContainer.closest('.relative').getBoundingClientRect();
+    
+    // Keep zoom overlay within modal bounds
+    zoomOverlayX = Math.max(modalRect.left, Math.min(zoomOverlayX, modalRect.right - zoomWidth));
+    zoomOverlayY = Math.max(modalRect.top, Math.min(zoomOverlayY, modalRect.bottom - zoomHeight));
+    
+    // Apply styles to zoom overlay
+    Object.assign(zoomOverlay.style, {
+        display: 'block',
+        position: 'fixed',
+        left: `${zoomOverlayX}px`,
+        top: `${zoomOverlayY}px`,
+        width: `${zoomWidth}px`,
+        height: `${zoomHeight}px`,
+        backgroundImage: `url(${imageContainer.src})`,
+        backgroundSize: `${width * 2.5}px ${height * 2.5}px`,
+        backgroundPosition: `${zoomX}% ${zoomY}%`,
+        border: '2px solid black',
+        borderRadius: '4px',
+        pointerEvents: 'none',
+        zIndex: '1000'
+    });
+};
+
+const handleMouseLeave = () => {
+    const zoomOverlay = document.querySelector('.zoom-overlay');
+    zoomOverlay.style.display = 'none';
+};
+
+return (
     <>
-      <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-30">
-        <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-lg sm:max-w-3xl relative">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 text-2xl hover:text-gray-700">&times;</button>
-          {loading && <LoadingScreen />}
-          <div className={`relative ${loading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-            <h2 className="text-3xl font-bold mb-4 text-center sm:text-left text-black">{producto?.nombreProducto}</h2>
-  
-            {modeloSeleccionado && (
-              <div className="mb-6">
-                <div className="flex space-x-4 mb-4">
-                  {producto?.modelos.map((modelo) => (
-                    <button
-                      key={modelo.nombreModelo}
-                      onClick={() => handleModeloChange(modelo)}
-                      className={`px-4 py-2 rounded-md ${modeloSeleccionado.nombreModelo === modelo.nombreModelo ? 'bg-black text-white' : 'bg-gray-200 text-black'}`}
-                    >
-                      {modelo.nombreModelo}
-                    </button>
-                  ))}
-                </div>
-  
-                <div className="w-full h-80 mb-3 relative bg-white flex items-center justify-center">
-                  {modeloSeleccionado.imagenes.length > 1 && (
-                    <button
-                      onClick={handlePrevImage}
-                      className="absolute left-0 px-4 py-2 bg-black text-white rounded-md"
-                    >
-                      {'<'}
-                    </button>
-                  )}
-                  <div className={`transition-opacity duration-300 ${imageTransitioning ? 'opacity-0' : 'opacity-100'} w-full h-full`}>
-                    {isImageLoading && modeloSeleccionado.imagenes.length > 0 && (
-                      <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
-                        <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
-                      </div>
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-30">
+            <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-lg sm:max-w-3xl relative">
+                {/* Botón de cerrar */}
+                <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 text-2xl hover:text-gray-700">&times;</button>
+
+                {loading && <LoadingScreen />}
+
+                <div className={`relative ${loading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                    <h2 className="text-3xl font-bold mb-4 text-center sm:text-left text-black">{producto?.nombreProducto}</h2>
+
+                    {modeloSeleccionado && (
+                        <div className="mb-6">
+                            <div className="flex space-x-4 mb-4">
+                                {producto?.modelos.map((modelo) => (
+                                    <button
+                                        key={modelo.nombreModelo}
+                                        onClick={() => handleModeloChange(modelo)}
+                                        className={`px-4 py-2 rounded-md ${modeloSeleccionado.nombreModelo === modelo.nombreModelo ? 'bg-black text-white' : 'bg-gray-200 text-black'}`}
+                                    >
+                                        {modelo.nombreModelo}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="w-full h-80 mb-3 relative bg-white flex items-center justify-center">
+                                {modeloSeleccionado.imagenes.length > 1 && (
+                                    <button
+                                        onClick={handlePrevImage}
+                                        className="absolute left-0 px-4 py-2 bg-black text-white rounded-md z-10"
+                                    >
+                                        {'<'}
+                                    </button>
+                                )}
+                                <div className="relative w-full h-full">
+                                    {isImageLoading && modeloSeleccionado.imagenes.length > 0 && (
+                                        <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
+                                            <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
+                                        </div>
+                                    )}
+                                    <img
+                                        src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen)}
+                                        alt={modeloSeleccionado.nombreModelo}
+                                        className="w-full h-full object-contain rounded-md"
+                                        onLoad={handleImageLoad}
+                                        onError={handleImageError}
+                                        onMouseMove={handleMouseMove}
+                                        onMouseLeave={handleMouseLeave}
+                                    />
+                                </div>
+                                <div className="zoom-overlay" style={{ display: 'none' }}></div>
+                                {modeloSeleccionado.imagenes.length > 1 && (
+                                    <button
+                                        onClick={handleNextImage}
+                                        className="absolute right-0 px-4 py-2 bg-black text-white rounded-md z-10"
+                                    >
+                                        {'>'}
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="text-center">
+                                <p className="text-lg font-semibold">Tallas disponibles:</p>
+                                <div className="space-y-2">
+                                    {modeloSeleccionado.tallas.map((talla, index) => (
+                                        <label key={index} className="flex items-center space-x-2">
+                                            <input
+                                                type="checkbox"
+                                                value={talla.nombreTalla}
+                                                checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
+                                                onChange={() => setTallaSeleccionada(talla)}
+                                                className="text-black"
+                                            />
+                                            <span>{talla.nombreTalla} - {talla.cantidad} unidades</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     )}
-                    <img
-                      src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen)}
-                      alt={modeloSeleccionado.nombreModelo}
-                      className="w-full h-full object-contain rounded-md"
-                      onLoad={handleImageLoad}
-                      onError={handleImageError}
-                    />
-                  </div>
-                  {modeloSeleccionado.imagenes.length > 1 && (
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute right-0 px-4 py-2 bg-black text-white rounded-md"
-                    >
-                      {'>'}
-                    </button>
-                  )}
-                </div>
-  
-                <div className="text-center">
-                  <p className="text-lg font-semibold">Tallas disponibles:</p>
-                  <div className="space-y-2">
-                    {modeloSeleccionado.tallas.map((talla, index) => (
-                      <label key={index} className="flex items-center space-x-2">
+
+                    {/* Restante contenido */}
+                    <div className="flex items-center mb-6 justify-center sm:justify-start">
+                        <button onClick={handleDecrease} className="px-4 py-2 bg-black text-white rounded-l-md text-xl"> <AiOutlineMinus /></button>
                         <input
-                          type="checkbox"
-                          value={talla.nombreTalla}
-                          checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
-                          onChange={() => setTallaSeleccionada(talla)}
-                          className="text-black"
+                            type="number"
+                            value={cantidad}
+                            onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-16 text-center border-t border-b border-gray-300 text-xl mx-2 text-black"
                         />
-                        <span>{talla.nombreTalla} - {talla.cantidad} unidades</span>
-                      </label>
-                    ))}
-                  </div>
+                        <button onClick={handleIncrease} className="px-4 py-2 bg-black text-white rounded-r-md text-xl"> <AiOutlinePlus /></button>
+                    </div>
+
+                    <button
+                        onClick={handleAddToCart}
+                        className={`w-full bg-black text-white py-3 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={loading}
+                    >
+                        {loading ? 'Agregando...' : 'Agregar al carrito'}
+                    </button>
                 </div>
-              </div>
-            )}
-  
-            <div className="flex items-center mb-6 justify-center sm:justify-start">
-              <button onClick={handleDecrease} className="px-4 py-2 bg-black text-white rounded-l-md text-xl"> <AiOutlineMinus /></button>
-              <input
-                type="number"
-                value={cantidad}
-                onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-16 text-center border-t border-b border-gray-300 text-xl mx-2 text-black"
-              />
-              <button onClick={handleIncrease} className="px-4 py-2 bg-black text-white rounded-r-md text-xl"> <AiOutlinePlus /></button>
+                {!loading && error && <p className="text-red-500 text-center mt-4">Error: {error}</p>}
             </div>
-  
-            <button
-              onClick={handleAddToCart}
-              className={`w-full bg-black text-white py-3 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={loading}
-            >
-              {loading ? 'Agregando...' : 'Agregar al carrito'}
-            </button>
-          </div>
-          {!loading && error && <p className="text-red-500 text-center mt-4">Error: {error}</p>}
         </div>
-      </div>
-  
-      {showModalLogin && <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50"><CheckLogin setShowModal={handleCloseModalLogin} /></div>}
-      {notification && <Notification description={notification.message} bgColor={notification.color} />}
+
+        {showModalLogin && <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50"><CheckLogin setShowModal={handleCloseModalLogin} /></div>}
+        {notification && <Notification description={notification.message} bgColor={notification.color} />}
     </>
-  );
+);
 }
 
 export default DetalleProducto;
