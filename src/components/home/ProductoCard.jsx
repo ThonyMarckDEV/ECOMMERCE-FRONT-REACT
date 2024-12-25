@@ -87,3 +87,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
 });
 
 export default ProductoCard;
+
+
+
+
