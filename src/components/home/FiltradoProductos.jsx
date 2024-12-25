@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AiOutlineFilter, AiOutlineClose, AiOutlineSearch } from 'react-icons/ai';
+import { AiOutlineFilter, AiOutlineClose, AiOutlineDown, AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -65,13 +65,13 @@ function FiltradoProductos({ onFilter }) {
 
   return (
     <>
-      {/* Botón de filtro */}
-      <button
+      {/* Mobile Filter Button */}
+      <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-4 bottom-4 md:hidden z-50 bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
-        aria-label="Toggle filters"
+        className="md:hidden flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg"
       >
-        <AiOutlineFilter className="w-6 h-6" />
+        <span>Filtros</span>
+        <AiOutlineDown className={`w-4 h-4 transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Overlay */}
@@ -125,7 +125,7 @@ function FiltradoProductos({ onFilter }) {
             >
               <option value="">Todas las categorías</option>
               {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>
+                <option key={categoria.id} value={categoria.idCategoria}>
                   {categoria.nombreCategoria}
                 </option>
               ))}
