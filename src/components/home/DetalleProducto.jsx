@@ -239,111 +239,168 @@ const handleMouseLeave = () => {
 
 return (
     <>
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-30">
-            <div className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-lg sm:max-w-3xl relative">
-                {/* Botón de cerrar */}
-                <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 text-2xl hover:text-gray-700">&times;</button>
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-30 p-0 sm:p-4">
+            <div className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl max-w-4xl relative overflow-y-auto">
+                {/* Close button - adjusted for mobile */}
+                <button 
+                    onClick={onClose} 
+                    className="fixed sm:absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-white sm:bg-black/10 hover:bg-black/20 transition-colors"
+                >
+                    <span className="text-black text-xl">&times;</span>
+                </button>
 
                 {loading && <LoadingScreen />}
 
-                <div className={`relative ${loading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                    <h2 className="text-3xl font-bold mb-4 text-center sm:text-left text-black">{producto?.nombreProducto}</h2>
-
-                    {modeloSeleccionado && (
-                        <div className="mb-6">
-                            <div className="flex space-x-4 mb-4">
-                                {producto?.modelos.map((modelo) => (
-                                    <button
-                                        key={modelo.nombreModelo}
-                                        onClick={() => handleModeloChange(modelo)}
-                                        className={`px-4 py-2 rounded-md ${modeloSeleccionado.nombreModelo === modelo.nombreModelo ? 'bg-black text-white' : 'bg-gray-200 text-black'}`}
-                                    >
-                                        {modelo.nombreModelo}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="w-full h-80 mb-3 relative bg-white flex items-center justify-center">
-                                {modeloSeleccionado.imagenes.length > 1 && (
+                <div className={`flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8 ${loading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
+                    {/* Left column - Image */}
+                    <div className="p-4 sm:p-6 md:p-8 pt-14 sm:pt-6">
+                        <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden">
+                            {modeloSeleccionado?.imagenes.length > 1 && (
+                                <>
                                     <button
                                         onClick={handlePrevImage}
-                                        className="absolute left-0 px-4 py-2 bg-black text-white rounded-md z-10"
+                                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
                                     >
-                                        {'<'}
+                                        <span className="text-black">←</span>
                                     </button>
-                                )}
-                                <div className="relative w-full h-full">
-                                    {isImageLoading && modeloSeleccionado.imagenes.length > 0 && (
-                                        <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md">
-                                            <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black" />
-                                        </div>
-                                    )}
-                                    <img
-                                        src={buildImageUrl(modeloSeleccionado.imagenes[imagenIndex]?.urlImagen)}
-                                        alt={modeloSeleccionado.nombreModelo}
-                                        className="w-full h-full object-contain rounded-md"
-                                        onLoad={handleImageLoad}
-                                        onError={handleImageError}
-                                        onMouseMove={handleMouseMove}
-                                        onMouseLeave={handleMouseLeave}
-                                    />
-                                </div>
-                                <div className="zoom-overlay" style={{ display: 'none' }}></div>
-                                {modeloSeleccionado.imagenes.length > 1 && (
                                     <button
                                         onClick={handleNextImage}
-                                        className="absolute right-0 px-4 py-2 bg-black text-white rounded-md z-10"
+                                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
                                     >
-                                        {'>'}
+                                        <span className="text-black">→</span>
                                     </button>
+                                </>
+                            )}
+                            
+                            <div className="relative w-full h-full">
+                                {isImageLoading && (
+                                    <div className="absolute inset-0 flex justify-center items-center bg-gray-50">
+                                        <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black/40" />
+                                    </div>
                                 )}
+                                <img
+                                    src={buildImageUrl(modeloSeleccionado?.imagenes[imagenIndex]?.urlImagen)}
+                                    alt={modeloSeleccionado?.nombreModelo}
+                                    className="w-full h-full object-contain"
+                                    onLoad={handleImageLoad}
+                                    onError={handleImageError}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseLeave={handleMouseLeave}
+                                />
                             </div>
-
-                            <div className="text-center">
-                                <p className="text-lg font-semibold">Tallas disponibles:</p>
-                                <div className="space-y-2">
-                                    {modeloSeleccionado.tallas.map((talla, index) => (
-                                        <label key={index} className="flex items-center space-x-2">
-                                            <input
-                                                type="checkbox"
-                                                value={talla.nombreTalla}
-                                                checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
-                                                onChange={() => setTallaSeleccionada(talla)}
-                                                className="text-black"
-                                            />
-                                            <span>{talla.nombreTalla} - {talla.cantidad} unidades</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
+                            <div className="zoom-overlay" style={{ display: 'none' }}></div>
                         </div>
-                    )}
-
-                    {/* Restante contenido */}
-                    <div className="flex items-center mb-6 justify-center sm:justify-start">
-                        <button onClick={handleDecrease} className="px-4 py-2 bg-black text-white rounded-l-md text-xl"> <AiOutlineMinus /></button>
-                        <input
-                            type="number"
-                            value={cantidad}
-                            onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-16 text-center border-t border-b border-gray-300 text-xl mx-2 text-black"
-                        />
-                        <button onClick={handleIncrease} className="px-4 py-2 bg-black text-white rounded-r-md text-xl"> <AiOutlinePlus /></button>
                     </div>
 
-                    <button
-                        onClick={handleAddToCart}
-                        className={`w-full bg-black text-white py-3 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        disabled={loading}
-                    >
-                        {loading ? 'Agregando...' : 'Agregar al carrito'}
-                    </button>
+                    {/* Right column - Product details */}
+                    <div className="px-4 sm:px-6 md:p-8 pb-6 flex flex-col h-full">
+                        <h2 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">{producto?.nombreProducto}</h2>
+
+                        {modeloSeleccionado && (
+                            <>
+                                {/* Models selector */}
+                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                                    <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {producto?.modelos.map((modelo) => (
+                                            <button
+                                                key={modelo.nombreModelo}
+                                                onClick={() => handleModeloChange(modelo)}
+                                                className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                                                    ${modeloSeleccionado.nombreModelo === modelo.nombreModelo 
+                                                        ? 'bg-black text-white' 
+                                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                                    }`}
+                                            >
+                                                {modelo.nombreModelo}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Sizes selector */}
+                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                                    <h3 className="text-sm font-medium text-gray-500">Tallas disponibles</h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                        {modeloSeleccionado.tallas.map((talla, index) => (
+                                            <label 
+                                                key={index} 
+                                                className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 rounded-lg cursor-pointer transition-colors
+                                                    ${tallaSeleccionada?.nombreTalla === talla.nombreTalla 
+                                                        ? 'bg-black text-white' 
+                                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                                    }`}
+                                            >
+                                                <span className="font-medium text-sm sm:text-base">{talla.nombreTalla}</span>
+                                                <span className="text-xs sm:text-sm opacity-75">{talla.cantidad}</span>
+                                                <input
+                                                    type="radio"
+                                                    value={talla.nombreTalla}
+                                                    checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
+                                                    onChange={() => setTallaSeleccionada(talla)}
+                                                    className="sr-only"
+                                                />
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Quantity selector */}
+                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                                    <h3 className="text-sm font-medium text-gray-500">Cantidad</h3>
+                                    <div className="flex items-center space-x-2">
+                                        <button 
+                                            onClick={handleDecrease}
+                                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                                        >
+                                            <AiOutlineMinus className="text-gray-600" />
+                                        </button>
+                                        <input
+                                            type="number"
+                                            value={cantidad}
+                                            onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
+                                            className="w-14 sm:w-16 h-8 sm:h-10 text-center border border-gray-200 rounded-lg text-gray-800"
+                                        />
+                                        <button 
+                                            onClick={handleIncrease}
+                                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                                        >
+                                            <AiOutlinePlus className="text-gray-600" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="w-full p-4 bg-white border-t border-gray-100 sm:p-0 sm:bg-transparent sm:border-0">
+                                    <div className="sm:relative sm:bottom-0 sm:left-0 sm:right-0">
+                                        <button
+                                            onClick={handleAddToCart}
+                                            disabled={loading}
+                                            className={`w-full bg-black text-white py-3 sm:py-4 rounded-xl font-medium
+                                                hover:bg-black/90 transition-colors
+                                                ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        >
+                                            {loading ? 'Agregando...' : 'Agregar al carrito'}
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                            </>
+                        )}
+
+                        {!loading && error && (
+                            <p className="mt-4 text-red-500 text-sm text-center">{error}</p>
+                        )}
+                    </div>
                 </div>
-                {!loading && error && <p className="text-red-500 text-center mt-4">Error: {error}</p>}
             </div>
         </div>
 
-        {showModalLogin && <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50"><CheckLogin setShowModal={handleCloseModalLogin} /></div>}
+        {showModalLogin && (
+            <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-50">
+                <CheckLogin setShowModal={handleCloseModalLogin} />
+            </div>
+        )}
         {notification && <Notification description={notification.message} bgColor={notification.color} />}
     </>
 );
