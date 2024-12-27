@@ -295,7 +295,10 @@ return (
                     {/* Right column - Product details */}
                     <div className="px-4 sm:px-6 md:p-8 pb-6 flex flex-col h-full">
                         <h2 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">{producto?.nombreProducto}</h2>
-
+                                {/* Product price */}
+                                <div className="text-lg sm:text-xl font-semibold text-black mb-4">
+                                    Precio: S/.{producto?.precio}
+                                </div>
                         {modeloSeleccionado && (
                             <>
                                 {/* Models selector */}
