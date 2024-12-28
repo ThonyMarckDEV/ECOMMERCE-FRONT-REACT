@@ -85,14 +85,14 @@ const PedidoCard = ({
 
             {/* Order Total */}
             <div className="flex justify-between items-center">
-                <span className="text-gray-600">Total</span>
+                <span className="text-gray-600">Total: (IGV. 18%)</span>
                 <span className="text-lg font-medium">S/{Number(pedido.total).toFixed(2)}</span>
             </div>
 
             {/* Shipping Address */}
             {pedido.direccionEnvio && (
                 <div className="space-y-2">
-                    <h3 className="text-sm text-gray-500">Dirección de envío</h3>
+                    <h3 className="text-sm text-black font-medium">Dirección de envío</h3>
                     <div className="text-sm space-y-1">
                         <p className="text-gray-600">{pedido.direccionEnvio.direccion}</p>
                         <p className="text-gray-500">

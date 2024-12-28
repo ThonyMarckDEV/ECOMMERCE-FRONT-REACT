@@ -28,7 +28,7 @@ const DetalleProducto = ({ detalles, direccion, total, onClose }) => {
                       <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-left">Talla</th>
                       <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Cantidad</th>
                       <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Precio</th>
-                      <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Subtotal</th>
+                      <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Subtotal (IGV. 18%)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
