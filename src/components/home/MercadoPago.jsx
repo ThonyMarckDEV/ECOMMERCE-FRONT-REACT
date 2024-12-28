@@ -1,6 +1,7 @@
+// src/components/MercadoPago.jsx
 import React, { useEffect, useState } from 'react';
-import API_BASE_URL from '../../js/urlHelper.js';
-import LoadingScreen from './LoadingScreen'; // Ajusta la ruta si es necesario
+import  API_BASE_URL  from '../../js/urlHelper.js';
+import LoadingScreen from './LoadingScreen';
 
 const MercadoPago = ({ pedido }) => {
     const [loading, setLoading] = useState(false);
@@ -12,23 +13,20 @@ const MercadoPago = ({ pedido }) => {
         const existingScript = document.getElementById(scriptId);
 
         if (existingScript) {
-            // Si el script ya existe, inicializa MercadoPago
             if (window.MercadoPago) {
                 setMercadoPago(new window.MercadoPago('APP_USR-40a548aa-c96d-4b17-94e5-577e3a400a52', { locale: 'es-PE' })); //(SANDBOX)
-               // setMercadoPago(new window.MercadoPago('APP_USR-191bf4cc-dd05-419c-87b5-d6a7773f181e', { locale: 'es-PE' })); //(PRODUCCION)
-                
+                // setMercadoPago(new window.MercadoPago('APP_USR-191bf4cc-dd05-419c-87b5-d6a7773f181e', { locale: 'es-PE' })); //(PRODUCCION)
             }
             return;
         }
 
-        // Crea e inserta el script si no existe
         const script = document.createElement('script');
         script.id = scriptId;
         script.src = 'https://sdk.mercadopago.com/js/v2';
         script.onload = () => {
             if (window.MercadoPago) {
                 setMercadoPago(new window.MercadoPago('APP_USR-40a548aa-c96d-4b17-94e5-577e3a400a52', { locale: 'es-PE' }));  //(SANDBOX)
-              // setMercadoPago(new window.MercadoPago('APP_USR-191bf4cc-dd05-419c-87b5-d6a7773f181e', { locale: 'es-PE' }));//(PRODUCCION)
+                // setMercadoPago(new window.MercadoPago('APP_USR-191bf4cc-dd05-419c-87b5-d6a7773f181e', { locale: 'es-PE' }));//(PRODUCCION)
             } else {
                 setError('Error al cargar el SDK de MercadoPago.');
             }
@@ -37,13 +35,42 @@ const MercadoPago = ({ pedido }) => {
         document.body.appendChild(script);
 
         return () => {
-            // Verifica y elimina el script al desmontar
             const loadedScript = document.getElementById(scriptId);
             if (loadedScript) {
                 document.body.removeChild(loadedScript);
             }
         };
     }, []);
+
+    const actualizarComprobante = async () => {
+        const token = localStorage.getItem('jwt');
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/actualizar-comprobante`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    idPedido: pedido.idPedido,
+                    tipo_comprobante: pedido.tipoComprobante,
+                    ruc: pedido.tipoComprobante === 'factura' ? pedido.rucData.ruc : null,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Error al actualizar el comprobante');
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error al actualizar comprobante:', error);
+            throw error;
+        }
+    };
 
     const handlePago = async () => {
         if (!mercadoPago) {
@@ -65,6 +92,10 @@ const MercadoPago = ({ pedido }) => {
         }
 
         try {
+            // Primero actualizar el comprobante
+            await actualizarComprobante();
+
+            // Luego proceder con la creación de la preferencia de pago
             const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
                 method: 'POST',
                 headers: {
@@ -76,6 +107,8 @@ const MercadoPago = ({ pedido }) => {
                     detalles: pedido.detalles,
                     total: pedido.total,
                     correo: correoUsuario,
+                    tipo_comprobante: pedido.tipoComprobante,
+                    ruc_data: pedido.tipoComprobante === 'factura' ? pedido.rucData : null
                 }),
             });
 
@@ -111,13 +144,18 @@ const MercadoPago = ({ pedido }) => {
     return (
         <div>
             {loading && <LoadingScreen />}
-            {error && <div className="py-2 text-center text-white bg-red-500 rounded-lg">{error}</div>}
+            {error && (
+                <div className="py-2 text-center text-white bg-red-500 rounded-lg mb-2">
+                    {error}
+                </div>
+            )}
             {!loading && (
                 <button
                     onClick={handlePago}
-                    className="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all"
+                    className="w-full px-4 py-2.5 bg-yellow-500 text-white text-sm font-medium rounded-lg hover:bg-yellow-600 transition-colors"
+                    disabled={loading}
                 >
-                    Pagar Pedido
+                    {loading ? 'Procesando...' : 'Pagar Pedido'}
                 </button>
             )}
         </div>
