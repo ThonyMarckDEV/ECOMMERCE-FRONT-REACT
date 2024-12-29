@@ -13,7 +13,6 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [dni, setDni] = useState('');
   const [errors, setErrors] = useState({});
   const [age, setAge] = useState('');
   const [birthDate, setBirthDate] = useState('1990-01-01');
@@ -53,10 +52,6 @@ const Register = () => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!email || !emailPattern.test(email)) {
       newErrors.email = 'Debe ingresar un correo válido.';
-    }
-
-    if (!dni || dni.length !== 8 || !/^\d{8}$/.test(dni)) {
-      newErrors.dni = 'El DNI debe tener exactamente 8 caracteres numéricos.';
     }
 
     if (age && (isNaN(age) || age < 18 || age > 100)) {
@@ -165,7 +160,6 @@ const Register = () => {
             nombres: name,
             apellidos,
             rol: 'cliente',
-            dni,
             edad: age, // Enviar la edad calculada
             nacimiento: birthDate,
           }),
@@ -185,7 +179,6 @@ const Register = () => {
           setEmail('');
           setPassword('');
           setConfirmPassword('');
-          setDni('');
           setAge('');
           setBirthDate('1990-01-01');
           setErrors({}); // Limpiar errores
@@ -258,27 +251,6 @@ const Register = () => {
           {errors.apellidos && <p className="text-xs text-red-500">{errors.apellidos}</p>}
         </div>
 
-          <div className="mb-4">
-            <label htmlFor="dni" className="block text-sm font-medium text-gray-700">DNI</label>
-            <input
-              id="dni"
-              type="text"
-              value={dni}
-              onChange={(e) => {
-                // Solo permitir números y limitar a 8 caracteres
-                const value = e.target.value;
-                if (/^\d{0,8}$/.test(value)) {
-                  setDni(value);
-                }
-              }}
-              className="w-full p-2 mt-1 border border-gray-300 rounded-md"
-              required
-              maxLength={8} // Limita el máximo de caracteres
-            />
-            {errors.dni && <p className="text-xs text-red-500">{errors.dni}</p>}
-          </div>
-
-  
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo electrónico</label>
             <input

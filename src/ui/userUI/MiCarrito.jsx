@@ -169,9 +169,6 @@ function Carrito() {
         return;
     }
 
-    // Verificar el valor de idDireccion
-    console.log('ID Dirección:', idDireccion);
-
     try {
         const response = await fetch(`${API_BASE_URL}/api/pedido`, {
             method: 'POST',

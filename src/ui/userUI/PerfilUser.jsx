@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { getIdUsuario } from '../../utilities/jwtUtils'; // Importamos getIdUsuario
-import LoadingScreen from '../../components/home/LoadingScreen'; // Importamos el componente LoadingScreen
-import Notification from '../../components/home/Notificacion'; // Importamos el componente de notificación
-//Js scripts
+import { getIdUsuario } from '../../utilities/jwtUtils';
+import LoadingScreen from '../../components/home/LoadingScreen';
+import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
 
@@ -19,23 +18,154 @@ function Perfil() {
     direccion: '',
     telefono: '',
     departamento: '',
-    perfil: '' // Foto de perfil
+    perfil: ''
   });
-  const [isEditing, setIsEditing] = useState(false); // Controla si estamos en modo edición
-  const [notification, setNotification] = useState(null); // Estado para manejar la notificación
-  const [isLoading, setIsLoading] = useState(false); // Controlar la pantalla de carga
-  const [newProfileImage, setNewProfileImage] = useState(null); // Estado para manejar la nueva imagen
+  const [isEditing, setIsEditing] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [newProfileImage, setNewProfileImage] = useState(null);
+  const [isDniValid, setIsDniValid] = useState(true);
+  const [dniValidationData, setDniValidationData] = useState(null);
+  const [showDniNote, setShowDniNote] = useState(false);
+  const [isDniLocked, setIsDniLocked] = useState(false);
 
-  const token = localStorage.getItem('jwt'); // Obtener el token desde localStorage
-  const idUsuario = getIdUsuario(token); // Obtener el ID del usuario desde el token
-  const perfilRef = useRef(null); // Referencia al contenedor del perfil
+  const token = localStorage.getItem('jwt');
+  const idUsuario = getIdUsuario(token);
+  const perfilRef = useRef(null);
 
   const departamentos = [
     'Amazonas', 'Áncash', 'Apurímac', 'Arequipa', 'Ayacucho', 'Cajamarca', 'Callao', 'Cusco',
     'Huancavelica', 'Huánuco', 'Ica', 'Junín', 'La Libertad', 'Lambayeque', 'Lima', 'Loreto', 
     'Madre de Dios', 'Moquegua', 'Pasco', 'Piura', 'Puno', 'San Martín', 'Tacna', 'Tumbes', 'Ucayali'
   ];
-  const sexos = ['Masculino', 'Femenino']; // Opciones de sexo
+  
+  const sexos = ['Masculino', 'Femenino'];
+
+  // Efecto principal para cargar los datos del perfil
+  useEffect(() => {
+    if (token) {
+      setIsLoading(true);
+      verificarYRenovarToken();
+      fetch(`${API_BASE_URL}/api/perfilCliente`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          setPerfilData(data.data);
+          // Si hay un DNI existente, simplemente bloquearlo sin revalidar
+          if (data.data.dni && data.data.dni.length === 8) {
+            setIsDniLocked(true);
+            setIsDniValid(true);
+          }
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.error("Error al obtener los datos del perfil:", error);
+          setIsLoading(false);
+        });
+    }
+  }, [token]);
+
+  const validateDNI = async (dni, skipNotifications = false) => {
+    if (dni.length !== 8) {
+      setNotification({
+        description: 'El DNI debe tener 8 dígitos',
+        bgColor: 'bg-red-400',
+      });
+      return;
+    }
+
+    // Si el DNI ya está validado y bloqueado, no realizar la validación
+    if (isDniLocked) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/validate-dni/${dni}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsDniValid(true);
+        setIsDniLocked(true);
+        if (!skipNotifications) {
+          setNotification({
+            description: 'DNI validado correctamente',
+            bgColor: 'bg-green-400',
+          });
+        }
+      } else {
+        setIsDniValid(false);
+        if (!skipNotifications) {
+          setNotification({
+            description: data.message || 'DNI no válido o no encontrado',
+            bgColor: 'bg-red-400',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error al validar el DNI:', error);
+      setIsDniValid(false);
+      setNotification({
+        description: 'Error al validar el DNI',
+        bgColor: 'bg-red-400',
+      });
+    }
+
+    setIsLoading(false);
+
+    if (!skipNotifications) {
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'dni') {
+      // Si el DNI está bloqueado, no permitir cambios
+      if (isDniLocked) return;
+      
+      // Validar que solo se ingresen números y máximo 8 dígitos
+      const dniValue = value.replace(/\D/g, '').slice(0, 8);
+      setPerfilData(prev => ({ ...prev, [name]: dniValue }));
+      if (dniValue.length === 8) {
+        validateDNI(dniValue, false);
+      }
+    } else if (name === 'nacimiento') {
+      const birthDate = new Date(value);
+      const age = new Date().getFullYear() - birthDate.getFullYear();
+      setPerfilData(prev => ({
+        ...prev,
+        [name]: value,
+        edad: age,
+      }));
+    } else {
+      setPerfilData(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleEdit = () => {
+    // Asegurar que el DNI permanezca bloqueado si ya existe
+    if (perfilData.dni && perfilData.dni.length === 8) {
+      setIsDniLocked(true);
+    }
+    setIsEditing(true);
+  };
 
   useEffect(() => {
     if (token) {
@@ -75,10 +205,6 @@ function Perfil() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
-
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
 
   const handleSave = () => {
     setIsLoading(true); // Activar la pantalla de carga
@@ -185,26 +311,6 @@ function Perfil() {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    // Si el campo modificado es 'nacimiento', calculamos la edad
-    if (name === 'nacimiento') {
-      const birthDate = new Date(value);
-      const age = new Date().getFullYear() - birthDate.getFullYear();
-      setPerfilData((prevData) => ({
-        ...prevData,
-        [name]: value,
-        edad: age, // Establecer la edad calculada
-      }));
-    } else {
-      setPerfilData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen font-sans p-6 text-gray-200">
       {/* Pantalla de carga */}
@@ -241,25 +347,61 @@ function Perfil() {
           </div>
   
           {/* Información del usuario */}
-          <div className="w-full">
-            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">{perfilData.username}</h2>
-  
-           {/* Fila de 3 elementos con el campo DNI editable si isEditing es true */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
-            {[{ label: 'Nombre', name: 'nombres' }, { label: 'Apellidos', name: 'apellidos' }, { label: 'DNI', name: 'dni' }].map(({ label, name }) => (
-              <div key={name} className="flex flex-col space-y-2">
-                <label className="font-semibold text-gray-700">{label}</label>
-                <input
-                  type="text"
-                  name={name}
-                  value={perfilData[name] || ''}
-                  onChange={handleChange} // Asegúrate de tener un manejador de cambios
-                  disabled={name !== 'dni' && !isEditing} // Solo el DNI es editable si isEditing es true
-                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
-                />
-              </div>
-            ))}
-          </div>
+              {[
+                { label: 'Nombre', name: 'nombres' },
+                { label: 'Apellidos', name: 'apellidos' },
+                { 
+                  label: 'DNI', 
+                  name: 'dni',
+                  className: `border ${
+                    isEditing && !isDniLocked
+                      ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' 
+                      : 'bg-gray-100'
+                  } ${
+                    !isDniValid && isEditing ? 'border-red-500' : ''
+                  } text-gray-900 p-2 rounded-md`
+                }
+              ].map(({ label, name, className }) => (
+                <div key={name} className="flex flex-col space-y-2 relative">
+                  <label className="font-semibold text-gray-700">
+                    {label}
+                    {name === 'dni' && isDniLocked && (
+                      <span className="ml-2 text-sm text-gray-500">
+                        (Bloqueado)
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    name={name}
+                    value={perfilData[name] || ''}
+                    onChange={handleChange}
+                    disabled={name !== 'dni' ? !isEditing : isDniLocked}
+                    onFocus={() => {
+                      if (name === 'dni' && !isDniLocked) {
+                        setShowDniNote(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (name === 'dni') {
+                        setTimeout(() => setShowDniNote(false), 200);
+                      }
+                    }}
+                    className={className || `border ${
+                      isEditing 
+                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' 
+                        : 'bg-gray-100'
+                    } text-gray-900 p-2 rounded-md`}
+                  />
+                  {name === 'dni' && showDniNote && !isDniLocked && (
+                    <div className="absolute -bottom-6 left-0 bg-yellow-100 text-yellow-800 text-xs p-1 rounded shadow-sm z-10">
+                      Ingresa tu DNI verdadero , Una vez validado sera bloqueado el campo.
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
   
             {/* Fila de 3 elementos: Correo, Edad, Fecha de nacimiento */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
@@ -377,7 +519,6 @@ function Perfil() {
           </div>
         </div>
       </div>
-    </div>
   );
   
   }
