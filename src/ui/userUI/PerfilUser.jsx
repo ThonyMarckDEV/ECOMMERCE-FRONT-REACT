@@ -17,7 +17,6 @@ function Perfil() {
     sexo: '',
     direccion: '',
     telefono: '',
-    departamento: '',
     perfil: ''
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -32,12 +31,6 @@ function Perfil() {
   const token = localStorage.getItem('jwt');
   const idUsuario = getIdUsuario(token);
   const perfilRef = useRef(null);
-
-  const departamentos = [
-    'Amazonas', 'Áncash', 'Apurímac', 'Arequipa', 'Ayacucho', 'Cajamarca', 'Callao', 'Cusco',
-    'Huancavelica', 'Huánuco', 'Ica', 'Junín', 'La Libertad', 'Lambayeque', 'Lima', 'Loreto', 
-    'Madre de Dios', 'Moquegua', 'Pasco', 'Piura', 'Puno', 'San Martín', 'Tacna', 'Tumbes', 'Ucayali'
-  ];
   
   const sexos = ['Masculino', 'Femenino'];
 
@@ -442,42 +435,26 @@ function Perfil() {
               </div>
             </div>
   
-            {/* Fila de 2 elementos: Sexo y Departamento */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
-              <div className="flex flex-col space-y-2">
-                <label className="font-semibold text-gray-700">Sexo</label>
-                <select
-                  name="sexo"
-                  value={perfilData.sexo || ''}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
-                >
-                  {sexos.map((sexo) => (
-                    <option key={sexo} value={sexo}>
-                      {sexo}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <label className="font-semibold text-gray-700">Departamento</label>
-                <select
-                  name="departamento"
-                  value={perfilData.departamento || ''}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
-                >
-                  {departamentos.map((departamento) => (
-                    <option key={departamento} value={departamento}>
-                      {departamento}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          {/* Fila de 1 elemento: Sexo */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 justify-center items-center">
+            <div className="flex flex-col space-y-2 ml-auto"> {/* ml-auto para mover el contenido hacia la derecha */}
+              <label className="font-semibold text-gray-700">Sexo</label>
+              <select
+                name="sexo"
+                value={perfilData.sexo || ''}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md w-full sm:w-auto`}  // Agregamos w-full y sm:w-auto para control de ancho
+              >
+                {sexos.map((sexo) => (
+                  <option key={sexo} value={sexo}>
+                    {sexo}
+                  </option>
+                ))}
+              </select>
             </div>
-  
+          </div>
+
             {/* Campo para seleccionar la nueva foto de perfil */}
             {isEditing && (
               <div className="flex flex-col space-y-2 mb-6">
