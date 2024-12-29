@@ -15,6 +15,10 @@ module.exports = {
         'flip-in': 'flipIn 1s ease-out',
       },
       keyframes: {
+        progress: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
         fadeIn: {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
