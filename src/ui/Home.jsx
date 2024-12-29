@@ -33,21 +33,27 @@ function Home() {
 
   return (
     <div className="bg-white font-sans text-gray-200">
-      {/* Usar Suspense para manejar componentes cargados de forma diferida */}
-      <Suspense fallback={<LoadingScreen />}>  {/* Cambiar el fallback a LoadingScreen */}
+      {/* Suspense para manejar componentes cargados de forma diferida */}
+      <Suspense fallback={<LoadingScreen />}>
         {/* Barra de navegación */}
-        <NavBarHome />
+        <div className="animate-fade-in">
+          <NavBarHome />
+        </div>
 
         {/* Carrusel debajo de la barra de navegación */}
-        <CarruselHome images={images} interval={5000} />
+        <div className="animate-fade-in-down">
+          <CarruselHome images={images} interval={5000} />
+        </div>
 
         {/* Grid de categorías debajo del carrusel */}
-        <div ref={categoriasRef} className="py-16">
+        <div ref={categoriasRef} className="py-16 animate-fade-in">
           <CategoriasHome />
         </div>
 
         {/* Footer */}
-        <Footer />
+        <div className="animate-fade-in-down">
+          <Footer />
+        </div>
       </Suspense>
     </div>
   );

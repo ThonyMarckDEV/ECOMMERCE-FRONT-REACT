@@ -71,35 +71,42 @@ function ListarProductos({ filtro }) {
       </p>
     );
 
-  return (
-    <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
-      <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10">
-        Productos
-      </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full">
-        {productos.length > 0 ? (
-          productos.map((producto) => (
-            <ProductoCard
-              key={producto.idProducto}
-              producto={producto}
-              onClick={() => setProductoSeleccionado(producto.idProducto)}
-            />
-          ))
-        ) : (
-          <p className="text-gray-700 col-span-full text-center">
-            No se encontraron productos con los filtros aplicados.
-          </p>
+    return (
+      <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
+        {/* Título con animación de entrada */}
+        <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10 animate-fade-in">
+          Productos
+        </h1>
+    
+        {/* Grid de productos con animación de entrada */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full animate-fade-in-down">
+          {productos.length > 0 ? (
+            productos.map((producto) => (
+              <ProductoCard
+                key={producto.idProducto}
+                producto={producto}
+                onClick={() => setProductoSeleccionado(producto.idProducto)}
+                className="animate-scale-up"  // Animación añadida
+              />
+            ))
+          ) : (
+            <p className="text-gray-700 col-span-full text-center animate-bounce-in">
+              No se encontraron productos con los filtros aplicados.
+            </p>
+          )}
+        </div>
+    
+        {/* Detalle del producto con animación de entrada */}
+        {productoSeleccionado && (
+          <DetalleProducto
+            productoId={productoSeleccionado}
+            onClose={() => setProductoSeleccionado(null)}
+            className="animate-flip-in" // Animación añadida
+          />
         )}
       </div>
+    );
 
-      {productoSeleccionado && (
-        <DetalleProducto
-          productoId={productoSeleccionado}
-          onClose={() => setProductoSeleccionado(null)}
-        />
-      )}
-    </div>
-  );
 }
 
 export default ListarProductos;
