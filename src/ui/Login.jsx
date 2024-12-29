@@ -95,98 +95,110 @@ const Login = ({ closeLoginModal }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
-      <div className="bg-white p-8 sm:p-10 rounded-lg w-full max-w-sm relative shadow-lg">
-        {loading && <LoadingScreen />} {/* Mostrar la pantalla de carga si 'loading' es verdadero */}
-
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Iniciar sesión</h2>
-
-        <form onSubmit={handleLogin}>
-          {/* Input de correo */}
-          <div className="mb-6">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600">Correo electrónico</label>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-lg p-8 sm:p-10 w-full max-w-md">
+        {loading && <LoadingScreen />} {/* Pantalla de carga */}
+  
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
+          Bienvenido de nuevo
+        </h2>
+        <p className="text-center text-gray-600 mb-8">
+          Ingresa tus datos para continuar.
+        </p>
+  
+        <form onSubmit={handleLogin} className="space-y-6">
+          {/* Campo de correo */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Correo electrónico
+            </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Escribe tu correo"
+              placeholder="ejemplo@correo.com"
               required
-              className="w-full p-4 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
-          <div className="mb-6 relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+  
+          {/* Campo de contraseña */}
+          <div className="relative">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Contraseña
             </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Escribe tu contraseña"
-                required
-                autoComplete="new-password"
-                className="w-full p-4 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-16 appearance-none"
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 focus:outline-none"
-              >
-                {showPassword ? <AiFillEyeInvisible size={28} /> : <AiFillEye size={28} />}
-              </button>
-            </div>
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Escribe tu contraseña"
+              required
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+            >
+              {showPassword ? <AiFillEyeInvisible size={24} /> : <AiFillEye size={24} />}
+            </button>
           </div>
-
+  
           {/* Botón de iniciar sesión */}
           <button
             type="submit"
-            className="w-full py-3 bg-black text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+            className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
           >
             Iniciar sesión
           </button>
         </form>
-
+  
         {/* Mostrar error */}
         {error && <p className="mt-4 text-center text-red-500">{error}</p>}
-
+  
+        {/* Separador */}
+        <div className="flex items-center my-6">
+          <div className="flex-grow h-px bg-gray-300"></div>
+          <span className="px-3 text-sm text-gray-500">O</span>
+          <div className="flex-grow h-px bg-gray-300"></div>
+        </div>
+  
+        {/* Botón de login con Google */}
+        <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com">
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => setError('Error al intentar iniciar sesión con Google.')}
+            useOneTap
+            text="signin_with"
+            theme="outline"
+            shape="pill"
+            className="w-full"
+          />
+        </GoogleOAuthProvider>
+  
         {/* Enlace a registro */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">¿Nuevo en ECOMMERCE? 
-            <span 
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-600">
+            ¿Nuevo en ECOMMERCE?{' '}
+            <span
               onClick={() => navigate('/register')}
-              className="text-blue-600 cursor-pointer"
+              className="text-blue-600 cursor-pointer font-medium hover:underline"
             >
               Regístrate aquí
             </span>
           </p>
         </div>
-
+  
         {/* Botón de regresar */}
-        <div className="mt-4 text-center">
+        <div className="mt-6">
           <button
             onClick={() => navigate('/')}
-            className="w-full py-3 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           >
             Regresar
           </button>
-        </div>
-
-        {/* Botón de login con Google */}
-        <div className="mt-6 text-center">
-          <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com"> {/* Proveer tu Client ID */}
-            <GoogleLogin
-              onSuccess={handleGoogleLogin}
-              onError={() => setError('Error al intentar iniciar sesión con Google.')}
-              useOneTap
-              shape="pill" // Opcional, forma del botón
-              text="signin_with" // Texto para el botón (opcional)
-              theme="outline" // Estilo del botón
-            />
-          </GoogleOAuthProvider>
         </div>
       </div>
     </div>
