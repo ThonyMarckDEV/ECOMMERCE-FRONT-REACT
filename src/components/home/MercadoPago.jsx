@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import  API_BASE_URL  from '../../js/urlHelper.js';
 import LoadingScreen from './LoadingScreen';
+import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
 
 const MercadoPago = ({ pedido }) => {
     const [loading, setLoading] = useState(false);

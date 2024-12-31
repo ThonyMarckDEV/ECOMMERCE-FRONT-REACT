@@ -7,11 +7,11 @@ import Estado from '../../components/userComponents/EstadoPedido.jsx';
 import PedidoCard from '../../components/userComponents/PedidoCard.jsx';
 import nopedidos from '../../img/nopedidos.png'; // Asegúrate de que la ruta sea correcta
 import LoadingScreen from '../../components/home/LoadingScreen'; // Asegúrate de importar el componente
+import SweetAlert from '../../components/SweetAlert';
 
 const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [notification, setNotification] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('jwt'));
     const [isLoading, setIsLoading] = useState(false);
 
@@ -51,10 +51,6 @@ const Pedidos = () => {
         }
     }, [token]);
 
-    const showNotification = (message, bgColor) => {
-        setNotification({ message, bgColor });
-        setTimeout(() => setNotification(null), 5000);
-    };
 
     const decodeJWT = (token) => {
         try {
@@ -73,7 +69,7 @@ const Pedidos = () => {
         const idUsuario = decoded ? decoded.idUsuario : null;
 
         if (!idUsuario) {
-            showNotification('Error: idUsuario no disponible.', 'bg-red-500');
+            SweetAlert.showMessageAlert('Error', 'idUsuario no disponible.', 'error'); 
             return;
         }
 
@@ -91,10 +87,10 @@ const Pedidos = () => {
             if (data.success) {
                 setPedidos(data.pedidos);
             } else {
-                showNotification(data.message, 'bg-red-500');
+                SweetAlert.showMessageAlert('Error', data.message, 'error'); 
             }
         } catch (error) {
-            showNotification('Error al obtener los pedidos. Intenta nuevamente.', 'bg-red-500');
+            SweetAlert.showMessageAlert('Error', 'Error al obtener los pedidos. Intenta nuevamente.', 'error'); 
         } finally {
             setLoading(false);
         }
@@ -117,10 +113,10 @@ const Pedidos = () => {
             });
 
             if (response.ok) {
-                showNotification(`Pedido cancelado exitosamente`, 'bg-green-500');
+                SweetAlert.showMessageAlert('Exito!', 'Pedido cancelado exitosamente.', 'success'); 
                 fetchPedidos(); // Refrescar los pedidos
             } else {
-                showNotification(`Error al cancelar el pedido`, 'bg-red-500');
+                SweetAlert.showMessageAlert('Error', 'Error al cancelar el pedido.', 'error'); 
             }
         } catch (error) {
             console.error('Error:', error);
@@ -131,11 +127,11 @@ const Pedidos = () => {
 
     const handlePaymentNotification = (status, externalReference) => {
         if (status === 'approved') {
-            showNotification(`Pago aprobado para el pedido ${externalReference}`, 'bg-green-500');
+            SweetAlert.showMessageAlert('Exito!', `Pago aprobado para el pedido: ${externalReference}`, 'success'); 
         } else if (status === 'failure') {
-            showNotification(`Pago fallido para el pedido ${externalReference}`, 'bg-red-500');
+            SweetAlert.showMessageAlert('Error', `Pago fallido para el pedido ${externalReference}`, 'error'); 
         } else if (status === 'pending') {
-            showNotification(`Pago pendiente para el pedido ${externalReference}`, 'bg-yellow-500');
+            SweetAlert.showMessageAlert('Error',`Pago pendiente para el pedido ${externalReference}`, 'info'); 
         }
     };
 
@@ -193,13 +189,6 @@ const Pedidos = () => {
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
             {/* Navbar */}
             <NavbarHome />
-
-            {/* Notificación */}
-            {notification && (
-                <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 text-white font-semibold text-center ${notification.bgColor} rounded-lg shadow-lg animate-fade-in`}>
-                    {notification.message}
-                </div>
-            )}
 
             {/* Modales */}
             {estadoModalVisible && (
