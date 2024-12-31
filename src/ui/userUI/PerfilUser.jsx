@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getIdUsuario } from '../../utilities/jwtUtils';
 import LoadingScreen from '../../components/home/LoadingScreen';
-import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
+import SweetAlert from '../../components/SweetAlert';
 
 function Perfil() {
   const [perfilData, setPerfilData] = useState({
@@ -20,7 +20,6 @@ function Perfil() {
     perfil: ''
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [newProfileImage, setNewProfileImage] = useState(null);
   const [isDniValid, setIsDniValid] = useState(true);
@@ -64,10 +63,7 @@ function Perfil() {
 
   const validateDNI = async (dni, skipNotifications = false) => {
     if (dni.length !== 8) {
-      setNotification({
-        description: 'El DNI debe tener 8 dígitos',
-        bgColor: 'bg-red-400',
-      });
+      SweetAlert.showMessageAlert('Error', 'El DNI debe tener 8 dígitos.', 'error'); 
       return;
     }
 
@@ -91,36 +87,27 @@ function Perfil() {
         setIsDniValid(true);
         setIsDniLocked(true);
         if (!skipNotifications) {
-          setNotification({
-            description: 'DNI validado correctamente',
-            bgColor: 'bg-green-400',
-          });
+          SweetAlert.showMessageAlert('Exito', 'DNI validado correctamente, guarda los cambios.', 'success'); 
         }
       } else {
         setIsDniValid(false);
         if (!skipNotifications) {
-          setNotification({
-            description: data.message || 'DNI no válido o no encontrado',
-            bgColor: 'bg-red-400',
-          });
+          SweetAlert.showMessageAlert('Error', 'DNI no válido o no encontrado.', 'error'); 
         }
       }
     } catch (error) {
       console.error('Error al validar el DNI:', error);
       setIsDniValid(false);
-      setNotification({
-        description: 'Error al validar el DNI',
-        bgColor: 'bg-red-400',
-      });
+      SweetAlert.showMessageAlert('Error', 'Error al validar el DNI.', 'error'); 
     }
 
     setIsLoading(false);
 
-    if (!skipNotifications) {
-      setTimeout(() => {
-        setNotification(null);
-      }, 3000);
-    }
+    // if (!skipNotifications) {
+    //   setTimeout(() => {
+    //     setNotification(null);
+    //   }, 3000);
+    // }
   };
 
   const handleChange = (e) => {
@@ -213,29 +200,13 @@ function Perfil() {
       .then(response => response.json())
       .then(() => {
         setIsEditing(false);
-        setNotification({
-          description: 'Perfil actualizado exitosamente',
-          bgColor: 'bg-green-400', // Notificación de éxito
-        });
+        SweetAlert.showMessageAlert('Exito!', 'Perfil actualizado exitosamente.', 'success'); 
         setIsLoading(false); // Desactivar la pantalla de carga
-  
-        // Limpiar la notificación después de 3 segundos
-        setTimeout(() => {
-          setNotification(null);
-        }, 3000);
       })
       .catch(error => {
         console.error("Error al actualizar el perfil:", error);
-        setNotification({
-          description: 'Error al actualizar el perfil',
-          bgColor: 'bg-red-400', // Notificación de error
-        });
+        SweetAlert.showMessageAlert('Error', 'Error al actualizar el perfil.', 'error'); 
         setIsLoading(false); // Desactivar la pantalla de carga
-  
-        // Limpiar la notificación después de 3 segundos
-        setTimeout(() => {
-          setNotification(null);
-        }, 3000);
       });
   };
   
@@ -259,17 +230,9 @@ function Perfil() {
       })
         .then(response => response.json())
         .then(() => {
-          setNotification({
-            description: 'Foto de perfil actualizada exitosamente',
-            bgColor: 'bg-green-400', // Notificación de éxito
-          });
+          SweetAlert.showMessageAlert('Exito!', 'Foto de perfil actualizada exitosamente.', 'success'); 
           // Desactivar el modo de edición después de la subida de la foto
           setIsEditing(false);
-  
-          // Limpiar la notificación después de 3 segundos
-          setTimeout(() => {
-            setNotification(null);
-          }, 3000);
   
           // Obtener nuevamente los datos del perfil para actualizar la foto
           fetch(`${API_BASE_URL}/api/perfilCliente`, {
@@ -290,16 +253,8 @@ function Perfil() {
         })
         .catch(error => {
           console.error("Error al subir la foto de perfil:", error);
-          setNotification({
-            description: 'Error al actualizar la foto de perfil',
-            bgColor: 'bg-red-400', // Notificación de error
-          });
+          SweetAlert.showMessageAlert('Error', 'Error al actualizar la foto de perfil.', 'error'); 
           setIsLoading(false);
-  
-          // Limpiar la notificación después de 3 segundos
-          setTimeout(() => {
-            setNotification(null);
-          }, 3000);
         });
     }
   };
@@ -310,13 +265,6 @@ function Perfil() {
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-        </div>
-      )}
-
-      {/* Notificación */}
-      {notification && (
-        <div className={`fixed top-6 right-6 p-4 rounded-md text-white ${notification.bgColor}`}>
-          {notification.description}
         </div>
       )}
 

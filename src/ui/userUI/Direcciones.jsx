@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import LoadingScreen from '../../components/home/LoadingScreen';
-import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
+import SweetAlert from '../../components/SweetAlert';
 
 function Direcciones() {
   const [direcciones, setDirecciones] = useState([]);
   const [loading, setLoading] = useState(false); // Estado para controlar el loading
-  const [notification, setNotification] = useState(null);
   const [userToken, setUserToken] = useState(localStorage.getItem('jwt'));
 
   useEffect(() => {
     if (userToken) {
       fetchDirecciones();
     } else {
-      setNotification({
-        description: 'No estás autenticado. Por favor, inicia sesión.',
-        bgColor: 'bg-red-500',
-      });
+      SweetAlert.showMessageAlert('Error', 'No estás autenticado. Por favor, inicia sesión.', 'error'); 
     }
   }, [userToken]);
 
@@ -40,16 +36,10 @@ function Direcciones() {
       if (response.ok) {
         setDirecciones(data);
       } else {
-        setNotification({
-          description: data.error || 'No se encontraron direcciones.',
-          bgColor: 'bg-red-500',
-        });
+        SweetAlert.showMessageAlert('Error', 'No se encontraron direcciones.', 'error'); 
       }
     } catch (error) {
-      setNotification({
-        description: 'Error al obtener direcciones.',
-        bgColor: 'bg-red-500',
-      });
+      SweetAlert.showMessageAlert('Error', 'Error al obtener direcciones.', 'error'); 
     } finally {
       setLoading(false); // Detener loader cuando la solicitud termine
     }
@@ -69,11 +59,8 @@ function Direcciones() {
   
       const data = await response.json();
       if (response.ok) {
-        setNotification({
-          description: data.message || 'Dirección marcada como en uso.',
-          bgColor: 'bg-green-500',
-        });
-  
+        SweetAlert.showMessageAlert('Exito!', 'Dirección marcada como en uso.', 'success'); 
+
         // Optimizar: Actualizar localmente sin hacer un nuevo fetch
         setDirecciones(prevDirecciones =>
           prevDirecciones.map(direccion =>
@@ -86,16 +73,10 @@ function Direcciones() {
         // Llamar nuevamente a fetchDirecciones para actualizar las direcciones
         fetchDirecciones(); // Aseguramos que las direcciones estén actualizadas
       } else {
-        setNotification({
-          description: data.error || 'Error al cambiar la dirección.',
-          bgColor: 'bg-red-500',
-        });
+        SweetAlert.showMessageAlert('Error', 'Error al cambiar la dirección.', 'error'); 
       }
     } catch (error) {
-      setNotification({
-        description: 'Error al actualizar la dirección.',
-        bgColor: 'bg-red-500',
-      });
+      SweetAlert.showMessageAlert('Error', 'Error al actualizar la dirección.', 'error'); 
     } finally {
       setLoading(false); // Detener loader cuando la solicitud termine
     }
@@ -114,26 +95,17 @@ function Direcciones() {
 
       const data = await response.json();
       if (response.ok) {
-        setNotification({
-          description: data.message || 'Dirección eliminada exitosamente.',
-          bgColor: 'bg-green-500',
-        });
+        SweetAlert.showMessageAlert('Exito!', 'Dirección eliminada exitosamente.', 'success');
 
         // Optimizar: Eliminar localmente sin hacer un nuevo fetch
         setDirecciones(prevDirecciones =>
           prevDirecciones.filter(direccion => direccion.idDireccion !== idDireccion)
         );
       } else {
-        setNotification({
-          description: data.message || 'Error al eliminar la dirección.',
-          bgColor: 'bg-red-500',
-        });
+        SweetAlert.showMessageAlert('Error', 'Error al eliminar la dirección.', 'error');
       }
     } catch (error) {
-      setNotification({
-        description: 'Error al eliminar la dirección.',
-        bgColor: 'bg-red-500',
-      });
+      SweetAlert.showMessageAlert('Error', 'Error al eliminar la dirección.', 'error');
     } finally {
       setLoading(false); // Detener loader cuando la solicitud termine
     }
@@ -147,9 +119,6 @@ function Direcciones() {
           <LoadingScreen />
         </div>
       )}
-  
-      {/* Mostrar notificación si existe */}
-      {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}
   
       {/* Contenedor principal que ocupa el espacio restante */}
       <div className="flex-1 container mx-auto p-4">

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 //import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';  // Importa el componente LoadingScreen
-import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet'; // Importamos Leaflet
 import 'leaflet/dist/leaflet.css';
+import SweetAlert from '../../components/SweetAlert';
 
 function AgregarDirecciones() {
   const [latitud, setLatitud] = useState(null);
@@ -17,7 +17,6 @@ function AgregarDirecciones() {
     direccion: ''
   });
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     // Obtener la ubicación del usuario al cargar la página
@@ -32,10 +31,7 @@ function AgregarDirecciones() {
         },
         (error) => {
           console.error("Error al obtener la geolocalización: ", error);
-          setNotification({
-            description: 'No se pudo obtener la ubicación.',
-            bgColor: 'bg-yellow-500'
-          });
+          SweetAlert.showMessageAlert('Error', 'No se pudo obtener la ubicación.', 'error'); 
           setLoading(false);  // Desactivar el loading en caso de error
         }
       );
@@ -85,19 +81,12 @@ function AgregarDirecciones() {
       });
 
       if (!response.ok) throw new Error('Error al enviar los datos');
-
-      setNotification({
-        description: 'Dirección agregada exitosamente',
-        bgColor: 'bg-green-500'
-      });
+      SweetAlert.showMessageAlert('Exito!', 'Dirección agregada exitosamente.', 'success'); 
 
       setLoading(false);  // Desactivar el loading después de agregar la dirección
       resetForm();
     } catch (error) {
-      setNotification({
-        description: 'Error al agregar dirección',
-        bgColor: 'bg-red-500'
-      });
+      SweetAlert.showMessageAlert('Error', 'Error al agregar dirección.', 'error');
       setLoading(false);  // Desactivar el loading en caso de error
     }
   };
@@ -156,8 +145,6 @@ function AgregarDirecciones() {
       <div className="flex-1 p-1 sm:p-2 md:p-2"> {/* Reducir el padding */}
         <div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-2"> {/* Reducir el padding interno */}
           <h2 className="text-xl font-semibold mb-1 text-center text-gray-800">Detalles de la Dirección</h2> {/* Reducir el tamaño de la fuente y el margen inferior */}
-  
-          {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}
   
           {/* Mostrar loader mientras cargamos la información */}
           {loading && (
