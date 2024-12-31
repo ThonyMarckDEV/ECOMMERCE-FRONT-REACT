@@ -19,26 +19,35 @@ const CategoryTable = () => {
 
   const itemsPerPage = 5;
 
+  // Obtener las categorías paginadas
   const fetchCategorias = async (page = 0) => {
     const token = localStorage.getItem('jwt');
     try {
       setLoading(true);
-      const response = await fetch(
-        `${API_BASE_URL}/api/obtenerCategorias?page=${page + 1}&limit=${itemsPerPage}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
+
+      // Construir la URL con los parámetros de filtro y búsqueda
+      const url = new URL(`${API_BASE_URL}/api/obtenerCategorias`);
+      url.searchParams.append('page', page + 1);
+      url.searchParams.append('limit', itemsPerPage);
+      url.searchParams.append('idCategoria', filters.idCategoria);
+      url.searchParams.append('nombreCategoria', filters.nombreCategoria);
+      url.searchParams.append('descripcion', filters.descripcion);
+      url.searchParams.append('estado', filters.estado);
+      url.searchParams.append('searchTerm', searchTerm);
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error('Error al obtener las categorías');
       }
 
       const data = await response.json();
-      setCategorias(data.data || []);
-      setPageCount(Math.ceil(data.total / itemsPerPage));
+      setCategorias(data.data || []); // Actualizar los datos de la página actual
+      setPageCount(data.totalPages); // Actualizar el total de páginas
     } catch (error) {
       console.error('Error al obtener categorías:', error);
       setCategorias([]);
@@ -47,14 +56,25 @@ const CategoryTable = () => {
     }
   };
 
+  // Cargar las categorías cuando cambia la página, los filtros o el término de búsqueda
   useEffect(() => {
     fetchCategorias(currentPage);
-  }, [currentPage]);
+  }, [currentPage, filters, searchTerm]);
 
+  // Manejar el cambio de página
   const handlePageClick = (selectedPage) => {
-    setCurrentPage(selectedPage.selected);
+    setCurrentPage(selectedPage.selected); // Actualizar la página actual
   };
 
+  // Manejar cambios en los filtros
+  const handleFilterChange = (e, field) => {
+    setFilters({
+      ...filters,
+      [field]: e.target.value,
+    });
+  };
+
+  // Cambiar el estado de una categoría
   const cambiarEstado = async (idCategoria, estadoActual) => {
     const token = localStorage.getItem('jwt');
     const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
@@ -74,6 +94,7 @@ const CategoryTable = () => {
         throw new Error('Error al cambiar el estado');
       }
 
+      // Actualizar el estado local
       setCategorias((prevCategorias) =>
         prevCategorias.map((categoria) =>
           categoria.idCategoria === idCategoria
@@ -91,41 +112,15 @@ const CategoryTable = () => {
     }
   };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleFilterChange = (e, field) => {
-    setFilters({
-      ...filters,
-      [field]: e.target.value
-    });
-  };
-
-  const filteredCategorias = categorias.filter((categoria) => {
-    return (
-      categoria.idCategoria.toString().includes(filters.idCategoria) &&
-      categoria.nombreCategoria.toLowerCase().includes(filters.nombreCategoria.toLowerCase()) &&
-      (categoria.descripcion || '').toLowerCase().includes(filters.descripcion.toLowerCase()) &&
-      categoria.estado.toLowerCase().includes(filters.estado.toLowerCase()) &&
-      (
-        categoria.idCategoria.toString().includes(searchTerm) ||
-        categoria.nombreCategoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (categoria.descripcion || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        categoria.estado.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  });
-
   return (
     <div>
-      {/* Contenedor del buscador (fuera del contenedor de la tabla) */}
+      {/* Contenedor del buscador */}
       <div className="mb-4">
         <input
           type="text"
           placeholder="Buscar..."
           value={searchTerm}
-          onChange={handleSearchChange}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-3 py-2 border rounded-lg"
         />
       </div>
@@ -178,7 +173,7 @@ const CategoryTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredCategorias.map((categoria) => (
+            {categorias.map((categoria) => (
               <tr key={categoria.idCategoria} className="hover:bg-gray-100">
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.idCategoria}</td>
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.nombreCategoria}</td>
@@ -207,12 +202,6 @@ const CategoryTable = () => {
                       onClick={() => alert(`Editar categoría con ID: ${categoria.idCategoria}`)}
                     >
                       Editar
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                      onClick={() => alert(`Eliminar categoría con ID: ${categoria.idCategoria}`)}
-                    >
-                      Eliminar
                     </button>
                   </div>
                 </td>

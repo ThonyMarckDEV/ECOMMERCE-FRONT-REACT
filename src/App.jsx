@@ -23,7 +23,8 @@ import Admin from './ui/adminUI/Admin';
 import EditarUsuario from './ui/adminUI/EditarUsuario';
 import AgregarCategoria from './ui/adminUI/AgregarCategoria';
 import EditarCategoria from './ui/adminUI/EditarCategoria';
-
+import AgregarTalla from './ui/adminUI/AgregarTalla';
+import EditarTalla from './ui/adminUI/EditarTalla';
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
@@ -100,7 +101,8 @@ function AppContent() {
       <Route path="/admin/usuarios/editar" element={<ProtectedRouteRolAdmin element={<EditarUsuario />} />} />
       <Route path="/admin/categorias/agregar" element={<ProtectedRouteRolAdmin element={<AgregarCategoria />} />} />
       <Route path="/admin/categorias/editar" element={<ProtectedRouteRolAdmin element={<EditarCategoria />} />} />
-
+      <Route path="/admin/tallas/agregar" element={<ProtectedRouteRolAdmin element={<AgregarTalla />} />} />
+      <Route path="/admin/tallas/editar" element={<ProtectedRouteRolAdmin element={<EditarTalla />} />} />
 
       {/* RUTAS ROL MARCA*/}
 
