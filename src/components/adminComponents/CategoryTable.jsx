@@ -118,9 +118,8 @@ const CategoryTable = () => {
   });
 
   return (
-    <div className="overflow-auto">
-      {loading && <LoadingScreen />}
-
+    <div>
+      {/* Contenedor del buscador (fuera del contenedor de la tabla) */}
       <div className="mb-4">
         <input
           type="text"
@@ -131,108 +130,116 @@ const CategoryTable = () => {
         />
       </div>
 
-      <table className="w-full min-w-max table-auto border-collapse">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-              <input
-                type="text"
-                placeholder="Filtrar ID"
-                value={filters.idCategoria}
-                onChange={(e) => handleFilterChange(e, 'idCategoria')}
-                className="w-full px-2 py-1 border rounded"
-              />
-            </th>
-            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-              <input
-                type="text"
-                placeholder="Filtrar Nombre"
-                value={filters.nombreCategoria}
-                onChange={(e) => handleFilterChange(e, 'nombreCategoria')}
-                className="w-full px-2 py-1 border rounded"
-              />
-            </th>
-            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-              <input
-                type="text"
-                placeholder="Filtrar Descripción"
-                value={filters.descripcion}
-                onChange={(e) => handleFilterChange(e, 'descripcion')}
-                className="w-full px-2 py-1 border rounded"
-              />
-            </th>
-            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Imagen</th>
-            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-              <input
-                type="text"
-                placeholder="Filtrar Estado"
-                value={filters.estado}
-                onChange={(e) => handleFilterChange(e, 'estado')}
-                className="w-full px-2 py-1 border rounded"
-              />
-            </th>
-            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Acciones</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {filteredCategorias.map((categoria) => (
-            <tr key={categoria.idCategoria} className="hover:bg-gray-100">
-              <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.idCategoria}</td>
-              <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.nombreCategoria}</td>
-              <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.descripcion || 'N/A'}</td>
-              <td className="px-4 py-2 text-sm text-gray-700 border-b">
-                <img 
-                  src={`${API_BASE_URL}/storage/${categoria.imagen}`}
-                  alt={categoria.nombreCategoria} 
-                  className="w-10 h-10 object-cover" 
-                />
-              </td>
-              <td className="px-4 py-2 text-sm text-gray-700 border-b">
-                <button
-                  className={`inline-block px-3 py-1 rounded-full text-white font-bold ${
-                    categoria.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'
-                  }`}
-                  onClick={() => cambiarEstado(categoria.idCategoria, categoria.estado)}
-                >
-                  {categoria.estado}
-                </button>
-              </td>
-              <td className="px-4 py-2 text-sm text-gray-700 border-b">
-                <div className="space-x-2">
-                  <button
-                    className="bg-black text-white px-3 py-1 rounded hover:bg-gray-700"
-                    onClick={() => alert(`Editar categoría con ID: ${categoria.idCategoria}`)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    onClick={() => alert(`Eliminar categoría con ID: ${categoria.idCategoria}`)}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Contenedor de la tabla */}
+      <div className="overflow-auto">
+        {loading && <LoadingScreen />}
 
-      <ReactPaginate
-        previousLabel={'Anterior'}
-        nextLabel={'Siguiente'}
-        breakLabel={'...'}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        onPageChange={handlePageClick}
-        containerClassName={'flex justify-center mt-6 space-x-2'}
-        pageClassName={'px-3 py-1 border rounded-lg'}
-        activeClassName={'bg-black text-white'}
-        previousClassName={'px-3 py-1 border rounded-lg'}
-        nextClassName={'px-3 py-1 border rounded-lg'}
-        disabledClassName={'opacity-50 cursor-not-allowed'}
-      />
+        <table className="w-full min-w-max table-auto border-collapse">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+                <input
+                  type="text"
+                  placeholder="Filtrar ID"
+                  value={filters.idCategoria}
+                  onChange={(e) => handleFilterChange(e, 'idCategoria')}
+                  className="w-full px-2 py-1 border rounded"
+                />
+              </th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+                <input
+                  type="text"
+                  placeholder="Filtrar Nombre"
+                  value={filters.nombreCategoria}
+                  onChange={(e) => handleFilterChange(e, 'nombreCategoria')}
+                  className="w-full px-2 py-1 border rounded"
+                />
+              </th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+                <input
+                  type="text"
+                  placeholder="Filtrar Descripción"
+                  value={filters.descripcion}
+                  onChange={(e) => handleFilterChange(e, 'descripcion')}
+                  className="w-full px-2 py-1 border rounded"
+                />
+              </th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Imagen</th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+                <input
+                  type="text"
+                  placeholder="Filtrar Estado"
+                  value={filters.estado}
+                  onChange={(e) => handleFilterChange(e, 'estado')}
+                  className="w-full px-2 py-1 border rounded"
+                />
+              </th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredCategorias.map((categoria) => (
+              <tr key={categoria.idCategoria} className="hover:bg-gray-100">
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.idCategoria}</td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.nombreCategoria}</td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.descripcion || 'N/A'}</td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                  <img 
+                    src={`${API_BASE_URL}/storage/${categoria.imagen}`}
+                    alt={categoria.nombreCategoria} 
+                    className="w-10 h-10 object-cover" 
+                  />
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                  <button
+                    className={`inline-block px-3 py-1 rounded-full text-white font-bold ${
+                      categoria.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'
+                    }`}
+                    onClick={() => cambiarEstado(categoria.idCategoria, categoria.estado)}
+                  >
+                    {categoria.estado}
+                  </button>
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                  <div className="space-x-2">
+                    <button
+                      className="bg-black text-white px-3 py-1 rounded hover:bg-gray-700"
+                      onClick={() => alert(`Editar categoría con ID: ${categoria.idCategoria}`)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      onClick={() => alert(`Eliminar categoría con ID: ${categoria.idCategoria}`)}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Contenedor de la paginación */}
+      <div className="mt-6">
+        <ReactPaginate
+          previousLabel={'Anterior'}
+          nextLabel={'Siguiente'}
+          breakLabel={'...'}
+          pageCount={pageCount}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={handlePageClick}
+          containerClassName={'flex justify-center space-x-2'}
+          pageClassName={'px-3 py-1 border rounded-lg'}
+          activeClassName={'bg-black text-white'}
+          previousClassName={'px-3 py-1 border rounded-lg'}
+          nextClassName={'px-3 py-1 border rounded-lg'}
+          disabledClassName={'opacity-50 cursor-not-allowed'}
+        />
+      </div>
     </div>
   );
 };
