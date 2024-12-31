@@ -43,7 +43,7 @@ function Home() {
 
         {/* Carrusel debajo de la barra de navegación */}
         <div className="animate-fade-in-down transform transition-transform duration-500 hover:scale-105">
-          <CarruselHome images={images} interval={3000} />
+          <CarruselHome images={images} interval={7000} />
         </div>
 
         {/* Sección de ofertas destacadas */}

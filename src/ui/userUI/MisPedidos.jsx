@@ -190,56 +190,61 @@ const Pedidos = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+            {/* Navbar */}
             <NavbarHome />
+
             {/* Notificación */}
             {notification && (
-                <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 text-white font-semibold text-center ${notification.bgColor} rounded shadow-md`}>
+                <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 text-white font-semibold text-center ${notification.bgColor} rounded-lg shadow-lg animate-fade-in`}>
                     {notification.message}
                 </div>
             )}
-    
+
             {/* Modales */}
             {estadoModalVisible && (
                 <Estado estadoActual={estadoActual} onClose={cerrarEstadoModal} />
             )}
-    
+
             {detalleModalVisible && (
                 <DetalleProducto detalles={detallesPedido} onClose={cerrarDetalleModal} />
             )}
-    
+
             {/* Pantalla de Carga */}
             {isLoading && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <LoadingScreen /> {/* Asegúrate de que LoadingScreen esté centrado */}
+                    <LoadingScreen />
                 </div>
             )}
-    
+
             {/* Contenido Principal */}
             {loading ? (
-                <div className="flex justify-center items-center py-10">
-                    <LoadingScreen /> {/* Reemplazamos "Cargando..." con el componente LoadingScreen */}
+                <div className="flex justify-center items-center py-20">
+                    <LoadingScreen />
                 </div>
             ) : pedidos.length === 0 ? (
-                <div className="flex flex-col justify-center items-center pt-16">
+                <div className="flex flex-col justify-center items-center pt-20 px-4">
                     <div className="text-center">
                         <img
                             src={nopedidos}
                             alt="No tienes pedidos"
-                            className="mx-auto mb-8 w-80 h-80 sm:w-80 sm:h-80 md:w-80 md:h-80 lg:w-96 lg:h-96"
+                            className="mx-auto mb-8 w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 transform hover:scale-105 transition-transform duration-300"
                         />
-                        <div className="text-3xl sm:text-4xl text-gray-600 font-semibold">
+                        <div className="text-3xl sm:text-4xl text-gray-800 font-bold mb-4">
                             No tienes pedidos.
                         </div>
+                        <p className="text-gray-600 text-lg">
+                            ¡Explora nuestros productos y realiza tu primera compra!
+                        </p>
                     </div>
                 </div>
             ) : (
-                <div className="max-w-7xl mx-auto py-10 px-4">
+                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                     {renderPedidos()}
                 </div>
             )}
         </div>
-    );    
+    );
 };
 
 export default Pedidos;
