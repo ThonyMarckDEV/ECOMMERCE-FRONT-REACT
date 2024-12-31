@@ -5,9 +5,10 @@ import CheckLogin from '../home/CheckLogin';
 import { AiOutlineMinus, AiOutlinePlus, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import LoadingScreen from './LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
-import Notification from '../../components/home/Notificacion';
 import { verificarYRenovarToken } from '../../js/authToken';
 import { useCart } from '../../context/CartContext'; 
+import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
+
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -15,7 +16,6 @@ function DetalleProducto({ productoId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModalLogin, setShowModalLogin] = useState(false);
-  const [notification, setNotification] = useState(null);
   const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
   const [imagenIndex, setImagenIndex] = useState(0);
   const [imageTransitioning, setImageTransitioning] = useState(false);
@@ -78,10 +78,7 @@ function DetalleProducto({ productoId, onClose }) {
     const precio = parseFloat(producto?.precio) || 0;
 
     if (!idCarrito || !idUsuario || !tallaSeleccionada) {
-        setNotification({
-            message: 'Por favor selecciona una talla antes de agregar al carrito',
-            color: 'bg-red-400'
-        });
+        SweetAlert.showMessageAlert('Error', 'Por favor selecciona una talla antes de agregar al carrito.', 'error'); // Mostrar SweetAlert de éxito
         return;
     }
 
@@ -116,33 +113,21 @@ function DetalleProducto({ productoId, onClose }) {
         })
         .then((data) => {
             if (data.success) {
-                setNotification({
-                    message: 'Producto agregado al carrito',
-                    color: 'bg-green-400'
-                });
-
+                SweetAlert.showMessageAlert('Exito!', 'Producto agregado al carrito.', 'success'); // Mostrar SweetAlert de éxito
                 updateCartCount(); 
 
                 setCantidad(1); 
                 setTallaSeleccionada(null);
             } else {
-                // Si hay un error en la respuesta, mostramos el mensaje adecuado
-                setNotification({
-                    message: data.message || 'Error al agregar al carrito',
-                    color: 'bg-red-400'
-                });
+                SweetAlert.showMessageAlert('Error', 'Error al agregar al carrito.', 'error'); // Mostrar SweetAlert de éxito
             }
         })
         .catch((error) => {
             console.error('Error al agregar al carrito:', error);
-            setNotification({
-                message: error.message || 'Error al conectar con el servidor',
-                color: 'bg-red-400'
-            });
+            SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error'); // Mostrar SweetAlert de éxito
         })
         .finally(() => {
             setLoading(false);
-            setTimeout(() => setNotification(null), 1500);
         });
 };
 
@@ -404,7 +389,6 @@ return (
                 <CheckLogin setShowModal={handleCloseModalLogin} />
             </div>
         )}
-        {notification && <Notification description={notification.message} bgColor={notification.color} />}
     </>
 );
 }

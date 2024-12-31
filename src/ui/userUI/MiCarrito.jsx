@@ -12,22 +12,13 @@ import carritoVacio from '../../img/carritovacio.png'; // Asegúrate de que la r
 import logoyape from '../../img/yapelogo.png';
 import mercadopagologo from '../../img/mercadopago.png';
 import visalogo from '../../img/visalogo.jpg';
+import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
 
 function Carrito() { 
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [notification, setNotification] = useState(null);
   const { updateCartCount } = useCart(); // Usamos el contexto de carrito
   const navigate = useNavigate();
-
-  const mostrarNotificacion = (descripcion, color) => {
-
-    setNotification({ description: descripcion, bgColor: color });
-    // Ocultar la notificación después de 3 segundos
-    setTimeout(() => {
-      setNotification(null); // Limpiar la notificación
-    }, 3000);
-  };
 
   const obtenerCarrito = async () => {
     try {
@@ -56,13 +47,13 @@ function Carrito() {
         if (data.success) {
           setProductos(data.data); // Incluye el idDetalle como parte del estado de los productos
         } else {
-          mostrarNotificacion('No se pudo cargar el carrito.', 'bg-red-500');
+          SweetAlert.showMessageAlert('Error', 'No se pudo cargar el carrito.', 'error'); 
         }
       } else {
-        mostrarNotificacion('Error al obtener los productos del carrito.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Error al obtener los productos del carrito.', 'error'); 
       }
     } catch (error) {
-      mostrarNotificacion('Ocurrió un error al obtener los productos.', 'bg-red-500');
+      SweetAlert.showMessageAlert('Error', 'Ocurrió un error al obtener los productos.', 'error'); 
     } finally {
       setIsLoading(false);
     }
@@ -107,8 +98,7 @@ function Carrito() {
       });
   
       if (!perfilResponse.ok) {
-        const data = await perfilResponse.json();
-        mostrarNotificacion(data.message || 'Error al obtener datos del perfil', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Error al obtener datos del perfil.', 'error'); 
         setIsLoading(false);
         return;
       }
@@ -118,7 +108,7 @@ function Carrito() {
   
       // Validar DNI
       if (!dni || dni.length < 8 || /^[0]+$/.test(dni)) {
-        mostrarNotificacion('Por favor, actualiza tu DNI a uno válido antes de realizar un pedido.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Por favor, actualiza tu DNI a uno válido antes de realizar un pedido.', 'error'); 
         setIsLoading(false);
         return;
       }
@@ -133,8 +123,7 @@ function Carrito() {
       });
   
       if (!direccionResponse.ok) {
-        const data = await direccionResponse.json();
-        mostrarNotificacion(data.message || 'Error al verificar la dirección', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Error al verificar la dirección , agrega una en tu perfil..', 'error'); 
         setIsLoading(false);
         return;
       }
@@ -144,12 +133,12 @@ function Carrito() {
       if (direccionUsando && direccionUsando.idDireccion) {
         await proceedToCheckout(direccionUsando.idDireccion);
       } else {
-        mostrarNotificacion('No tienes una dirección válida.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'No tienes una dirección válida , agrega una en tu perfil.', 'error'); 
         setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
-      mostrarNotificacion('Error al verificar la dirección.', 'bg-red-500');
+      SweetAlert.showMessageAlert('Error', 'Error al verificar la dirección , agrega una en tu perfil.', 'error'); 
       setIsLoading(false);
     }
   };
@@ -166,7 +155,7 @@ function Carrito() {
     const idUsuario = payload.idUsuario;
 
     if (!idCarrito || !idUsuario) {
-        mostrarNotificacion('Carrito o usuario no encontrados.', 'bg-red-500');
+      SweetAlert.showMessageAlert('Error', 'Carrito o usuario no encontrados.', 'error'); 
         setIsLoading(false);
         return;
     }
@@ -191,7 +180,7 @@ function Carrito() {
         const data = await response.json();
         if (data.success) {
             clearCartUI();
-            mostrarNotificacion('Pedido realizado con éxito.', 'bg-green-500');
+            SweetAlert.showMessageAlert('Exito', 'Pedido realizado con éxito.', 'success'); 
             updateCartCount(); 
             setIsLoading(false);
              // Navegar después de 2 segundos
@@ -199,12 +188,12 @@ function Carrito() {
                 navigate('/pedidos');
             }, 1200);
         } else {
-            mostrarNotificacion('Error al realizar el pedido.', 'bg-red-500');
-            setIsLoading(false);
-            updateCartCount(); 
+          SweetAlert.showMessageAlert('Error', 'Error al realizar el pedido.', 'error'); 
+          setIsLoading(false);
+           updateCartCount(); 
         }
     } catch (error) {
-        mostrarNotificacion('Error al proceder con el pedido.', 'bg-red-500');
+      SweetAlert.showMessageAlert('Error', 'Error al proceder con el pedido.', 'error'); 
         setIsLoading(false);
         updateCartCount(); 
     }
@@ -214,7 +203,7 @@ function Carrito() {
   const actualizarCantidad = async (idDetalle, cantidad) => {
     try {
       if (isNaN(cantidad) || cantidad < 1) {
-        mostrarNotificacion('La cantidad debe ser un número mayor que 0.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'La cantidad debe ser un número mayor que 0.', 'error'); 
         return;
       }
 
@@ -224,7 +213,7 @@ function Carrito() {
       const idUsuario = getIdUsuario(token);
 
       if (!token || !idUsuario) {
-        mostrarNotificacion('Usuario no autenticado o token inválido.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Usuario no autenticado o token inválido.', 'error'); 
         return;
       }
 
@@ -249,16 +238,15 @@ function Carrito() {
                 : producto
             )
           );
-          mostrarNotificacion('Cantidad y precio actualizados correctamente.', 'bg-green-500');
+          SweetAlert.showMessageAlert('Exito!', 'Cantidad actualizada correctamente.', 'success'); 
         } else {
-          mostrarNotificacion(data.message || 'Error al actualizar la cantidad.', 'bg-red-500');
+          SweetAlert.showMessageAlert('Error', 'Error al actualizar la cantidad.', 'error'); 
         }
       } else {
-        const errorData = await response.json();
-        mostrarNotificacion(errorData.message || 'Error al conectar con el servidor.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error'); 
       }
     } catch (error) {
-      mostrarNotificacion('Ocurrió un error al actualizar la cantidad.', 'bg-red-500');
+      SweetAlert.showMessageAlert('Error', 'Ocurrió un error al actualizar la cantidad.', 'error'); 
     } finally {
       setIsLoading(false);
       updateCartCount();
@@ -283,15 +271,15 @@ function Carrito() {
         const data = await response.json();
         if (data.success) {
           obtenerCarrito();
-          mostrarNotificacion('Producto eliminado correctamente.', 'bg-green-500');
+          SweetAlert.showMessageAlert('Exito!', 'Producto eliminado correctamente.', 'success'); 
         } else {
-          mostrarNotificacion('Error al eliminar el producto.', 'bg-red-500');
+          SweetAlert.showMessageAlert('Error', 'Error al eliminar el producto.', 'error'); 
         }
       } else {
-        mostrarNotificacion('Error al conectar con el servidor.', 'bg-red-500');
+        SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error'); 
       }
     } catch (error) {
-      mostrarNotificacion('Ocurrió un error al eliminar el producto.', 'bg-red-500');
+      SweetAlert.showMessageAlert('Error', 'Ocurrió un error al eliminar el producto.', 'error'); 
     } finally {
       setIsLoading(false);
       updateCartCount();
@@ -452,12 +440,6 @@ function Carrito() {
         </div>
       )}
       
-      {notification && (
-        <div className="animate-fade-in-down fixed top-4 right-4 z-50">
-          <Notification description={notification.description} bgColor={notification.bgColor} />
-        </div>
-      )}
-
       <div className="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:pb-8">
         <h1 className="text-2xl sm:text-3xl font-light text-gray-800 mb-8 animate-fade-in text-center lg:text-left">
           Carrito de Compra {productos.length > 0 && `(${productos.length} Productos)`}
