@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@headlessui/react": "^1.7.17",
     "@react-oauth/google": "^0.12.1",
     "cra-template": "1.2.0",
     "ecommerce": "file:",
@@ -17,9 +18,11 @@
     "react-intersection-observer": "^9.13.1",
     "react-lazyload": "^3.2.1",
     "react-leaflet": "^3.2.1",
+    "react-paginate": "^8.2.0",
     "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
-    "react-table": "^7.8.0"
+    "react-table": "^7.8.0",
+    "sweetalert2": "^11.15.3"
   },
   "scripts": {
     "start": "react-scripts start",

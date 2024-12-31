@@ -65,7 +65,7 @@ function AgregarCategoria() {
           <h2 className="text-2xl font-semibold mb-6">Agregar Categoría</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700">Nombre de la Categoría</label>
+              <label className="block text-sm font-medium text-gray-700">Nombre de la Categoría (Requerido)</label>
               <input
                 type="text"
                 value={nombreCategoria}
@@ -84,7 +84,7 @@ function AgregarCategoria() {
               />
             </div>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700">Imagen</label>
+              <label className="block text-sm font-medium text-gray-700">Imagen (Requerido)</label>
               <input
                 type="file"
                 onChange={handleImagenChange}
@@ -94,7 +94,7 @@ function AgregarCategoria() {
             </div>
             <button
               type="submit"
-              className={`w-full py-3 px-4 bg-indigo-600 text-white rounded-md ${loading ? 'opacity-50' : ''}`}
+              className={`w-full py-3 px-4 bg-black text-white rounded-md ${loading ? 'opacity-50' : ''}`}
               disabled={loading}
             >
               {loading ? 'Cargando...' : 'Agregar Categoría'}
