@@ -305,20 +305,22 @@ function Perfil() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans p-6 text-gray-200">
+    <div className="flex flex-col min-h-screen font-sans p--20 text-gray-200">
       {/* Pantalla de carga */}
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <LoadingScreen /> {/* Asegúrate de que LoadingScreen esté centrado */}
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
         </div>
       )}
-  
+
       {/* Notificación */}
       {notification && (
-        <Notification description={notification.description} bgColor={notification.bgColor} />
+        <div className={`fixed top-6 right-6 p-4 rounded-md text-white ${notification.bgColor}`}>
+          {notification.description}
+        </div>
       )}
-  
-      <div className="flex flex-grow justify-center items-start py-4 px-4"> {/* Ajusté el padding superior */}
+
+      <div className="flex flex-grow justify-center items-start py-1 px-4">
         <div
           ref={perfilRef}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl flex flex-col items-center"
@@ -327,124 +329,128 @@ function Perfil() {
           {/* Foto de perfil */}
           <div className="flex justify-center items-center mb-6">
             <img
-              src={perfilData.perfil || '/path/to/default-avatar.jpg'}
+              src={perfilData.perfil}
               alt="Foto de perfil"
               className="rounded-full object-cover shadow-md"
               style={{
-                width: '160px', // Dimensiones fijas
+                width: '160px',
                 height: '160px',
-                backgroundColor: '#f0f0f0', // Fondo para evitar bordes visibles
+                backgroundColor: '#f0f0f0',
               }}
               loading="eager"
             />
           </div>
-  
+
           {/* Información del usuario */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
-              {[
-                { label: 'Nombre', name: 'nombres' },
-                { label: 'Apellidos', name: 'apellidos' },
-                { 
-                  label: 'DNI', 
-                  name: 'dni',
-                  className: `border ${
-                    isEditing && !isDniLocked
-                      ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' 
-                      : 'bg-gray-100'
-                  } ${
-                    !isDniValid && isEditing ? 'border-red-500' : ''
-                  } text-gray-900 p-2 rounded-md`
-                }
-              ].map(({ label, name, className }) => (
-                <div key={name} className="flex flex-col space-y-2 relative">
-                  <label className="font-semibold text-gray-700">
-                    {label}
-                    {name === 'dni' && isDniLocked && (
-                      <span className="ml-2 text-sm text-gray-500">
-                        (Bloqueado)
-                      </span>
-                    )}
-                  </label>
-                  <input
-                    type="text"
-                    name={name}
-                    value={perfilData[name] || ''}
-                    onChange={handleChange}
-                    disabled={name !== 'dni' ? !isEditing : isDniLocked}
-                    onFocus={() => {
-                      if (name === 'dni' && !isDniLocked) {
-                        setShowDniNote(true);
-                      }
-                    }}
-                    onBlur={() => {
-                      if (name === 'dni') {
-                        setTimeout(() => setShowDniNote(false), 200);
-                      }
-                    }}
-                    className={className || `border ${
-                      isEditing 
-                        ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' 
-                        : 'bg-gray-100'
-                    } text-gray-900 p-2 rounded-md`}
-                  />
-                  {name === 'dni' && showDniNote && !isDniLocked && (
-                    <div className="absolute -bottom-6 left-0 bg-yellow-100 text-yellow-800 text-xs p-1 rounded shadow-sm z-10">
-                      Ingresa tu DNI verdadero , Una vez validado sera bloqueado el campo.
-                    </div>
+            {[
+              { label: 'Nombre', name: 'nombres' },
+              { label: 'Apellidos', name: 'apellidos' },
+              {
+                label: 'DNI',
+                name: 'dni',
+                className: `border ${
+                  isEditing && !isDniLocked
+                    ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    : 'bg-gray-100'
+                } ${
+                  !isDniValid && isEditing ? 'border-red-500' : ''
+                } text-gray-900 p-2 rounded-md`,
+              },
+            ].map(({ label, name, className }) => (
+              <div key={name} className="flex flex-col space-y-2 relative">
+                <label className="font-semibold text-gray-700">
+                  {label}
+                  {name === 'dni' && isDniLocked && (
+                    <span className="ml-2 text-sm text-gray-500">(Bloqueado)</span>
                   )}
-                </div>
-              ))}
-            </div>
-  
-            {/* Fila de 3 elementos: Correo, Edad, Fecha de nacimiento */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
-              {[{ label: 'Correo', name: 'correo', type: 'email' }].map(({ label, name, type = 'text' }) => (
-                <div key={name} className="flex flex-col space-y-2">
-                  <label className="font-semibold text-gray-700">{label}</label>
-                  <input
-                    type={type}
-                    name={name}
-                    value={perfilData[name] || ''}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
-                  />
-                </div>
-              ))}
-              {/* Edad (no editable) */}
-              <div className="flex flex-col space-y-2">
-                <label className="font-semibold text-gray-700">Edad</label>
+                </label>
                 <input
-                  type="number"
-                  name="edad"
-                  value={perfilData.edad || ''}
-                  disabled
-                  className="border bg-gray-100 text-gray-900 p-2 rounded-md"
+                  type="text"
+                  name={name}
+                  value={perfilData[name] || ''}
+                  onChange={handleChange}
+                  disabled={name !== 'dni' ? !isEditing : isDniLocked}
+                  onFocus={() => {
+                    if (name === 'dni' && !isDniLocked) {
+                      setShowDniNote(true);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (name === 'dni') {
+                      setTimeout(() => setShowDniNote(false), 200);
+                    }
+                  }}
+                  className={className || `border ${
+                    isEditing
+                      ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      : 'bg-gray-100'
+                  } text-gray-900 p-2 rounded-md`}
                 />
+                {name === 'dni' && showDniNote && !isDniLocked && (
+                  <div className="absolute -bottom-6 left-0 bg-yellow-100 text-yellow-800 text-xs p-1 rounded shadow-sm z-10">
+                    Ingresa tu DNI verdadero. Una vez validado, será bloqueado el campo.
+                  </div>
+                )}
               </div>
-              <div className="flex flex-col space-y-2">
-                <label className="font-semibold text-gray-700">Fecha de Nacimiento</label>
+            ))}
+          </div>
+
+          {/* Fila de 3 elementos: Correo, Edad, Fecha de nacimiento */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+            {[{ label: 'Correo', name: 'correo', type: 'email' }].map(({ label, name, type = 'text' }) => (
+              <div key={name} className="flex flex-col space-y-2">
+                <label className="font-semibold text-gray-700">{label}</label>
                 <input
-                  type="date"
-                  name="nacimiento"
-                  value={perfilData.nacimiento || ''}
+                  type={type}
+                  name={name}
+                  value={perfilData[name] || ''}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md`}
+                  className={`border ${
+                    isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'
+                  } text-gray-900 p-2 rounded-md`}
                 />
               </div>
+            ))}
+            {/* Edad (no editable) */}
+            <div className="flex flex-col space-y-2">
+              <label className="font-semibold text-gray-700">Edad</label>
+              <input
+                type="number"
+                name="edad"
+                value={perfilData.edad || ''}
+                disabled
+                className="border bg-gray-100 text-gray-900 p-2 rounded-md"
+              />
             </div>
-  
+            <div className="flex flex-col space-y-2">
+              <label className="font-semibold text-gray-700">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                name="nacimiento"
+                value={perfilData.nacimiento || ''}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className={`border ${
+                  isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'
+                } text-gray-900 p-2 rounded-md`}
+              />
+            </div>
+          </div>
+
           {/* Fila de 1 elemento: Sexo */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 justify-center items-center">
-            <div className="flex flex-col space-y-2 ml-auto"> {/* ml-auto para mover el contenido hacia la derecha */}
+            <div className="flex flex-col space-y-2 ml-auto">
               <label className="font-semibold text-gray-700">Sexo</label>
               <select
                 name="sexo"
                 value={perfilData.sexo || ''}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className={`border ${isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'} text-gray-900 p-2 rounded-md w-full sm:w-auto`}  // Agregamos w-full y sm:w-auto para control de ancho
+                className={`border ${
+                  isEditing ? 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500' : 'bg-gray-100'
+                } text-gray-900 p-2 rounded-md w-full sm:w-auto`}
               >
                 {sexos.map((sexo) => (
                   <option key={sexo} value={sexo}>
@@ -455,47 +461,47 @@ function Perfil() {
             </div>
           </div>
 
-            {/* Campo para seleccionar la nueva foto de perfil */}
-            {isEditing && (
-              <div className="flex flex-col space-y-2 mb-6">
-                <label className="font-semibold text-gray-700">Foto de perfil</label>
-                <input
-                  type="file"
-                  onChange={handleProfileImageChange}
-                  className="text-gray-800"
-                />
-              </div>
-            )}
-  
-            {/* Botones para editar y guardar */}
-            <div className="flex justify-center md:justify-start space-x-4">
-              {!isEditing ? (
+          {/* Campo para seleccionar la nueva foto de perfil */}
+          {isEditing && (
+            <div className="flex flex-col space-y-2 mb-6">
+              <label className="font-semibold text-gray-700">Foto de perfil</label>
+              <input
+                type="file"
+                onChange={handleProfileImageChange}
+                className="text-gray-800"
+              />
+            </div>
+          )}
+
+          {/* Botones para editar y guardar */}
+          <div className="flex justify-center md:justify-start space-x-4">
+            {!isEditing ? (
+              <button
+                onClick={handleEdit}
+                className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
+              >
+                Editar
+              </button>
+            ) : (
+              <>
                 <button
-                  onClick={handleEdit}
+                  onClick={handleSave}
                   className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
                 >
-                  Editar
+                  Guardar Cambios
                 </button>
-              ) : (
-                <>
-                  <button
-                    onClick={handleSave}
-                    className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
-                  >
-                    Guardar Cambios
-                  </button>
-                  <button
-                    onClick={handleProfileImageUpload}
-                    className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-800"
-                  >
-                    Actualizar Foto
-                  </button>
-                </>
-              )}
-            </div>
+                <button
+                  onClick={handleProfileImageUpload}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-800"
+                >
+                  Actualizar Foto
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
+    </div>
   );
   
   }

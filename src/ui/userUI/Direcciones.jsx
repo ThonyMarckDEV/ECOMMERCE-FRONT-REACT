@@ -141,66 +141,72 @@ function Direcciones() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans text-gray-800">
-    
       {/* Mostrar el loader mientras se hace una solicitud */}
       {loading && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <LoadingScreen />
         </div>
       )}
-      
+  
       {/* Mostrar notificación si existe */}
       {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}
-      
-      <div className="container mx-auto p-4">
-        <div className="bg-white shadow-lg rounded-lg p-4">
-          <h2 className="text-2xl font-semibold mb-4">Direcciones</h2>
-          
-          {direcciones.length > 0 ? (
-            <div className="overflow-x-auto"> {/* Contenedor con desplazamiento horizontal */}
-              <table className="table-auto w-full border-collapse">
-                <thead>
-                  <tr className="border-b">
-                    <th className="px-4 py-2">Departamento</th>
-                    <th className="px-4 py-2">Distrito</th>
-                    <th className="px-4 py-2">Provincia</th>
-                    <th className="px-4 py-2">Dirección</th>
-                    <th className="px-4 py-2">Estado</th>
-                    <th className="px-4 py-2">Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {direcciones.map((direccion) => (
-                    <tr key={direccion.idDireccion} className="border-b">
-                      <td className="px-4 py-2">{direccion.departamento}</td>
-                      <td className="px-4 py-2">{direccion.distrito}</td>
-                      <td className="px-4 py-2">{direccion.provincia}</td>
-                      <td className="px-4 py-2">{direccion.direccion}</td>
-                      <td className="px-4 py-2">{direccion.estado}</td>
-                      <td className="px-4 py-2">
-                        {direccion.estado === 'no usando' && (
-                          <button
-                            className="bg-black text-white px-4 py-2 rounded"
-                            onClick={() => setDireccionUsando(direccion.idDireccion)}
-                          >
-                            Usar
-                          </button>
-                        )}
-                        <button
-                          className="bg-red-500 text-white px-4 py-2 rounded ml-2"
-                          onClick={() => eliminarDireccion(direccion.idDireccion)}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
+  
+      {/* Contenedor principal que ocupa el espacio restante */}
+      <div className="flex-1 container mx-auto p-4">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden h-full flex flex-col"> {/* Agregar shadow-xl */}
+          {/* Encabezado */}
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-2xl font-semibold text-gray-800">Direcciones</h2>
+          </div>
+  
+          {/* Contenido (flex-1 para ocupar el espacio restante) */}
+          <div className="p-6 flex-1 overflow-y-auto">
+            {direcciones.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left text-sm font-medium text-gray-500">
+                      <th className="px-4 py-3">Departamento</th>
+                      <th className="px-4 py-3">Distrito</th>
+                      <th className="px-4 py-3">Provincia</th>
+                      <th className="px-4 py-3">Dirección</th>
+                      <th className="px-4 py-3">Estado</th>
+                      <th className="px-4 py-3">Acción</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">No tienes direcciones guardadas.</p>
-          )}
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {direcciones.map((direccion) => (
+                      <tr key={direccion.idDireccion} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-700">{direccion.departamento}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{direccion.distrito}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{direccion.provincia}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{direccion.direccion}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{direccion.estado}</td>
+                        <td className="px-4 py-3 text-sm">
+                          {direccion.estado === 'no usando' && (
+                            <button
+                              className="bg-black text-white px-3 py-1.5 rounded-md text-xs hover:bg-gray-700 transition-colors"
+                              onClick={() => setDireccionUsando(direccion.idDireccion)}
+                            >
+                              Usar
+                            </button>
+                          )}
+                          <button
+                            className="bg-red-500 text-white px-3 py-1.5 rounded-md text-xs hover:bg-red-600 transition-colors ml-2"
+                            onClick={() => eliminarDireccion(direccion.idDireccion)}
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-center text-gray-500">No tienes direcciones guardadas.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

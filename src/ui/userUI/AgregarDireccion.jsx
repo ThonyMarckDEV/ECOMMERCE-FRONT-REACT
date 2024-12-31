@@ -153,9 +153,9 @@ function AgregarDirecciones() {
 
   return (
     <div className="flex flex-col min-h-screen p-0 font-sans text-gray-800">
-      <div className="flex-1 p--1 sm:p-2 md:p-4">
-        <div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-2">
-          <h2 className="text-2xl font-semibold mb-2 text-center text-gray-800">Detalles de la Dirección</h2>
+      <div className="flex-1 p-1 sm:p-2 md:p-2"> {/* Reducir el padding */}
+        <div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-2"> {/* Reducir el padding interno */}
+          <h2 className="text-xl font-semibold mb-1 text-center text-gray-800">Detalles de la Dirección</h2> {/* Reducir el tamaño de la fuente y el margen inferior */}
   
           {notification && <Notification description={notification.description} bgColor={notification.bgColor} />}
   
@@ -166,96 +166,88 @@ function AgregarDirecciones() {
             </div>
           )}
   
-          <form onSubmit={handleSubmit} className="space-y-0 relative"> {/* Reducimos aún más el espacio entre los elementos */}
-            
-          <div className="mt-0"> {/* Eliminamos el margen superior aquí */}
-            <label className="block text-gray-700 text-sm">Departamento:</label>
-            <select
-              name="departamento"
-              value={formData.departamento}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="" disabled>Seleccione un departamento</option>
-              <option value="Amazonas">Amazonas</option>
-              <option value="Áncash">Áncash</option>
-              <option value="Apurímac">Apurímac</option>
-              <option value="Arequipa">Arequipa</option>
-              <option value="Ayacucho">Ayacucho</option>
-              <option value="Cajamarca">Cajamarca</option>
-              <option value="Callao">Callao</option>
-              <option value="Cusco">Cusco</option>
-              <option value="Huancavelica">Huancavelica</option>
-              <option value="Huánuco">Huánuco</option>
-              <option value="Ica">Ica</option>
-              <option value="Junín">Junín</option>
-              <option value="La Libertad">La Libertad</option>
-              <option value="Lambayeque">Lambayeque</option>
-              <option value="Lima">Lima</option>
-              <option value="Loreto">Loreto</option>
-              <option value="Madre de Dios">Madre de Dios</option>
-              <option value="Moquegua">Moquegua</option>
-              <option value="Pasco">Pasco</option>
-              <option value="Piura">Piura</option>
-              <option value="Puno">Puno</option>
-              <option value="San Martín">San Martín</option>
-              <option value="Tacna">Tacna</option>
-              <option value="Tumbes">Tumbes</option>
-              <option value="Ucayali">Ucayali</option>
-            </select>
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-1 relative"> {/* Reducir el espacio entre los elementos */}
+            <div className="mt-0"> {/* Eliminar el margen superior */}
+              <label className="block text-gray-700 text-sm">Departamento:</label>
+              <select
+                name="departamento"
+                value={formData.departamento}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" // Reducir el padding
+                required
+              >
+                <option value="" disabled>Seleccione un departamento</option>
+                <option value="Amazonas">Amazonas</option>
+                <option value="Áncash">Áncash</option>
+                <option value="Apurímac">Apurímac</option>
+                <option value="Arequipa">Arequipa</option>
+                <option value="Ayacucho">Ayacucho</option>
+                <option value="Cajamarca">Cajamarca</option>
+                <option value="Callao">Callao</option>
+                <option value="Cusco">Cusco</option>
+                <option value="Huancavelica">Huancavelica</option>
+                <option value="Huánuco">Huánuco</option>
+                <option value="Ica">Ica</option>
+                <option value="Junín">Junín</option>
+                <option value="La Libertad">La Libertad</option>
+                <option value="Lambayeque">Lambayeque</option>
+                <option value="Lima">Lima</option>
+                <option value="Loreto">Loreto</option>
+                <option value="Madre de Dios">Madre de Dios</option>
+                <option value="Moquegua">Moquegua</option>
+                <option value="Pasco">Pasco</option>
+                <option value="Piura">Piura</option>
+                <option value="Puno">Puno</option>
+                <option value="San Martín">San Martín</option>
+                <option value="Tacna">Tacna</option>
+                <option value="Tumbes">Tumbes</option>
+                <option value="Ucayali">Ucayali</option>
+              </select>
+            </div>
   
-          <div className="mt-0"> {/* Eliminamos el margen superior aquí también */}
-            <label className="block text-gray-700 text-sm">Provincia:</label>
-            <input
-              type="text"
-              name="provincia"
-              value={formData.provincia}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-           />
-           </div>
-
-            <div className="mt-2"> {/* Eliminamos el margen superior aquí también */}
+            <div className="mt-0"> {/* Eliminar el margen superior */}
+              <label className="block text-gray-700 text-sm">Provincia:</label>
+              <input
+                type="text"
+                name="provincia"
+                value={formData.provincia}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" // Reducir el padding
+                required
+              />
+            </div>
+  
+            <div className="mt-0"> {/* Eliminar el margen superior */}
               <label className="block text-gray-700 text-sm">Distrito:</label>
               <input
                 type="text"
                 name="distrito"
                 value={formData.distrito}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" // Reducir el padding
                 required
               />
             </div>
-
   
-            <div className="mt-0"> {/* Eliminamos el margen superior aquí también */}
+            <div className="mt-0"> {/* Eliminar el margen superior */}
               <label className="block text-gray-700 text-sm">Dirección:</label>
               <input
                 type="text"
                 name="direccion"
                 value={formData.direccion}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" // Reducir el padding
                 required
               />
             </div>
-
-            <div className="mt-2"> {/* Eliminamos el margen superior aquí también */}
-              <br></br>
-            </div>
   
-
-            {/* Aumentamos el espacio entre la dirección y el mapa */}
-            <div className="my-8 z-20 relative flex flex-col h-full"> {/* Aumenté el margen superior aún más */}
-              {/* Contenedor del mapa con altura fija */}
-              <div className="flex-grow" style={{ height: '350px' }}>
+            {/* Contenedor del mapa con altura reducida */}
+            <div className="my-4 z-20 relative flex flex-col h-full"> {/* Reducir el margen superior */}
+              <div className="flex-grow" style={{ height: '280px' }}> {/* Reducir la altura del mapa */}
                 <MapContainer
                   center={latitud ? [latitud, longitud] : [-12.04318, -77.02824]}
                   zoom={13}
-                  style={{ height: '100%', width: '100%' }} 
+                  style={{ height: '100%', width: '100%' }}
                   scrollWheelZoom={true}
                 >
                   <TileLayer
@@ -264,22 +256,21 @@ function AgregarDirecciones() {
                   <Map latitud={latitud} longitud={longitud} setLatitud={setLatitud} setLongitud={setLongitud} />
                 </MapContainer>
               </div>
-
-              {/* Botón abajo con margen superior */}
+  
+              {/* Botón con margen superior reducido */}
               <button
                 type="submit"
-                className="w-full bg-black text-white p-3 rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-4"
+                className="w-full bg-black text-white p-2 rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2" // Reducir el padding y el margen
                 disabled={loading}
               >
                 {loading ? 'Cargando...' : 'Agregar Dirección'}
               </button>
             </div>
-
           </form>
         </div>
       </div>
     </div>
-  );
+  );  
 }
 
 export default AgregarDirecciones;
