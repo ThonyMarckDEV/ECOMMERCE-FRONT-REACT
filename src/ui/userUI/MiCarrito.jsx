@@ -9,8 +9,11 @@ import API_BASE_URL from '../../js/urlHelper';
 import { getIdUsuario } from '../../utilities/jwtUtils'; 
 import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
 import carritoVacio from '../../img/carritovacio.png'; // Asegúrate de que la ruta sea correcta
+import logoyape from '../../img/yapelogo.png';
+import mercadopagologo from '../../img/mercadopago.png';
+import visalogo from '../../img/visalogo.jpg';
 
-function Carrito() {
+function Carrito() { 
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -363,7 +366,7 @@ function Carrito() {
       ref={drawerRef}
       className="fixed bottom-0 left-0 right-0 bg-white z-40 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] rounded-t-3xl touch-none"
       style={{
-        height: '340px',
+        height: '370px',
         transform: 'translateY(280px)',
         transition: 'transform 0.3s ease-out'
       }}
@@ -371,6 +374,9 @@ function Carrito() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Línea de deslizar */}
+      <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-3" />
+  
       {/* Vista minimizada (siempre visible) */}
       <div className="p-6 bg-white rounded-t-3xl">
         <div className="flex justify-between items-center">
@@ -378,7 +384,7 @@ function Carrito() {
           <span className="text-xl font-bold">S/.{calcularTotal().toFixed(2)}</span>
         </div>
       </div>
-
+  
       {/* Contenido completo */}
       <div className="p-6 opacity-transition bg-white">
         <div className="space-y-4">
@@ -394,7 +400,7 @@ function Carrito() {
             <span>Envío</span>
             <span className="text-green-600">Gratis</span>
           </div>
-          
+  
           <div className="pt-4">
             <button
               className="w-full bg-black text-white px-6 py-4 rounded-xl font-medium
@@ -406,15 +412,28 @@ function Carrito() {
             >
               {isLoading ? 'Procesando...' : 'Hacer Pedido'}
             </button>
-
+  
             <div className="mt-4 flex justify-center items-center gap-4 text-gray-400">
               <span className="text-sm">Aceptamos:</span>
               <div className="flex gap-3">
-                <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                <img
+                  src={logoyape}
+                  alt="Tarjeta 1"
+                  className="w-8 h-5 object-contain rounded"
+                />
+                <img
+                  src={visalogo}
+                  alt="Tarjeta 2"
+                  className="w-8 h-5 object-contain rounded"
+                />
+                <img
+                  src={mercadopagologo}
+                  alt="Tarjeta 3"
+                  className="w-8 h-5 object-contain rounded"
+                />
               </div>
             </div>
+            
           </div>
         </div>
       </div>
@@ -519,12 +538,24 @@ function Carrito() {
                     <div className="mt-6 flex flex-wrap justify-center gap-2 items-center text-gray-400">
                       <span className="text-sm">Aceptamos:</span>
                       <div className="flex gap-3">
-                        <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                        <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                        <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                        <img
+                          src={logoyape}
+                          alt="Tarjeta 1"
+                          className="w-8 h-5 object-contain rounded"
+                        />
+                        <img
+                          src={visalogo}
+                          alt="Tarjeta 2"
+                          className="w-8 h-5 object-contain rounded"
+                        />
+                        <img
+                          src={mercadopagologo}
+                          alt="Tarjeta 3"
+                          className="w-8 h-5 object-contain rounded"
+                        />
                       </div>
                     </div>
-                    
+
                   </div>
                 </div>
               </div>
