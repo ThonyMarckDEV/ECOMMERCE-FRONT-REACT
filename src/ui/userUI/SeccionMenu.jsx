@@ -62,9 +62,9 @@ const Sidebar = () => {
         </ul>
       </div>
 
-      {/* Botón flotante para abrir la barra lateral */}
+        {/* Botón flotante para abrir la barra lateral */}
       <button
-        className="md:hidden text-white bg-black p-4 rounded-full fixed top-20 left-6 z-50"
+        className="md:hidden text-white bg-black p-4 rounded-full fixed bottom-6 right-6 z-50"
         onClick={toggleMenu}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

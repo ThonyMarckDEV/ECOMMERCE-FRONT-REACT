@@ -1,223 +1,205 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { logout } from '../../js/logout'; // Cambiar a importación nombrada
-import jwtUtils from '../../utilities/jwtUtils'; // Importar las utilidades JWT
-import { useCart } from '../../context/CartContext'; // Usar el contexto del carrito
+import { ShoppingBag, User, Menu, X } from 'lucide-react';
+import { logout } from '../../js/logout';
+import jwtUtils from '../../utilities/jwtUtils';
+import { useCart } from '../../context/CartContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Verificación de autenticación
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Verificar si el menú de perfil está abierto
-  const navigate = useNavigate(); // Inicializamos useNavigate
-  const { cantidadCarrito, updateCartCount } = useCart(); // Obtener cantidadCarrito y la función updateCartCount desde el contexto
-  const [profileImage, setProfileImage] = useState(''); // Foto de perfil
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
+  const { cantidadCarrito } = useCart();
+  const [profileImage, setProfileImage] = useState('');
 
-  // Verificar si hay token en el localStorage al cargar el componente
   useEffect(() => {
     const token = localStorage.getItem('jwt');
     if (token) {
-      setIsAuthenticated(true); // Si hay token, está autenticado
-      const profileImgUrl = jwtUtils.getPerfil(token); // Obtener URL de la imagen del perfil desde el token
-      setProfileImage(profileImgUrl); // Establecer la imagen de perfil
+      setIsAuthenticated(true);
+      const profileImgUrl = jwtUtils.getPerfil(token);
+      setProfileImage(profileImgUrl);
     } else {
-      setIsAuthenticated(false); // Si no hay token, no está autenticado
+      setIsAuthenticated(false);
     }
+
+    // Añadir evento de scroll
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isProfileMenuOpen && !event.target.closest('.profile-menu-container')) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isProfileMenuOpen]);
 
   const toggleProfileMenu = () => {
-    setIsProfileMenuOpen(!isProfileMenuOpen); // Cambia el estado de visibilidad del menú de perfil
-  };
-
-  const goToProfile = () => {
-    navigate('/menuUsuario'); // Redirige a la página de perfil
-  };
-
-  // Llamamos al logout.js cuando el usuario hace click en "Cerrar sesión"
-  const handleLogout = () => {
-    logout(); // Cierra sesión
-    setIsAuthenticated(false); 
-    setIsProfileMenuOpen(false);
-  };
-
-  const handleCategoriesClick = () => {
-    navigate('/?scrollTo=categories'); // Redirige a la página principal con un query param
+    setIsProfileMenuOpen(!isProfileMenuOpen);
   };
 
   return (
-    <nav className="bg-black text-white py-4 px-6">
-      <div className="flex items-center justify-between">
-        
-        {/* Nombre de la empresa */}
-        <a href="/" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-          <div className="text-xl font-bold">
-            ECOMMERCE
-          </div>
-        </a>
-
-        {/* Categorías para pantallas grandes */}
-        <div className="hidden md:flex space-x-8 flex-1 justify-center">
-          <a href="/" className="hover:text-gray-400 font-bold">
-            Home
-          </a>
-          <a href="/productos" className="hover:text-gray-400 font-bold">
-            Productos
-          </a>
-          <button
-            onClick={handleCategoriesClick}
-            className="hover:text-gray-400 font-bold"
-          >
-            Categorías
-          </button>
-        </div>
-
-        {/* Botón del menú para móviles */}
-        <button
-          className="md:hidden focus:outline-none -ml-10"
-          onClick={toggleMenu}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
-        </button>
-
-        {/* Contenedor Flex para los íconos del carrito y perfil */}
-        <div className="flex items-center space-x-2 md:space-x-6">
-          
-        {/* Carrito de compras */}
-          <div className="relative">
-            {isAuthenticated && (
-              <Link to="/carrito">
-                <button
-                  className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
-                  aria-label="Carrito de compras"
-                  title="Carrito de compras"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-12 h-12 md:w-10 md:h-10"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l1.6-8H6.4M16 16a2 2 0 11-4 0M10 16a2 2 0 11-4 0"
-                    />
-                  </svg>
-                </button>
-              </Link>
-            )}
-
-            {/* Mostrar el indicador si hay token y cantidadCarrito > 0 */}
-            {isAuthenticated && cantidadCarrito > 0 && (
-              <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-black bg-white rounded-full">
-                {cantidadCarrito}
-              </span>
-            )}
-          </div>
-
-          {/* Ícono de perfil */}
-          <div className="relative">
+    <>
+      {/* Div espaciador para evitar saltos en el contenido */}
+      <div className="h-20" />
+      
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 
+        ${isScrolled 
+          ? 'bg-black/95 backdrop-blur-sm shadow-lg' 
+          : 'bg-black'} 
+        border-b border-zinc-800`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-20 flex items-center justify-between">
+            {/* Mobile Menu Button */}
             <button
-              onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
-              className="hover:text-gray-400 transition-colors duration-200 focus:outline-none"
-              aria-label="Perfil de usuario"
-              title="Perfil de usuario"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden text-zinc-400 hover:text-white transition-colors duration-300"
             >
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Perfil"
-                  className="w-12 h-12 md:w-10 md:h-10 rounded-full"
-                />
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-12 h-12 md:w-10 md:h-10"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.485 0 4.739.565 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
+                <Menu className="h-6 w-6" />
               )}
             </button>
 
-            {/* Menú desplegable de perfil */}
-            {isProfileMenuOpen && isAuthenticated && (
-              <div className="absolute right-0 mt-2 bg-white text-black border border-gray-300 rounded-lg shadow-lg w-48 z-10">
-                <ul>
-                  <li>
+            {/* Logo */}
+            <Link 
+              to="/" 
+              className="text-2xl tracking-widest text-white hover:text-zinc-200 transition-colors duration-300"
+            >
+              ECOMMERCE
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex space-x-12 text-sm tracking-wider">
+              <Link 
+                to="/" 
+                className="text-zinc-300 hover:text-white transition-colors duration-300"
+              >
+                INICIO
+              </Link>
+              <Link 
+                to="/productos" 
+                className="text-zinc-300 hover:text-white transition-colors duration-300"
+              >
+                PRODUCTOS
+              </Link>
+              <button
+                onClick={() => navigate('/?scrollTo=categories')}
+                className="text-zinc-300 hover:text-white transition-colors duration-300"
+              >
+                CATEGORÍAS
+              </button>
+            </div>
+
+            {/* Right Icons */}
+            <div className="flex items-center space-x-8">
+              {isAuthenticated && (
+                <Link to="/carrito" className="relative group">
+                  <ShoppingBag className="h-6 w-6 text-zinc-300 group-hover:text-white transition-colors duration-300" />
+                  {cantidadCarrito > 0 && (
+                    <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-white text-black text-xs flex items-center justify-center font-medium">
+                      {cantidadCarrito}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              <div className="relative profile-menu-container">
+                <button
+                  onClick={isAuthenticated ? toggleProfileMenu : () => navigate('/login')}
+                  className="focus:outline-none group"
+                >
+                  {profileImage ? (
+                    <img 
+                      src={profileImage} 
+                      alt="Profile" 
+                      className="h-8 w-8 rounded-full object-cover ring-2 ring-zinc-800 group-hover:ring-zinc-600 transition-all duration-300" 
+                    />
+                  ) : (
+                    <User className="h-6 w-6 text-zinc-300 group-hover:text-white transition-colors duration-300" />
+                  )}
+                </button>
+
+                {isProfileMenuOpen && isAuthenticated && (
+                  <div className="absolute right-0 mt-3 w-48 bg-zinc-900/95 backdrop-blur-sm rounded-lg shadow-xl py-1 text-sm border border-zinc-800">
                     <button
-                      onClick={goToProfile}
-                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                      onClick={() => {
+                        navigate('/menuUsuario');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors duration-300"
                     >
                       Mi Cuenta
                     </button>
-                  </li>
-                  <li>
                     <button
-                      onClick={() => navigate('/pedidos')} // Redirige a la página de direcciones
-                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left"
+                      onClick={() => {
+                        navigate('/pedidos');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors duration-300"
                     >
                       Mis Pedidos
                     </button>
-                  </li>
-                  <li>
                     <button
-                      onClick={handleLogout} // Cierra sesión
-                      className="block px-4 py-2 hover:bg-gray-200 w-full text-left text-red-600"
+                      onClick={() => {
+                        logout();
+                        setIsAuthenticated(false);
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors duration-300"
                     >
                       Cerrar sesión
                     </button>
-                  </li>
-                </ul>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Menú desplegable en móviles */}
-      <div
-        className={`md:hidden mt-4 ${isMenuOpen ? 'block' : 'hidden'}`}
-      >
-        <a href="/" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-          Home
-        </a>
-        <a href="/productos" className="block py-2 px-4 hover:bg-gray-700 font-bold">
-          Productos
-        </a>
-        <button
-          onClick={handleCategoriesClick}
-          className="block py-2 px-4 hover:bg-gray-700 font-bold text-left w-full"
+        {/* Mobile Menu */}
+        <div
+          className={`md:hidden bg-zinc-900/95 backdrop-blur-sm border-t border-zinc-800 transition-all duration-300 ${
+            isMenuOpen ? 'max-h-48' : 'max-h-0'
+          } overflow-hidden`}
         >
-          Categorías
-        </button>
-      </div>
-    </nav>
+          <div className="px-4 py-2 space-y-1">
+            <Link 
+              to="/" 
+              className="block py-2 text-zinc-300 hover:text-white transition-colors duration-300"
+            >
+              INICIO
+            </Link>
+            <Link 
+              to="/productos" 
+              className="block py-2 text-zinc-300 hover:text-white transition-colors duration-300"
+            >
+              PRODUCTOS
+            </Link>
+            <button
+              onClick={() => {
+                navigate('/?scrollTo=categories');
+                setIsMenuOpen(false);
+              }}
+              className="block w-full text-left py-2 text-zinc-300 hover:text-white transition-colors duration-300"
+            >
+              CATEGORÍAS
+            </button>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 };
 
