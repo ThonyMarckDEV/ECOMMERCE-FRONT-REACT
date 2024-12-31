@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';
@@ -9,7 +9,6 @@ import API_BASE_URL from '../../js/urlHelper';
 import { getIdUsuario } from '../../utilities/jwtUtils'; 
 import { useCart } from '../../context/CartContext'; // Asegúrate de importar correctamente
 import carritoVacio from '../../img/carritovacio.png'; // Asegúrate de que la ruta sea correcta
-
 
 function Carrito() {
   const [productos, setProductos] = useState([]);
@@ -297,89 +296,245 @@ function Carrito() {
   };
 
 
+  const [isMobile, setIsMobile] = useState(false);
+  const drawerRef = useRef(null);
+  const touchStartY = useRef(0);
+  const currentTranslate = useRef(280); // Inicializar en 280 para que empiece cerrado
+  const bodyRef = useRef(document.body);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Función para bloquear el scroll del body
+  const disableBodyScroll = () => {
+    if (bodyRef.current) {
+      bodyRef.current.style.overflow = 'hidden';
+      bodyRef.current.style.touchAction = 'none';
+    }
+  };
+
+  // Función para habilitar el scroll del body
+  const enableBodyScroll = () => {
+    if (bodyRef.current) {
+      bodyRef.current.style.overflow = '';
+      bodyRef.current.style.touchAction = '';
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+    drawerRef.current.style.transition = 'none';
+    disableBodyScroll();
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault(); // Prevenir scroll del body
+    const touchY = e.touches[0].clientY;
+    const diff = touchY - touchStartY.current;
+    const newTranslate = Math.max(0, Math.min(280, currentTranslate.current + diff));
+    
+    drawerRef.current.style.transform = `translateY(${newTranslate}px)`;
+  };
+
+  const handleTouchEnd = () => {
+    drawerRef.current.style.transition = 'transform 0.3s ease-out';
+    const currentPosition = parseInt(drawerRef.current.style.transform.replace('translateY(', ''));
+    
+    if (currentPosition > 140) {
+      drawerRef.current.style.transform = 'translateY(280px)';
+      currentTranslate.current = 280;
+    } else {
+      drawerRef.current.style.transform = 'translateY(0)';
+      currentTranslate.current = 0;
+    }
+    
+    enableBodyScroll();
+  };
+
+
+  const MobileDrawer = () => (
+    <div
+      ref={drawerRef}
+      className="fixed bottom-0 left-0 right-0 bg-white z-40 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] rounded-t-3xl touch-none"
+      style={{
+        height: '340px',
+        transform: 'translateY(280px)',
+        transition: 'transform 0.3s ease-out'
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Vista minimizada (siempre visible) */}
+      <div className="p-6 bg-white rounded-t-3xl">
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-medium">Total (IGV 18%)</span>
+          <span className="text-xl font-bold">S/.{calcularTotal().toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* Contenido completo */}
+      <div className="p-6 opacity-transition bg-white">
+        <div className="space-y-4">
+          <div className="flex justify-between text-gray-600">
+            <span>Subtotal</span>
+            <span>S/.{(calcularTotal() / 1.18).toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-gray-600">
+            <span>IGV (18%)</span>
+            <span>S/.{(calcularTotal() - (calcularTotal() / 1.18)).toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-gray-600">
+            <span>Envío</span>
+            <span className="text-green-600">Gratis</span>
+          </div>
+          
+          <div className="pt-4">
+            <button
+              className="w-full bg-black text-white px-6 py-4 rounded-xl font-medium
+                transform transition-all duration-300 
+                hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]
+                disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={verificarDireccionUsuario}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Procesando...' : 'Hacer Pedido'}
+            </button>
+
+            <div className="mt-4 flex justify-center items-center gap-4 text-gray-400">
+              <span className="text-sm">Aceptamos:</span>
+              <div className="flex gap-3">
+                <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                <div className="w-8 h-5 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <NavBarHome />
       
-      {/* Loading Overlay */}
       {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="animate-bounce-in">
             <LoadingScreen />
           </div>
         </div>
       )}
       
-      {/* Notification */}
       {notification && (
         <div className="animate-fade-in-down fixed top-4 right-4 z-50">
           <Notification description={notification.description} bgColor={notification.bgColor} />
         </div>
       )}
-      
-      {/* Main Content */}
-      <div className="flex-grow px-4 md:px-8 py-12 max-w-7xl mx-auto w-full">
-        <h1 className="text-4xl font-light text-center text-gray-800 mb-12 animate-fade-in">
-          Shopping Cart
+
+      <div className="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:pb-8">
+        <h1 className="text-2xl sm:text-3xl font-light text-gray-800 mb-8 animate-fade-in text-center lg:text-left">
+          Carrito de Compra {productos.length > 0 && `(${productos.length} Productos)`}
         </h1>
-        
+
         {productos.length === 0 ? (
-          <div className="animate-fade-in flex flex-col justify-center items-center pt-16">
-            <div className="text-center transform animate-scale-up">
+          <div className="animate-fade-in flex flex-col items-center justify-center py-16">
+            <div className="text-center transform animate-scale-up max-w-md">
               <img
                 src={carritoVacio}
                 alt="Empty cart"
-                className="mx-auto mb-8 w-64 h-64 opacity-75"
+                className="mx-auto w-48 h-48 opacity-80 mb-6"
               />
-              <div className="text-3xl text-gray-400 font-light animate-fade-in">
-                Your cart is empty
-              </div>
+              <h2 className="text-2xl text-gray-600 font-light mb-4">
+                Tu carrito esta vacio.
+              </h2>
+              <p className="text-gray-500 mb-8">
+                Ups. Parece que no hay nada en tu carrito.
+              </p>
+              <button 
+                onClick={() => window.history.back()}
+                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-900 transition duration-300"
+              >
+                Continuar Comprando
+              </button>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32 animate-fade-in">
-            {/* Products List */}
-            <div className="space-y-6">
-              <ProductosCarrito
-                productos={productos}
-                actualizarCantidad={actualizarCantidad}
-                eliminarProducto={eliminarProducto}
-                isLoading={isLoading}
-                API_BASE_URL={API_BASE_URL}
-              />
-            </div>
-            
-            {/* Order Summary */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 h-fit animate-fade-in-down">
-              <h2 className="text-2xl font-light mb-6">Order Summary</h2>
-              <div className="space-y-4">
-                <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
-                  <span>S/.{(calcularTotal() / 1.18).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax (18%)</span>
-                  <span>S/.{(calcularTotal() - (calcularTotal() / 1.18)).toFixed(2)}</span>
-                </div>
-                <div className="h-px bg-gray-100 my-4" />
-                <div className="flex justify-between text-xl font-medium">
-                  <span>Total</span>
-                  <span>S/.{calcularTotal().toFixed(2)}</span>
-                </div>
-                <button
-                  className="w-full mt-6 bg-black text-white px-8 py-4 rounded-xl font-medium
-                    transform transition duration-300 hover:scale-[1.02] hover:shadow-lg
-                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  onClick={verificarDireccionUsuario}
-                  disabled={isLoading}
-                >
-                  Proceed to Checkout
-                </button>
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            <div className="lg:col-span-8 animate-fade-in">
+              <div className="space-y-6 lg:pr-6 lg:max-h-[80vh] lg:overflow-y-auto custom-scrollbar">
+                <ProductosCarrito
+                  productos={productos}
+                  actualizarCantidad={actualizarCantidad}
+                  eliminarProducto={eliminarProducto}
+                  isLoading={isLoading}
+                  API_BASE_URL={API_BASE_URL}
+                />
               </div>
             </div>
+
+            {/* Desktop Order Summary */}
+            {!isMobile && (
+              <div className="lg:col-span-4 animate-fade-in bg-white rounded-2xl shadow-sm border border-gray-200 h-fit sticky top-8">
+                <div className="p-8">
+                  <h2 className="text-xl font-medium mb-6">Resumen de Orden</h2>
+                  <div className="space-y-4">
+                    {/* ... Desktop summary content ... */}
+                    <div className="flex justify-between text-gray-600">
+                      <span>Subtotal</span>
+                      <span>S/.{(calcularTotal() / 1.18).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>IGV. (18%)</span>
+                      <span>S/.{(calcularTotal() - (calcularTotal() / 1.18)).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Envio</span>
+                      <span className="text-green-600">Gratis</span>
+                    </div>
+                    <div className="h-px bg-gray-100 my-4" />
+                    <div className="flex justify-between text-lg font-medium">
+                      <span>Total</span>
+                      <span>S/.{calcularTotal().toFixed(2)}</span>
+                    </div>
+                    
+                    <button
+                      className="w-full mt-6 bg-black text-white px-6 py-4 rounded-xl font-medium
+                        transform transition-all duration-300 
+                        hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]
+                        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      onClick={verificarDireccionUsuario}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Procesando...' : 'Hacer Pedido'}
+                    </button>
+                    
+                    <div className="mt-6 flex flex-wrap justify-center gap-2 items-center text-gray-400">
+                      <span className="text-sm">Aceptamos:</span>
+                      <div className="flex gap-3">
+                        <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                        <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                        <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* Mobile Drawer */}
+      {isMobile && productos.length > 0 && <MobileDrawer />}
     </div>
   );
 }
