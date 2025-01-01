@@ -85,7 +85,7 @@ function FiltradoProductos({ onFilter }) {
       {/* Filter Sidebar */}
       <div className={`
         fixed md:relative top-0 right-0 h-full md:h-auto w-80 md:w-64
-        bg-white md:bg-transparent z-50 transform transition-transform duration-300
+        bg-white md:bg-transparent z-40 transform transition-transform duration-300
         ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
         overflow-y-auto
       `}>
