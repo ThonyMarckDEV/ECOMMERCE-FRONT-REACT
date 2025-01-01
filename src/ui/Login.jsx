@@ -162,14 +162,15 @@ const Login = ({ closeLoginModal }) => {
   
         {/* Mostrar error */}
         {error && <p className="mt-4 text-center text-red-500 animate-fade-in">{error}</p>}
-  
+
         {/* Separador */}
         <div className="flex items-center my-6 animate-fade-in">
           <div className="flex-grow h-px bg-gray-300"></div>
-          <span className="px-3 text-sm text-gray-500">O</span>
+          <span className="px-3 text-sm text-black">O</span>
           <div className="flex-grow h-px bg-gray-300"></div>
         </div>
-  
+        <div className="text-center text-sm text-black my-4">Inicia Sesión con:</div>
+
         {/* Botón de login con Google */}
         <div className="animate-fade-in">
           <GoogleOAuthProvider clientId="265411714077-7as2ltld99egmkrtg7p25la9t6d2r4bb.apps.googleusercontent.com">

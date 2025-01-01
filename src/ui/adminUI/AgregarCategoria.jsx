@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '../../components/adminComponents/Sidebar'; // Importamos el Sidebar
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
+import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen
 
 function AgregarCategoria() {
   const [nombreCategoria, setNombreCategoria] = useState('');
@@ -28,7 +29,7 @@ function AgregarCategoria() {
     formData.append('imagen', imagen);
 
     try {
-      setLoading(true);
+      setLoading(true); // Activar el loader
 
       // Configurar la solicitud HTTP con el token JWT en el encabezado
       const response = await fetch(`${API_BASE_URL}/api/categorias`, {
@@ -40,7 +41,7 @@ function AgregarCategoria() {
       });
 
       if (response.ok) {
-        alert('Categoría agregada exitosamente');
+        SweetAlert.showMessageAlert('Éxito', 'Categoría agregada exitosamente', 'success');
         setNombreCategoria('');
         setDescripcion('');
         setImagen(null); // Limpiar el campo de imagen
@@ -48,13 +49,13 @@ function AgregarCategoria() {
       } else {
         const errorData = await response.json();
         console.error('Error al agregar categoría:', errorData);
-        alert('Hubo un error al agregar la categoría');
+        SweetAlert.showMessageAlert('Error', 'Hubo un error al agregar la categoría', 'error');
       }
     } catch (error) {
       console.error('Error al agregar categoría:', error);
-      alert('Hubo un error al agregar la categoría');
+      SweetAlert.showMessageAlert('Error', 'Hubo un error al agregar la categoría', 'error');
     } finally {
-      setLoading(false);
+      setLoading(false); // Desactivar el loader
     }
   };
 
@@ -62,6 +63,8 @@ function AgregarCategoria() {
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex-1 p-8 bg-gray-100">
+        {/* Mostrar el LoaderScreen si loading es true */}
+        {loading && <LoaderScreen />}
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold mb-6">Agregar Categoría</h2>
           <form onSubmit={handleSubmit}>
@@ -87,14 +90,14 @@ function AgregarCategoria() {
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700">Imagen (Requerido)</label>
               <input
-                type='file'
+                type="file"
                 onChange={handleImagenChange}
-                className='w-full cursor-pointer rounded-md border border-stroke dark:border-dark-3 text-dark-6 outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke dark:file:border-dark-3 file:bg-gray-2 dark:file:bg-dark-2 file:py-3 file:px-5 file:text-body-color dark:file:text-dark-6 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2'
+                className="w-full cursor-pointer rounded-md border border-stroke dark:border-dark-3 text-dark-6 outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke dark:file:border-dark-3 file:bg-gray-2 dark:file:bg-dark-2 file:py-3 file:px-5 file:text-body-color dark:file:text-dark-6 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2"
               />
             </div>
             <button
               type="submit"
-              className={`w-full py-3 px-4 bg-black text-white rounded-md ${loading ? 'opacity-50' : ''}`}
+              className={`w-full py-3 px-4 bg-black text-white rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={loading}
             >
               {loading ? 'Cargando...' : 'Agregar Categoría'}
