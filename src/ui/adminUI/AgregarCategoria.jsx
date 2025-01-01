@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/adminComponents/Sidebar'; // Importamos el Sidebar
 import API_BASE_URL from '../../js/urlHelper';
+import SweetAlert from '../../components/SweetAlert';
 
 function AgregarCategoria() {
   const [nombreCategoria, setNombreCategoria] = useState('');
@@ -17,7 +18,7 @@ function AgregarCategoria() {
     const token = localStorage.getItem('jwt'); // Obtener el token JWT del localStorage
 
     if (!nombreCategoria || !imagen) {
-      alert('El nombre de la categoría y la imagen son obligatorios');
+      SweetAlert.showMessageAlert('Error', 'El nombre de la categoría y la imagen son obligatorios.', 'error');
       return;
     }
 
@@ -86,10 +87,9 @@ function AgregarCategoria() {
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700">Imagen (Requerido)</label>
               <input
-                type="file"
+                type='file'
                 onChange={handleImagenChange}
-                className="mt-1 block w-full py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                required
+                className='w-full cursor-pointer rounded-md border border-stroke dark:border-dark-3 text-dark-6 outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke dark:file:border-dark-3 file:bg-gray-2 dark:file:bg-dark-2 file:py-3 file:px-5 file:text-body-color dark:file:text-dark-6 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2'
               />
             </div>
             <button

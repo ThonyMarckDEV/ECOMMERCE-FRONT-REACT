@@ -235,16 +235,56 @@ const CategoryTable = () => {
         {loading && <LoadingScreen />}
 
         <table className="w-full min-w-max table-auto border-collapse">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">ID</th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Nombre</th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Descripción</th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Imagen</th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Estado</th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Acciones</th>
-            </tr>
-          </thead>
+        <thead className="bg-gray-200">
+          <tr>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+              <input
+                type="text"
+                placeholder="Filtrar ID"
+                value={filters.idCategoria}
+                onChange={(e) => handleFilterChange(e, 'idCategoria')}
+                className="w-full px-2 py-1 border rounded"
+              />
+            </th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+              <input
+                type="text"
+                placeholder="Filtrar Nombre"
+                value={filters.nombreCategoria}
+                onChange={(e) => handleFilterChange(e, 'nombreCategoria')}
+                className="w-full px-2 py-1 border rounded"
+              />
+            </th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+              <input
+                type="text"
+                placeholder="Filtrar Descripción"
+                value={filters.descripcion}
+                onChange={(e) => handleFilterChange(e, 'descripcion')}
+                className="w-full px-2 py-1 border rounded"
+              />
+            </th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+              {/* No se filtra por imagen */}
+              Imagen
+            </th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+              <select
+                value={filters.estado}
+                onChange={(e) => handleFilterChange(e, 'estado')}
+                className="w-full px-2 py-1 border rounded"
+              >
+                <option value="">Todos</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </th>
+            <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
+              {/* No se filtra por acciones */}
+              Acciones
+            </th>
+          </tr>
+        </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {categorias.map((categoria) => (
               <tr key={categoria.idCategoria} className="hover:bg-gray-100">
@@ -276,9 +316,9 @@ const CategoryTable = () => {
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">
                   {editingId === categoria.idCategoria ? (
                     <input
-                      type="file"
+                      type='file'
                       onChange={handleImagenChange}
-                      className="w-full px-2 py-1 border rounded"
+                      className='w-full cursor-pointer rounded-md border border-stroke dark:border-dark-3 text-dark-6 outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke dark:file:border-dark-3 file:bg-gray-2 dark:file:bg-dark-2 file:py-3 file:px-5 file:text-body-color dark:file:text-dark-6 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2'
                     />
                   ) : (
                     <img
