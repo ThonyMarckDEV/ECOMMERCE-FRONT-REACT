@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import '../../index.css';
 
-// Lazy load components para mejorar el tiempo de carga inicial
+// Lazy load components para mejorar el tiempo de carga 
 const NavBarHome = lazy(() => import('../../components/home/NavBarHome'));
 const SeccionMenu = lazy(() => import('./SeccionMenu'));
 
