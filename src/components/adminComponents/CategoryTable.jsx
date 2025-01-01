@@ -16,6 +16,13 @@ const CategoryTable = () => {
     descripcion: '',
     estado: ''
   });
+  const [editingId, setEditingId] = useState(null); // ID de la categoría en edición
+  const [editedCategoria, setEditedCategoria] = useState({
+    nombreCategoria: '',
+    descripcion: '',
+    imagen: ''
+  }); // Datos editados de la categoría
+  const [imagenFile, setImagenFile] = useState(null); // Archivo de imagen seleccionado
 
   const itemsPerPage = 5;
 
@@ -25,7 +32,6 @@ const CategoryTable = () => {
     try {
       setLoading(true);
 
-      // Construir la URL con los parámetros de filtro y búsqueda
       const url = new URL(`${API_BASE_URL}/api/obtenerCategorias`);
       url.searchParams.append('page', page + 1);
       url.searchParams.append('limit', itemsPerPage);
@@ -46,8 +52,8 @@ const CategoryTable = () => {
       }
 
       const data = await response.json();
-      setCategorias(data.data || []); // Actualizar los datos de la página actual
-      setPageCount(data.totalPages); // Actualizar el total de páginas
+      setCategorias(data.data || []);
+      setPageCount(data.totalPages);
     } catch (error) {
       console.error('Error al obtener categorías:', error);
       setCategorias([]);
@@ -63,7 +69,7 @@ const CategoryTable = () => {
 
   // Manejar el cambio de página
   const handlePageClick = (selectedPage) => {
-    setCurrentPage(selectedPage.selected); // Actualizar la página actual
+    setCurrentPage(selectedPage.selected);
   };
 
   // Manejar cambios en los filtros
@@ -112,6 +118,105 @@ const CategoryTable = () => {
     }
   };
 
+  // Cancelar la edición
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditedCategoria({
+      nombreCategoria: '',
+      descripcion: '',
+      imagen: ''
+    });
+    setImagenFile(null);
+  };
+
+  // Modify handleEditChange to prevent empty strings
+  const handleEditChange = (e, field) => {
+    const value = e.target.value;
+    if (value.trim() !== '' || value === '') { // Allow empty string for intentional clearing
+      setEditedCategoria(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+  };
+
+  // Update handleEdit to properly initialize edit state
+  const handleEdit = (categoria) => {
+    setEditingId(categoria.idCategoria);
+    setEditedCategoria({
+      nombreCategoria: categoria.nombreCategoria || '',
+      descripcion: categoria.descripcion || '',
+      imagen: categoria.imagen || ''
+    });
+    setImagenFile(null);
+  };
+
+  // Manejar la selección de la imagen
+  const handleImagenChange = (e) => {
+    setImagenFile(e.target.files[0]);
+  };
+
+  const handleUpdate = async () => {
+    const token = localStorage.getItem('jwt');
+    try {
+      setLoading(true);
+  
+      // Create FormData and explicitly set the ID
+      const formData = new FormData();
+      formData.append('id', editingId); // Explicitly add the ID
+      
+      // Only append if values exist and are different from current
+      if (editedCategoria.nombreCategoria) {
+        formData.append('nombreCategoria', editedCategoria.nombreCategoria);
+      }
+      
+      if (editedCategoria.descripcion !== null) {
+        formData.append('descripcion', editedCategoria.descripcion);
+      }
+      
+      if (imagenFile) {
+        formData.append('imagen', imagenFile);
+      }
+  
+      // Make sure to use the correct ID in the URL
+      const response = await fetch(`${API_BASE_URL}/api/actualizarCategoria/${editingId}`, {
+        method: 'POST', // Change to POST and override with _method
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // Remove Content-Type to let browser set it correctly for FormData
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al actualizar la categoría');
+      }
+  
+      const data = await response.json();
+  
+      // Refresh the categories after successful update
+      await fetchCategorias(currentPage);
+  
+      // Reset states
+      setEditingId(null);
+      setEditedCategoria({
+        nombreCategoria: '',
+        descripcion: '',
+        imagen: ''
+      });
+      setImagenFile(null);
+  
+      SweetAlert.showMessageAlert('¡Éxito!', 'Categoría actualizada correctamente.', 'success');
+  
+    } catch (error) {
+      console.error('Error updating category:', error);
+      SweetAlert.showMessageAlert('Error', error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       {/* Contenedor del buscador */}
@@ -132,43 +237,11 @@ const CategoryTable = () => {
         <table className="w-full min-w-max table-auto border-collapse">
           <thead className="bg-gray-200">
             <tr>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-                <input
-                  type="text"
-                  placeholder="Filtrar ID"
-                  value={filters.idCategoria}
-                  onChange={(e) => handleFilterChange(e, 'idCategoria')}
-                  className="w-full px-2 py-1 border rounded"
-                />
-              </th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-                <input
-                  type="text"
-                  placeholder="Filtrar Nombre"
-                  value={filters.nombreCategoria}
-                  onChange={(e) => handleFilterChange(e, 'nombreCategoria')}
-                  className="w-full px-2 py-1 border rounded"
-                />
-              </th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-                <input
-                  type="text"
-                  placeholder="Filtrar Descripción"
-                  value={filters.descripcion}
-                  onChange={(e) => handleFilterChange(e, 'descripcion')}
-                  className="w-full px-2 py-1 border rounded"
-                />
-              </th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">ID</th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Nombre</th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Descripción</th>
               <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Imagen</th>
-              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">
-                <input
-                  type="text"
-                  placeholder="Filtrar Estado"
-                  value={filters.estado}
-                  onChange={(e) => handleFilterChange(e, 'estado')}
-                  className="w-full px-2 py-1 border rounded"
-                />
-              </th>
+              <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Estado</th>
               <th className="px-4 py-2 text-xs font-medium text-gray-600 uppercase border-b">Acciones</th>
             </tr>
           </thead>
@@ -176,14 +249,44 @@ const CategoryTable = () => {
             {categorias.map((categoria) => (
               <tr key={categoria.idCategoria} className="hover:bg-gray-100">
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.idCategoria}</td>
-                <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.nombreCategoria}</td>
-                <td className="px-4 py-2 text-sm text-gray-700 border-b">{categoria.descripcion || 'N/A'}</td>
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">
-                  <img 
-                    src={`${API_BASE_URL}/storage/${categoria.imagen}`}
-                    alt={categoria.nombreCategoria} 
-                    className="w-10 h-10 object-cover" 
-                  />
+                  {editingId === categoria.idCategoria ? (
+                    <input
+                      type="text"
+                      value={editedCategoria.nombreCategoria}
+                      onChange={(e) => handleEditChange(e, 'nombreCategoria')}
+                      className="w-full px-2 py-1 border rounded"
+                    />
+                  ) : (
+                    categoria.nombreCategoria
+                  )}
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                  {editingId === categoria.idCategoria ? (
+                    <input
+                      type="text"
+                      value={editedCategoria.descripcion}
+                      onChange={(e) => handleEditChange(e, 'descripcion')}
+                      className="w-full px-2 py-1 border rounded"
+                    />
+                  ) : (
+                    categoria.descripcion || 'N/A'
+                  )}
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-700 border-b">
+                  {editingId === categoria.idCategoria ? (
+                    <input
+                      type="file"
+                      onChange={handleImagenChange}
+                      className="w-full px-2 py-1 border rounded"
+                    />
+                  ) : (
+                    <img
+                      src={`${API_BASE_URL}/storage/${categoria.imagen}`}
+                      alt={categoria.nombreCategoria}
+                      className="w-10 h-10 object-cover"
+                    />
+                  )}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">
                   <button
@@ -197,12 +300,29 @@ const CategoryTable = () => {
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-700 border-b">
                   <div className="space-x-2">
-                    <button
-                      className="bg-black text-white px-3 py-1 rounded hover:bg-gray-700"
-                      onClick={() => alert(`Editar categoría con ID: ${categoria.idCategoria}`)}
-                    >
-                      Editar
-                    </button>
+                    {editingId === categoria.idCategoria ? (
+                      <>
+                        <button
+                          className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                          onClick={handleUpdate}
+                        >
+                          Actualizar
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                          onClick={handleCancel}
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="bg-black text-white px-3 py-1 rounded hover:bg-gray-700"
+                        onClick={() => handleEdit(categoria)}
+                      >
+                        Editar
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
