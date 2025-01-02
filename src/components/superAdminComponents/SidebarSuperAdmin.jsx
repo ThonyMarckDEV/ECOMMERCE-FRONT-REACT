@@ -159,7 +159,7 @@ function SidebarSuperAdmin() {
               {/* Confguiracion */}
               <li className="mb-4">
                 <a
-                    href="/configuracion"
+                    href="/superAdmin/configuracion"
                     className="flex items-center text-lg hover:bg-gray-700 p-2 rounded-lg transition-all duration-300"
                   >
                     <AiFillSetting className="mr-4 text-xl" />

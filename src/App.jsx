@@ -26,6 +26,7 @@ import EditarCategoria from './ui/superadminUI/EditarCategoria';
 import AgregarTalla from './ui/superadminUI/AgregarTalla';
 import EditarTalla from './ui/superadminUI/EditarTalla';
 import AgregarUsuario from './ui/superadminUI/AgregarUsuario';
+import Configuracion from './ui/superadminUI/Configuracion';
 
 //ADMINUI
 import Admin from './ui/adminUI/Admin';
@@ -111,6 +112,7 @@ function AppContent() {
       <Route path="/superAdmin/categorias/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarCategoria />} />} />
       <Route path="/superAdmin/tallas/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarTalla />} />} />
       <Route path="/superAdmin/tallas/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarTalla />} />} />
+      <Route path="/superAdmin/configuracion" element={<ProtectedRouteRolSuperAdmin element={<Configuracion />} />} />
 
       {/* RUTAS ROL ADMIN*/}
       <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
