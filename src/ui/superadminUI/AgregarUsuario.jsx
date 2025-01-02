@@ -111,7 +111,7 @@ function AgregarUsuario() {
             </div>
             <button
               type="submit"
-              className={`w-full py-3 px-4 bg-black text-white rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-3 px-4 bg-gray-900 text-white rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={loading}
             >
               {loading ? 'Cargando...' : 'Agregar Usuario'}
