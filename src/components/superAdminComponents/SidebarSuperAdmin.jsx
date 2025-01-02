@@ -7,6 +7,7 @@ import {
   AiOutlineUser,
   AiOutlineDown,
   AiOutlineMenu,
+  AiOutlineMenuFold,
 } from 'react-icons/ai';
 
 function SidebarSuperAdmin() {
@@ -121,7 +122,7 @@ function SidebarSuperAdmin() {
                   onClick={() => setOpenCategorias(!openCategorias)}
                 >
                   <div className="flex items-center">
-                    <AiFillSetting className="mr-4 text-xl" />
+                    <AiOutlineMenuFold className="mr-4 text-xl" />
                     <span>Categorías</span>
                   </div>
                   <AiOutlineDown className={`transition-transform ${openCategorias ? 'rotate-180' : ''}`} />
@@ -142,6 +143,7 @@ function SidebarSuperAdmin() {
                 )}
               </li>
 
+
               {/* Reportes */}
               <li className="mb-4">
                 <a
@@ -152,6 +154,20 @@ function SidebarSuperAdmin() {
                   <span>Reportes</span>
                 </a>
               </li>
+
+              
+              {/* Confguiracion */}
+              <li className="mb-4">
+                <a
+                    href="/configuracion"
+                    className="flex items-center text-lg hover:bg-gray-700 p-2 rounded-lg transition-all duration-300"
+                  >
+                    <AiFillSetting className="mr-4 text-xl" />
+                    <span>Configuracion</span>
+                </a>
+              </li>
+
+
             </ul>
           </div>
 
