@@ -5,25 +5,30 @@ const FireworksEffect = () => {
   useEffect(() => {
     const container = document.getElementById('fireworks-container');
 
-    // Crear los fuegos artificiales
+    // Crear fuegos artificiales
     const fireworks = new Fireworks(container, {
-      speed: 0.0001,  // Velocidad extremadamente baja para que suban muy lentamente
-      acceleration: 1,  // Aceleración muy suave para movimiento controlado
-      friction: 0.98,  // Fricción suave
-      gravity: 0,  // Sin gravedad para que no caigan
-      particles: 50,  // Menos partículas por explosión
-      hue: { min: 0, max: 360 },  // Colores variados para los fuegos
-      delay: { min: 200, max: 100 },  // Mucho mayor tiempo de espera entre explosiones
-      lifetime: { min: 3, max: 3 },  // Duración más larga de los fuegos
-      position: { x: window.innerWidth / 2, y: window.innerHeight },  // Inicio desde la parte inferior
-      width: window.innerWidth, // Ancho de la pantalla
-      height: window.innerHeight, // Alto de la pantalla
-      numberOfFireworks: 1,  // Solo 1 fuego lanzado por vez
+      speed: 0.0001,
+      acceleration: 1,
+      friction: 0.98,
+      gravity: 0,
+      particles: 50,
+      hue: { min: 0, max: 360 },
+      delay: { min: 100, max: 200 },
+      lifetime: { min: 3, max: 3 },
+      position: { x: window.innerWidth / 2, y: window.innerHeight },
+      width: window.innerWidth,
+      height: window.innerHeight,
+      numberOfFireworks: 1,
     });
 
     fireworks.start();
 
-    // Limpiar al desmontar
+    // Detener fuegos artificiales después de 3 segundos
+    setTimeout(() => {
+      fireworks.stop();
+    }, 10000);
+
+    // Limpiar al desmontar el componente
     return () => {
       fireworks.stop();
     };
@@ -33,13 +38,13 @@ const FireworksEffect = () => {
     <div
       id="fireworks-container"
       style={{
-        position: 'fixed',  // Fijo para que no se muevan al hacer scroll
+        position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        pointerEvents: 'none', // Para que no interfiera con otros elementos
-        zIndex: 9999,  // Asegura que esté encima de otros elementos
+        pointerEvents: 'none',
+        zIndex: 9999,
       }}
     ></div>
   );
