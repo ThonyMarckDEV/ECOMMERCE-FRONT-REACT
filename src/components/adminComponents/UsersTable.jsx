@@ -374,21 +374,20 @@ const UsersTable = () => {
 
       <div className="mt-6">
         <ReactPaginate
-          previousLabel={'Anterior'}
-          nextLabel={'Siguiente'}
-          breakLabel={'...'}
-          pageCount={pageCount}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={handlePageClick}
-          containerClassName={'flex justify-center items-center space-x-2'}
-          pageClassName={'px-3 py-1 border rounded-lg hover:bg-gray-50 transition-colors'}
-          activeClassName={'bg-blue-500 text-white border-blue-500 hover:bg-blue-600'}
-          previousClassName={'px-3 py-1 border rounded-lg hover:bg-gray-50 transition-colors'}
-          nextClassName={'px-3 py-1 border rounded-lg hover:bg-gray-50 transition-colors'}
-          disabledClassName={'opacity-50 cursor-not-allowed'}
-          breakClassName={'px-3 py-1'}
-        />
+            previousLabel={'Anterior'}
+            nextLabel={'Siguiente'}
+            breakLabel={'...'}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageClick}
+            containerClassName={'flex justify-center space-x-2'}
+            pageClassName={'px-3 py-1 border rounded-lg'}
+            activeClassName={'bg-black text-white'}
+            previousClassName={'px-3 py-1 border rounded-lg'}
+            nextClassName={'px-3 py-1 border rounded-lg'}
+            disabledClassName={'opacity-50 cursor-not-allowed'}
+          />
       </div>
     </div>
   );
