@@ -130,6 +130,20 @@ function SidebarAdmin() {
                 )}
               </li>
 
+
+
+              {/* Confguiracion */}
+              <li className="mb-4">
+                <a
+                    href="/configuracion"
+                    className="flex items-center text-lg hover:bg-gray-700 p-2 rounded-lg transition-all duration-300"
+                  >
+                    <AiOutlineFileText className="mr-4 text-xl" />
+                    <span>Configuracion</span>
+                </a>
+              </li>
+
+
               {/* Reportes */}
               <li className="mb-4">
                 <a
@@ -140,6 +154,7 @@ function SidebarAdmin() {
                   <span>Reportes</span>
                 </a>
               </li>
+
             </ul>
           </div>
 
