@@ -9,6 +9,8 @@ import image1 from '../img/1.webp';
 import image2 from '../img/2.webp';
 import image3 from '../img/3.webp';
 
+import AnnouncementBar from '../effects/AnnouncementBar';
+
 // Lazy load components
 const NavBarHome = lazy(() => import('../components/home/NavBarHome'));
 const CarruselHome = lazy(() => import('../components/home/CarruselHome'));
@@ -17,6 +19,7 @@ const Footer = lazy(() => import('../components/home/Footer'));
 //const Testimonios = lazy(() => import('../components/home/Testimonios'));
 //const OfertasDestacadas = lazy(() => import('../components/home/OfertasDestacadas'));
 //const MarcasColaboradoras = lazy(() => import('../components/home/MarcasColaboradoras'));
+
 
 function Home() {
   const categoriasRef = useRef(null);
@@ -39,10 +42,12 @@ function Home() {
         {/* Barra de navegación */}
         <div className="animate-fade-in shadow-2xl bg-white/95 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
           <NavBarHome />
+          {/* Anuncio desplazable */}
+          <AnnouncementBar />
         </div>
 
         {/* Carrusel debajo de la barra de navegación */}
-        <div className="animate-fade-in-down transform transition-transform duration-500 hover:scale-105">
+        <div className="animate-fade-in-down transform transition-transform duration-500">
           <CarruselHome images={images} interval={7000} />
         </div>
 
