@@ -101,15 +101,16 @@ function AppContent() {
   }
 
   return (
-    <>
-    {/* ACA VAN EFECTOS */}
-    {/*<SnowEffect />  Agrega el efecto de nieve aquí */}
-    <FireworksEffect /> {/* Agrega el efecto de nieve aquí */}
     <Routes>
-      <Route path="/" element={<ProtectedRouteHome element={<Home />} />} />
+    
+      {/* ACA VAN EFECTOS */}
+      {/*<SnowEffect />  Agrega el efecto de nieve aquí */}
+    
+      <Route path="/" element={<ProtectedRouteHome element={<><FireworksEffect /><Home /></>} />} />
+
       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
-      <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
+      <Route path="/productos" element={<ProtectedRouteHome element={<><FireworksEffect /><Productos /></>} />} />
 
       {/* RUTAS ROL SUPERADMIN */}
       <Route path="/superAdmin" element={<ProtectedRouteRolSuperAdmin element={<SuperAdmin />} />} />
@@ -136,7 +137,6 @@ function AppContent() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    </>
   );
 }
 
