@@ -47,6 +47,9 @@ import { updateLastActivity } from './js/lastActivity';
 // Context del carrito
 import { CartProvider } from './context/CartContext';
 
+//EFECTOS
+import SnowEffect from './effects/SnowEffect'; // Importa el componente de nieve
+import FireworksEffect from './effects/FireworksEffect';
 
 
 function AppContent() {
@@ -98,6 +101,10 @@ function AppContent() {
   }
 
   return (
+    <>
+    {/* ACA VAN EFECTOS */}
+    {/*<SnowEffect />  Agrega el efecto de nieve aquí */}
+    <FireworksEffect /> {/* Agrega el efecto de nieve aquí */}
     <Routes>
       <Route path="/" element={<ProtectedRouteHome element={<Home />} />} />
       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
@@ -129,6 +136,7 @@ function AppContent() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
 

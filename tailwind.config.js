@@ -13,6 +13,7 @@ module.exports = {
         'rotate-in': 'rotateIn 1s ease-out',
         'bounce-in': 'bounceIn 1s ease-out',
         'flip-in': 'flipIn 1s ease-out',
+         fall: 'fall linear infinite',
       },
       keyframes: {
         progress: {
@@ -43,6 +44,10 @@ module.exports = {
         flipIn: {
           '0%': { transform: 'rotateY(-180deg)', opacity: 0 },
           '100%': { transform: 'rotateY(0)', opacity: 1 },
+        },
+        fall: {
+          '0%': { transform: 'translateY(-10vh)' },
+          '100%': { transform: 'translateY(100vh)' },
         },
       },
     },
