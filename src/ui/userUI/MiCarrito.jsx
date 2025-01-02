@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBarHome from '../../components/home/NavBarHome';
 import LoadingScreen from '../../components/home/LoadingScreen';
-import Notification from '../../components/home/Notificacion';
 import ProductosCarrito from '../../components/userComponents/ProductosCarrito';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
@@ -200,59 +199,82 @@ function Carrito() {
 };
 
   
-  const actualizarCantidad = async (idDetalle, cantidad) => {
-    try {
-      if (isNaN(cantidad) || cantidad < 1) {
-        SweetAlert.showMessageAlert('Error', 'La cantidad debe ser un número mayor que 0.', 'error'); 
-        return;
-      }
-
-      setIsLoading(true);
-
-      const token = localStorage.getItem('jwt');
-      const idUsuario = getIdUsuario(token);
-
-      if (!token || !idUsuario) {
-        SweetAlert.showMessageAlert('Error', 'Usuario no autenticado o token inválido.', 'error'); 
-        return;
-      }
-
-      const requestBody = { cantidad, idUsuario };
-
-      const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idDetalle}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setProductos((prevProductos) =>
-            prevProductos.map((producto) =>
-              producto.idDetalle === idDetalle
-                ? { ...producto, cantidad, subtotal: producto.precio * cantidad }
-                : producto
-            )
-          );
-          SweetAlert.showMessageAlert('Exito!', 'Cantidad actualizada correctamente.', 'success'); 
-        } else {
-          SweetAlert.showMessageAlert('Error', 'Error al actualizar la cantidad.', 'error'); 
-        }
-      } else {
-        SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error'); 
-      }
-    } catch (error) {
-      SweetAlert.showMessageAlert('Error', 'Ocurrió un error al actualizar la cantidad.', 'error'); 
-    } finally {
-      setIsLoading(false);
-      updateCartCount();
+const actualizarCantidad = async (idDetalle, cantidad, tempProduct) => {
+  try {
+    if (isNaN(cantidad) || cantidad < 1) {
+      SweetAlert.showMessageAlert('Error', 'La cantidad debe ser un número mayor que 0.', 'error');
+      return;
     }
-  };
 
+    setIsLoading(true);
+
+    // Immediately update UI with temporary values
+    if (tempProduct) {
+      setProductos(prevProductos =>
+        prevProductos.map(producto =>
+          producto.idDetalle === idDetalle
+            ? tempProduct
+            : producto
+        )
+      );
+    }
+
+    const token = localStorage.getItem('jwt');
+    const idUsuario = getIdUsuario(token);
+
+    if (!token || !idUsuario) {
+      throw new Error('Usuario no autenticado o token inválido.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idDetalle}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ cantidad, idUsuario }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      // Update with actual server data
+      setProductos(prevProductos =>
+        prevProductos.map(producto =>
+          producto.idDetalle === idDetalle
+            ? {
+                ...producto,
+                cantidad: data.data.cantidad,
+                subtotal: parseFloat(data.data.subtotal),
+                precioFinal: data.data.precioFinal
+              }
+            : producto
+        )
+      );
+      SweetAlert.showMessageAlert('Éxito', 'Cantidad actualizada correctamente.', 'success');
+    } else {
+      // Revert to original values if server update fails
+      setProductos(prevProductos =>
+        prevProductos.map(producto =>
+          producto.idDetalle === idDetalle
+            ? {
+                ...producto,
+                cantidad: tempProduct ? tempProduct.cantidad : producto.cantidad,
+                subtotal: tempProduct ? tempProduct.subtotal : producto.subtotal
+              }
+            : producto
+        )
+      );
+      throw new Error(data.message || 'Error al actualizar la cantidad.');
+    }
+  } catch (error) {
+    console.error('Error in actualizarCantidad:', error);
+    SweetAlert.showMessageAlert('Error', error.message || 'Ocurrió un error al actualizar la cantidad.', 'error');
+  } finally {
+    setIsLoading(false);
+    updateCartCount();
+  }
+};
 
   const eliminarProducto = async (idDetalle) => {
     try {

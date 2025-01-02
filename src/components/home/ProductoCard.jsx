@@ -53,8 +53,17 @@ const ProductoCard = memo(({ producto, onClick }) => {
       <h2 className="text-sm font-bold mb-2 text-gray-900">{producto.nombreProducto}</h2>
       <p className="text-xs text-gray-600 mb-2">{producto.descripcion}</p>
       <p className="text-xs text-gray-500 mb-2">Categoría: {producto.nombreCategoria}</p>
-      <p className="text-sm font-semibold text-gray-800">S/.{producto.precio}</p>
 
+      {/* Mostrar precios */}
+      {producto.tieneOferta ? (
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-gray-800 line-through">S/.{producto.precioOriginal}</p>
+          <p className="text-sm font-semibold text-red-600">S/.{producto.precioDescuento}</p>
+        </div>
+      ) : (
+        <p className="text-sm font-semibold text-gray-800">S/.{producto.precioOriginal}</p>
+      )}
+      
       <div className="mt-3">
         <h3 className="text-sm font-semibold text-gray-700">Modelo: {selectedModelo.nombreModelo}</h3>
         <div className="flex flex-wrap gap-2 mt-2">

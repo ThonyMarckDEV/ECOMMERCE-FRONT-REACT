@@ -9,7 +9,6 @@ import { verificarYRenovarToken } from '../../js/authToken';
 import { useCart } from '../../context/CartContext'; 
 import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
 
-
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
   const [cantidad, setCantidad] = useState(1);
@@ -280,31 +279,40 @@ return (
                     {/* Right column - Product details */}
                     <div className="px-4 sm:px-6 md:p-8 pb-6 flex flex-col h-full">
                         <h2 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">{producto?.nombreProducto}</h2>
-                                {/* Product price */}
-                                <div className="text-lg sm:text-xl font-semibold text-black mb-4">
-                                    Precio: S/.{producto?.precio}
-                                </div>
+                        
+                        {/* Product price */}
+                        <div className="text-lg sm:text-xl font-semibold text-black mb-4">
+                            {producto?.tieneOferta ? (
+                            <>
+                                <span className="line-through text-gray-500 mr-2">S/.{producto.precioOriginal}</span>
+                                <span className="text-red-600">S/.{producto.precioDescuento}</span>
+                            </>
+                            ) : (
+                            <span>S/.{producto?.precioOriginal}</span>
+                            )}
+                        </div>
+
                         {modeloSeleccionado && (
                             <>
-                                {/* Models selector */}
-                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                                    <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {producto?.modelos.map((modelo) => (
-                                            <button
-                                                key={modelo.nombreModelo}
-                                                onClick={() => handleModeloChange(modelo)}
-                                                className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                                    ${modeloSeleccionado.nombreModelo === modelo.nombreModelo 
-                                                        ? 'bg-black text-white' 
-                                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                                    }`}
-                                            >
-                                                {modelo.nombreModelo}
-                                            </button>
-                                        ))}
-                                    </div>
+                            {/* Models selector */}
+                            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                                <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
+                                <div className="flex flex-wrap gap-2">
+                                {producto?.modelos.map((modelo) => (
+                                    <button
+                                    key={modelo.nombreModelo}
+                                    onClick={() => handleModeloChange(modelo)}
+                                    className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                                        ${modeloSeleccionado.nombreModelo === modelo.nombreModelo 
+                                        ? 'bg-black text-white' 
+                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                    {modelo.nombreModelo}
+                                    </button>
+                                ))}
                                 </div>
+                            </div>
 
                                 {/* Sizes selector */}
                                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
