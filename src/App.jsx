@@ -110,7 +110,7 @@ function AppContent() {
 
       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
-      <Route path="/productos" element={<ProtectedRouteHome element={<><FireworksEffect /><Productos /></>} />} />
+      <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
 
       {/* RUTAS ROL SUPERADMIN */}
       <Route path="/superAdmin" element={<ProtectedRouteRolSuperAdmin element={<SuperAdmin />} />} />
