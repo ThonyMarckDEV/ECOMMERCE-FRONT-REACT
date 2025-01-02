@@ -18,11 +18,11 @@ const ProtectedRoute = ({ element }) => {
 
      // Redirigir según el rol del usuario
      switch (role) {
+      case 'superadmin':
+        return <Navigate to="/superAdmin" />;
+        return element;
       case 'admin':
         return <Navigate to="/admin" />;
-        return element;
-      case 'marca':
-        return <Navigate to="/marca" />;
         return element;
     }
   }

@@ -26,9 +26,9 @@ const ProtectedRouteCliente = ({ element, allowedRoles }) => {
      if (userRole === 'admin') {
        return <Navigate to="/admin" />;
        
-     } else if (userRole === 'marca') {
-       return <Navigate to="/marca" />;
- 
+     } else if (userRole === 'superadmin') {
+       return <Navigate to="/superAdmin" />;
+
      }
      return element;
    } catch (error) {

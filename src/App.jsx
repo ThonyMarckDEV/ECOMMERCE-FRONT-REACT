@@ -18,19 +18,19 @@ import Carrito from './ui/userUI/MiCarrito';
 import MenuUser from './ui/userUI/MenuUser';
 import Pedidos from './ui/userUI/MisPedidos';
 
-//ADMINUI
-import Admin from './ui/adminUI/Admin';
-import EditarUsuario from './ui/adminUI/EditarUsuario';
-import AgregarCategoria from './ui/adminUI/AgregarCategoria';
-import EditarCategoria from './ui/adminUI/EditarCategoria';
-import AgregarTalla from './ui/adminUI/AgregarTalla';
-import EditarTalla from './ui/adminUI/EditarTalla';
+//SUPERADMINUI
+import SuperAdmin from './ui/superadminUI/SuperAdmin';
+import EditarUsuario from './ui/superadminUI/EditarUsuario';
+import AgregarCategoria from './ui/superadminUI/AgregarCategoria';
+import EditarCategoria from './ui/superadminUI/EditarCategoria';
+import AgregarTalla from './ui/superadminUI/AgregarTalla';
+import EditarTalla from './ui/superadminUI/EditarTalla';
+import AgregarUsuario from './ui/superadminUI/AgregarUsuario';
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
 import ProtectedRouteRolCliente from './utilities/ProtectedRouteRolCliente';
-import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
-import ProtectedRouteRolMarca from './utilities/ProtectedRouteRolMarca';
+import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
 import ProtectedRouteToken from './utilities/ProtectedRouteToken';
 
 // Scripts
@@ -39,6 +39,7 @@ import { updateLastActivity } from './js/lastActivity';
 
 // Context del carrito
 import { CartProvider } from './context/CartContext';
+
 
 
 function AppContent() {
@@ -96,15 +97,16 @@ function AppContent() {
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
       <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
 
-      {/* RUTAS ROL ADMIN */}
-      <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
-      <Route path="/admin/usuarios/editar" element={<ProtectedRouteRolAdmin element={<EditarUsuario />} />} />
-      <Route path="/admin/categorias/agregar" element={<ProtectedRouteRolAdmin element={<AgregarCategoria />} />} />
-      <Route path="/admin/categorias/editar" element={<ProtectedRouteRolAdmin element={<EditarCategoria />} />} />
-      <Route path="/admin/tallas/agregar" element={<ProtectedRouteRolAdmin element={<AgregarTalla />} />} />
-      <Route path="/admin/tallas/editar" element={<ProtectedRouteRolAdmin element={<EditarTalla />} />} />
+      {/* RUTAS ROL SUPERADMIN */}
+      <Route path="/superAdmin" element={<ProtectedRouteRolSuperAdmin element={<SuperAdmin />} />} />
+      <Route path="/superAdmin/usuarios/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarUsuario />} />} />
+      <Route path="/superAdmin/usuarios/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarUsuario />} />} />
+      <Route path="/superAdmin/categorias/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarCategoria />} />} />
+      <Route path="/superAdmin/categorias/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarCategoria />} />} />
+      <Route path="/superAdmin/tallas/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarTalla />} />} />
+      <Route path="/superAdmin/tallas/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarTalla />} />} />
 
-      {/* RUTAS ROL MARCA*/}
+      {/* RUTAS ROL ADMIN*/}
 
       {/* RUTAS ROL CLIENTE */}
       <Route path="/menuUsuario" element={<ProtectedRouteRolCliente element={<MenuUser />} allowedRoles={['cliente']} />} />

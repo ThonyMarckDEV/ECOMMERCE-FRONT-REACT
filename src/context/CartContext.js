@@ -14,7 +14,7 @@ export const CartProvider = ({ children }) => {
     const location = window.location.pathname; // Obtener la ruta actual
 
     // No realizar la solicitud si estamos en la ruta /admin
-    if (token && !location.startsWith('/admin')) {
+    if (token && !location.startsWith('/superAdmin') && !location.startsWith('/admin')) {
       const idUsuario = jwtUtils.getIdUsuario(token);
       if (!idUsuario) return;
 

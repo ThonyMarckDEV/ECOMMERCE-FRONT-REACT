@@ -3,7 +3,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import jwtUtils from '../utilities/jwtUtils'; // Utilidad para emailVerified
 
-const ProtectedRouteAdmin = ({ element }) => {
+const ProtectedRouteRolSuperAdmin = ({ element }) => {
   // Obtener el JWT desde localStorage
   const token = localStorage.getItem('jwt');
 
@@ -25,10 +25,8 @@ const ProtectedRouteAdmin = ({ element }) => {
     // Redirigir dependiendo del rol
     if (userRole === 'cliente') {
       return <Navigate to="/" />;
-      
-    } else if (userRole === 'marca') {
-      return <Navigate to="/marca" />;
-
+    }else if (userRole === 'admin'){
+      return <Navigate to="/admin" />;
     }
     return element;
   } catch (error) {
@@ -37,4 +35,4 @@ const ProtectedRouteAdmin = ({ element }) => {
   }
 };
 
-export default ProtectedRouteAdmin;
+export default ProtectedRouteRolSuperAdmin;

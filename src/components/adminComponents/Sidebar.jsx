@@ -72,12 +72,12 @@ function Sidebar() {
                 {openUsuarios && (
                   <ul className="ml-8 mt-2 space-y-2">
                     <li>
-                      <a href="/admin/usuarios/agregar" className="hover:text-gray-400 transition-all duration-300">
+                      <a href="/superAdmin/usuarios/agregar" className="hover:text-gray-400 transition-all duration-300">
                         Agregar Usuarios
                       </a>
                     </li>
                     <li>
-                      <a href="/admin/usuarios/editar" className="hover:text-gregrayen-400 transition-all duration-300">
+                      <a href="/superAdmin/usuarios/editar" className="hover:text-gregrayen-400 transition-all duration-300">
                         Editar Usuarios
                       </a>
                     </li>
@@ -100,12 +100,12 @@ function Sidebar() {
                 {openTallas && (
                   <ul className="ml-8 mt-2 space-y-2">
                     <li>
-                      <a href="/admin/tallas/agregar" className="hover:text-gray-400 transition-all duration-300">
+                      <a href="/superAdmin/tallas/agregar" className="hover:text-gray-400 transition-all duration-300">
                         Agregar Tallas
                       </a>
                     </li>
                     <li>
-                      <a href="/admin/tallas/editar" className="hover:text-gray-400 transition-all duration-300">
+                      <a href="/superAdmin/tallas/editar" className="hover:text-gray-400 transition-all duration-300">
                         Editar Tallas
                       </a>
                     </li>
@@ -128,12 +128,12 @@ function Sidebar() {
                 {openCategorias && (
                   <ul className="ml-8 mt-2 space-y-2">
                     <li>
-                      <a href="/admin/categorias/agregar" className="hover:text-gray-400 transition-all duration-300">
+                      <a href="/superAdmin/categorias/agregar" className="hover:text-gray-400 transition-all duration-300">
                         Agregar Categorías
                       </a>
                     </li>
                     <li>
-                      <a href="/admin/categorias/editar" className="hover:text-gray-400 transition-all duration-300">
+                      <a href="/superAdmin/categorias/editar" className="hover:text-gray-400 transition-all duration-300">
                         Editar Categorías
                       </a>
                     </li>
