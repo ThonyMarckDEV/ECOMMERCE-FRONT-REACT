@@ -1,18 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../js/urlHelper'; // Asegúrate de importar la URL base de tu API
 
 const AnnouncementBar = () => {
+  const [ofertaActiva, setOfertaActiva] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const obtenerOfertaActiva = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/ofertas/activa`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            setOfertaActiva(data.data);
+          } else {
+            setOfertaActiva(null); // No hay oferta activa
+          }
+        } else {
+          console.error('Error al obtener la oferta activa');
+        }
+      } catch (error) {
+        console.error('Error al conectar con el servidor:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    obtenerOfertaActiva();
+  }, []);
+
+  if (isLoading) {
+    return null; // O puedes mostrar un spinner de carga
+  }
+
+  if (!ofertaActiva) {
+    return null; // No mostrar el componente si no hay oferta activa
+  }
+
   return (
     <div className="bg-red-600 overflow-hidden">
       <div className="whitespace-nowrap py-2 animate-marquee">
-        <span className="text-yellow-300 font-bold text-lg mx-10">
-          🎉       Feliz Año Nuevo 2025!        🎉
-        </span>
-        <span className="text-yellow-300 font-bold text-lg mx-10">
-          🎄   Promoción Navideña - 30% de descuento!    🎄
-        </span>
-        <span className="text-yellow-300 font-bold text-lg mx-10">
-          🎁    Envíos gratis hasta el 6 de enero!    🎁
-        </span>
+        {/* Repetir el mensaje varias veces */}
+        {[...Array(5)].map((_, index) => (
+          <span key={index} className="text-yellow-300 font-bold text-lg mx-10">
+            🎉 {ofertaActiva.descripcion} - {ofertaActiva.porcentajeDescuento}% de descuento! 🎉
+          </span>
+        ))}
       </div>
     </div>
   );
