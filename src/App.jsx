@@ -27,11 +27,17 @@ import AgregarTalla from './ui/superadminUI/AgregarTalla';
 import EditarTalla from './ui/superadminUI/EditarTalla';
 import AgregarUsuario from './ui/superadminUI/AgregarUsuario';
 
+//ADMINUI
+import Admin from './ui/adminUI/Admin';
+
+
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
 import ProtectedRouteRolCliente from './utilities/ProtectedRouteRolCliente';
 import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
 import ProtectedRouteToken from './utilities/ProtectedRouteToken';
+import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
+
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
@@ -107,6 +113,8 @@ function AppContent() {
       <Route path="/superAdmin/tallas/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarTalla />} />} />
 
       {/* RUTAS ROL ADMIN*/}
+      <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
+      
 
       {/* RUTAS ROL CLIENTE */}
       <Route path="/menuUsuario" element={<ProtectedRouteRolCliente element={<MenuUser />} allowedRoles={['cliente']} />} />

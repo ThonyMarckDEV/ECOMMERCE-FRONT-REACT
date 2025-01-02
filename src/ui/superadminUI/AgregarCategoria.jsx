@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Sidebar from '../../components/adminComponents/Sidebar'; // Importamos el Sidebar
+import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin'; // Importamos el Sidebar
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen

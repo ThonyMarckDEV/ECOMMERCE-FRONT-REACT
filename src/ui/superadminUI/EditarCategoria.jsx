@@ -1,5 +1,5 @@
-import Sidebar from '../../components/adminComponents/Sidebar';
-import CategoryTable from '../../components/adminComponents/CategoryTable';
+import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin';
+import CategoryTable from '../../components/superAdminComponents/CategoryTable';
 
 function EditarCategoria() {
   return (

@@ -1,5 +1,5 @@
-import Sidebar from '../../components/adminComponents/Sidebar';
-import TallaTable from '../../components/adminComponents/TallaTable';
+import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin';
+import TallaTable from '../../components/superAdminComponents/TallaTable';
 
 function Editartalla() {
   return (

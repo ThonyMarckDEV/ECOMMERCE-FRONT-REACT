@@ -1,5 +1,5 @@
-import Sidebar from '../../components/adminComponents/Sidebar';
-import UsersTable from '../../components/adminComponents/UsersTable';
+import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin';
+import UsersTable from '../../components/superAdminComponents/UsersTable';
 
 function EditarUsuario() {
   return (

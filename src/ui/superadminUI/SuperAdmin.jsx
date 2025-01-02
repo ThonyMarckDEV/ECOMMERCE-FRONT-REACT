@@ -1,8 +1,8 @@
 import React from 'react';
-import Sidebar from '../../components/adminComponents/Sidebar';
-import DashboardCard from '../../components/adminComponents/DashboardCard'; // Llamamos al componente de Cards
+import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin';
+import DashboardCard from '../../components/superAdminComponents/DashboardCard'; // Llamamos al componente de Cards
 
-function AdminUI() {
+function SuperAdminUI() {
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -18,4 +18,4 @@ function AdminUI() {
   );
 }
 
-export default AdminUI;
+export default SuperAdminUI;
