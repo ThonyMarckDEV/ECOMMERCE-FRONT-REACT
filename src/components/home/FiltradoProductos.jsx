@@ -65,27 +65,27 @@ function FiltradoProductos({ onFilter }) {
 
   return (
     <>
-      {/* Botón de filtro */}
+      {/* Botón de filtro - ahora con z-index más alto que el navbar en móvil */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-4 bottom-4 md:hidden z-50 bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+        className="fixed right-4 bottom-4 md:hidden z-[1001] bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
         aria-label="Toggle filters"
       >
         <AiOutlineFilter className="w-6 h-6" />
       </button>
 
-      {/* Overlay */}
+      {/* Overlay - z-index ajustado */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[999] md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Filter Sidebar */}
-      <div className={`
+      {/* Filter Sidebar - z-index ajustado */}
+      <aside className={`
         fixed md:relative top-0 right-0 h-full md:h-auto w-80 md:w-64
-        bg-white md:bg-transparent z-40 transform transition-transform duration-300
+        bg-white md:bg-transparent z-[1000] md:z-0 transform transition-transform duration-300
         ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
         overflow-y-auto
       `}>
@@ -166,7 +166,7 @@ function FiltradoProductos({ onFilter }) {
             </button>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 }
