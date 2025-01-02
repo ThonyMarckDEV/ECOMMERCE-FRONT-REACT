@@ -40,8 +40,8 @@ const AnnouncementBar = () => {
   return (
     <div className="bg-red-600 overflow-hidden">
       <div className="whitespace-nowrap py-2 animate-marquee">
-        {/* Repetir el mensaje varias veces */}
-        {[...Array(5)].map((_, index) => (
+        {/* Repetir el mensaje varias veces para un desplazamiento continuo */}
+        {[...Array(10)].map((_, index) => (
           <span key={index} className="text-yellow-300 font-bold text-lg mx-10">
             🎉 {ofertaActiva.descripcion} - {ofertaActiva.porcentajeDescuento}% de descuento! 🎉
           </span>
@@ -57,12 +57,13 @@ export default AnnouncementBar;
 const styles = `
 @layer utilities {
   @keyframes marquee {
-    0% { transform: translateX(100%); }
+    0% { transform: translateX(0%); }
     100% { transform: translateX(-100%); }
   }
   .animate-marquee {
     display: inline-block;
-    animation: marquee 15s linear infinite;
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
   }
 }`;
 
