@@ -9,7 +9,7 @@ import {
   AiOutlineMenu,
 } from 'react-icons/ai';
 
-function Sidebar() {
+function SidebarSuperAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [openUsuarios, setOpenUsuarios] = useState(false);
   const [openTallas, setOpenTallas] = useState(false);
@@ -46,6 +46,7 @@ function Sidebar() {
           <div>
             <h2 className="text-3xl font-bold mb-8 text-center text-white">Menú</h2>
             <ul>
+
               {/* Dashboard */}
               <li className="mb-4">
                 <a
@@ -164,4 +165,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default SidebarSuperAdmin;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LogoutButton from './LogoutButton';
 import {
-  AiFillHome,
   AiFillSetting,
   AiOutlineFileText,
   AiOutlineUser,
@@ -9,7 +8,7 @@ import {
   AiOutlineMenu,
 } from 'react-icons/ai';
 
-function Sidebar() {
+function SidebarAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [openUsuarios, setOpenUsuarios] = useState(false);
   const [openTallas, setOpenTallas] = useState(false);
@@ -154,4 +153,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default SidebarAdmin;
