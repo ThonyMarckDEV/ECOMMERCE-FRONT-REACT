@@ -68,9 +68,9 @@ const Login = ({ closeLoginModal }) => {
 
   const handleGoogleLogin = async (response) => {
     if (response?.credential) {
-      const tokenId = response.credential; // Usar `response.credential` en lugar de `tokenId`
+      const tokenId = response.credential;
       setLoading(true);
-
+  
       try {
         const loginResponse = await fetch(`${API_BASE_URL}/api/login-google`, {
           method: 'POST',
@@ -78,32 +78,30 @@ const Login = ({ closeLoginModal }) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            googleToken: tokenId, // Enviar el token para realizar login
+            googleToken: tokenId,
           }),
         });
-
-        const result = await response.json();
-
+  
+        // Changed from response.json() to loginResponse.json()
+        const result = await loginResponse.json();
+  
         if (loginResponse.ok) {
-          //Obtenenos el token y guardamos en token
           const token = result.token;
-
-          // Crear una cookie de sesión
-          document.cookie = `jwt=${token}; path=/`;
           
-          // Función para actualizar la actividad
+          // Set cookie with appropriate security flags
+          document.cookie = `jwt=${token}; path=/; SameSite=Strict; Secure`;
+          
           updateLastActivity();
-          
-          // Redirigir a la página principal después de iniciar sesión correctamente
           window.location.href = '/';
         } else {
-          setError(result.errors || 'Hubo un error al iniciar sesión con Google.');
+          // More specific error handling
+          setError(result.error || 'Hubo un error al iniciar sesión con Google.');
         }
       } catch (error) {
-        setError('Error al intentar iniciar sesión con Google.');
+        setError('Error al intentar iniciar sesión con Google. Por favor, inténtelo de nuevo.');
         console.error('Error al intentar iniciar sesión con Google:', error);
       } finally {
-        setLoading(false); // Ocultar la pantalla de carga
+        setLoading(false);
       }
     }
   };
