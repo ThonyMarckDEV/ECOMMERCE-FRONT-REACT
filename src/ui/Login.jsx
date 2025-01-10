@@ -88,8 +88,8 @@ const Login = ({ closeLoginModal }) => {
         if (loginResponse.ok) {
           const token = result.token;
           
-          // Set cookie with appropriate security flags
-          document.cookie = `jwt=${token}; path=/; SameSite=Strict; Secure`;
+
+          document.cookie = `jwt=${token}; path=/`;
           
           updateLastActivity();
           window.location.href = '/';
