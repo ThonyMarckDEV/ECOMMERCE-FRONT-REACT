@@ -97,7 +97,7 @@ const Login = ({ closeLoginModal }) => {
           // Redirigir a la página principal después de iniciar sesión correctamente
           window.location.href = '/';
         } else {
-          setError(loginResult.errors || 'Hubo un error al iniciar sesión con Google.');
+          setError(result.errors || 'Hubo un error al iniciar sesión con Google.');
         }
       } catch (error) {
         setError('Error al intentar iniciar sesión con Google.');
