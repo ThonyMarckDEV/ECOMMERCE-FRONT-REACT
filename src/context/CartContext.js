@@ -10,7 +10,7 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     let isMounted = true; // Flag para verificar si el componente está montado
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     const location = window.location.pathname; // Obtener la ruta actual
 
     // No realizar la solicitud si estamos en la ruta /admin
@@ -47,7 +47,7 @@ export const CartProvider = ({ children }) => {
   }, []); // Solo se ejecuta una vez al montar el componente
 
   const updateCartCount = () => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     const location = window.location.pathname;
 
     // No realizar la solicitud si estamos en la ruta /admin
