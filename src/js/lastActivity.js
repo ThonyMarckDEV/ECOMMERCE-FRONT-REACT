@@ -3,13 +3,15 @@ import { verificarYRenovarToken } from './authToken.js';
 import { jwtDecode } from 'jwt-decode';
 import { checkStatus } from './checkUserStatus';
 import { logout } from './logout'; // Cambiar a importación nombrada
+import jwtUtils from '../utilities/jwtUtils.jsx';
+
 
 export async function updateLastActivity() {
     try {
         // Verificar y renovar el token
         await verificarYRenovarToken();
 
-        const token = localStorage.getItem('jwt');
+        const token = jwtUtils.getTokenFromCookie();
         if (!token) {
             console.error('No token found. Logging out...');
             logout();
@@ -38,6 +40,6 @@ export async function updateLastActivity() {
         console.error('Error updating last activity:', error);
     } finally {
         // Verificar el estado del usuario
-        await checkStatus();
+         await checkStatus();
     }
 }

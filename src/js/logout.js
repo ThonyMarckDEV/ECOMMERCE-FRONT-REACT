@@ -1,9 +1,10 @@
 import API_BASE_URL from './urlHelper.js';
+import jwtUtils from '../utilities/jwtUtils.jsx';
 
 export async function logout() {
 
 
-    const token = localStorage.getItem("jwt");
+    const token = jwtUtils.getTokenFromCookie();
 
     const decodedToken = parseJwt(token);
 
@@ -24,17 +25,10 @@ export async function logout() {
     }
     
        // Eliminar el token de localStorage
-       localStorage.removeItem("jwt");
+       jwtUtils.removeTokenFromCookie();
 
-       // Eliminar la cookie JWT configurando su fecha de expiración en el pasado
-      document.cookie = "jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Strict";
-  
-        // Eliminar el session de localStorage
-       sessionStorage.removeItem('hasReloaded');
-       
         // Redirigir a la página de inicio de sesión en el dominio raíz
         window.location.href = `/`;
-
 }
 
 // Decodificar el token

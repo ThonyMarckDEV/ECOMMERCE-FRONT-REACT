@@ -39,8 +39,15 @@ const Login = ({ closeLoginModal }) => {
       const result = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('jwt', result.token);
+        //Obtenenos el token y guardamos en token
+        const token = result.token;
+
+        // Crear una cookie de sesión
+        document.cookie = `jwt=${token}; path=/`;
+        
+        // Función para actualizar la actividad
         updateLastActivity();
+
         // Verificar si el correo ha sido verificado usando jwtUtils
         const emailVerified = jwtUtils.getEmailVerified(result.token);
         if (!emailVerified) {
@@ -78,8 +85,15 @@ const Login = ({ closeLoginModal }) => {
         const loginResult = await loginResponse.json();
 
         if (loginResponse.ok) {
-          localStorage.setItem('jwt', loginResult.token); // Guardar el JWT en localStorage
+          //Obtenenos el token y guardamos en token
+          const token = result.token;
+
+          // Crear una cookie de sesión
+          document.cookie = `jwt=${token}; path=/`;
+          
+          // Función para actualizar la actividad
           updateLastActivity();
+          
           // Redirigir a la página principal después de iniciar sesión correctamente
           window.location.href = '/';
         } else {

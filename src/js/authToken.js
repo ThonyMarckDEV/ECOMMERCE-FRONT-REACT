@@ -1,17 +1,18 @@
 import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
+import jwtUtils from '../utilities/jwtUtils';
 
 // Función para verificar si el token está próximo a expirar
 function tokenExpirado() {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     if (!token) {
-       // console.log("Token no encontrado en localStorage.");
+        // console.log("Token no encontrado en la cookie.");
         return true;
     }
 
     const payload = parseJwt(token);
     if (!payload || !payload.exp) {
-       // console.error("El token es inválido o no contiene un campo de expiración.");
+        // console.error("El token es inválido o no contiene un campo de expiración.");
         return true;
     }
 
@@ -27,9 +28,9 @@ function tokenExpirado() {
 
 // Función para renovar el token
 export async function renovarToken() {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     if (!token) {
-        //console.log("Token no encontrado en localStorage.");
+        // console.log("Token no encontrado en la cookie.");
         return null;
     }
 
@@ -48,7 +49,7 @@ export async function renovarToken() {
 
             // Verifica si el token renovado es diferente al actual
             if (nuevoToken !== token) {
-                localStorage.setItem('jwt', nuevoToken); // Guarda el nuevo token inmediatamente
+                document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cookie
                 return nuevoToken;
             } else {
                 throw new Error("El token renovado es el mismo que el anterior.");
@@ -59,7 +60,7 @@ export async function renovarToken() {
                // console.log('El token ha sido invalidado. Redirigiendo al login...');
                 logoutAndRedirect();
             } else {
-                //console.log('El token ha expirado. Recargando la página...');
+                // console.log('El token ha expirado. Recargando la página...');
                 setTimeout(() => window.location.reload(), 3000);
             }
         } else if (response.status === 500) {
@@ -78,13 +79,13 @@ export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
         const nuevoToken = await renovarToken();
         if (nuevoToken) {
-           // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
+            // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token, redirigiendo al login...");
             logoutAndRedirect();
         }
     } else {
-        //console.log("El token es válido y no necesita renovación.");
+        // console.log("El token es válido y no necesita renovación.");
     }
 }
 
@@ -96,7 +97,7 @@ function parseJwt(token) {
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
             atob(base64)
-                .split('')
+                .split('') 
                 .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
                 .join('')
         );

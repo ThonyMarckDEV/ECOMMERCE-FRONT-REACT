@@ -5,7 +5,7 @@ import jwtUtils from '../utilities/jwtUtils'; // Utilidad para emailVerified
 
 const ProtectedRouteRolSuperAdmin = ({ element }) => {
   // Obtener el JWT desde localStorage
-  const token = localStorage.getItem('jwt');
+  const token = jwtUtils.getTokenFromCookie();
 
   if (!token) {
     // Si no hay token, redirigir al login

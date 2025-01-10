@@ -1,6 +1,6 @@
 import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
-import { getIdUsuario, isTokenExpired } from '../utilities/jwtUtils.jsx';
+import jwtUtils from '../utilities/jwtUtils.jsx';
 
 export const checkStatus = async () => {
     await checkUserStatus();
@@ -8,18 +8,19 @@ export const checkStatus = async () => {
 
 // Función para verificar el estado del usuario
 export const checkUserStatus = async () => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie(); // Obtener token desde la cookie
 
-    if (!token || isTokenExpired(token)) {
-        // Desloguear si no hay token o está expirado
+    if (!token || jwtUtils.isTokenExpired(token)) {
+        // Si no hay token o está expirado, deslogueamos al usuario
         console.warn('No hay token o está expirado');
-        logoutAndRedirect();
+        logoutAndRedirect();  // Aquí se debe hacer logout y redirigir
         return;
     }
 
-    const idUsuario = getIdUsuario(token);
+    const idUsuario = jwtUtils.getIdUsuario(token);
 
     try {
+        // Enviar solicitud para verificar el estado y el token en la base de datos
         const response = await fetch(`${API_BASE_URL}/api/check-status`, {
             method: "POST",
             headers: {
@@ -31,26 +32,26 @@ export const checkUserStatus = async () => {
 
         if (response.ok) {
             const data = await response.json();
-            // Si el estado es 'loggedOff', deslogueamos al usuario
-            if (data.status === 'loggedOff') {
-                console.warn('Usuario desconectado');
-                logoutAndRedirect();  // Desloguear al usuario
+
+            // Verificamos si el token en la base de datos es distinto al token de la cookie
+            if (data.token !== token) {
+                console.warn('Token en la base de datos no coincide con el local');
+                jwtUtils.removeTokenFromCookie();  // Eliminar el token de la cookie
+                window.location.href = '/';  // Redirigir a la página de inicio o login
             }
+        } else if (response.status === 403) {
+            // Si la respuesta es 403, el token no coincide o es inválido
+            console.error('Error 403: Token no válido o no coincide con el almacenado en la base de datos');
+            jwtUtils.removeTokenFromCookie();  // Eliminar el token de la cookie
+            window.location.href = '/';  // Redirigir a la página de inicio o login
         } else {
-            const errorData = await response.json();
-            if (response.status === 400) {
-                console.error('Error: ID de usuario no proporcionado');
-            } else if (response.status === 404) {
-                console.error('Error: Usuario no encontrado');
-            } else if (response.status === 403) {
-                console.error('Error: Usuario desconectado');
-                logoutAndRedirect();  // Desloguear al usuario si el estado es 'loggedOff'
-            } else {
-                console.error('Error al verificar el estado del usuario', errorData.message);
-            }
+            console.error('Error en la respuesta del servidor:', response.statusText);
+            jwtUtils.removeTokenFromCookie();  // Eliminar el token de la cookie
+            window.location.href = '/';  // Redirigir a la página de inicio o login
         }
     } catch (error) {
+        // Si ocurre un error durante la solicitud, deslogueamos al usuario
         console.error('Error en checkUserStatus:', error);
-        logoutAndRedirect();  // Desloguear en caso de error en la solicitud
+        logoutAndRedirect();  // Desloguear en caso de error
     }
 };
