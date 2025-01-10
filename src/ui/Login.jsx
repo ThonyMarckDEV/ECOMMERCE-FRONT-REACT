@@ -82,7 +82,7 @@ const Login = ({ closeLoginModal }) => {
           }),
         });
 
-        const loginResult = await loginResponse.json();
+        const result = await response.json();
 
         if (loginResponse.ok) {
           //Obtenenos el token y guardamos en token
