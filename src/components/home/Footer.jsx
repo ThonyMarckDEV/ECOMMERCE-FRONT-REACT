@@ -16,19 +16,16 @@ const Footer = () => {
 
           {/* Columna 2 */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Categorías</h3>
+            <h3 className="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#camisetas" className="hover:text-gray-400">Camisetas</a>
+                <a href="/" className="hover:text-gray-400">Inicio</a>
               </li>
               <li>
-                <a href="#pantalones" className="hover:text-gray-400">Pantalones</a>
+                <a href="/productos" className="hover:text-gray-400">Productos</a>
               </li>
               <li>
-                <a href="#zapatos" className="hover:text-gray-400">Zapatos</a>
-              </li>
-              <li>
-                <a href="#accesorios" className="hover:text-gray-400">Accesorios</a>
+                <a href="/?scrollTo=categories" className="hover:text-gray-400">Categorias</a>
               </li>
             </ul>
           </div>
