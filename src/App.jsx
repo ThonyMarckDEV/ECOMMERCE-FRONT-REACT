@@ -50,6 +50,7 @@ import { CartProvider } from './context/CartContext';
 //EFECTOS
 import SnowEffect from './effects/SnowEffect'; // Importa el componente de nieve
 import FireworksEffect from './effects/FireworksEffect';
+import jwtUtils from './utilities/jwtUtils';
 
 
 function AppContent() {
@@ -83,7 +84,7 @@ function AppContent() {
 
   // Actualizar la actividad del usuario si no está en mantenimiento
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     if (!enMantenimiento && token) {
 
       updateLastActivity();
