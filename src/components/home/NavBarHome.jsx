@@ -15,7 +15,7 @@ const Navbar = () => {
   const [profileImage, setProfileImage] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     if (token) {
       setIsAuthenticated(true);
       const profileImgUrl = jwtUtils.getPerfil(token);
