@@ -7,6 +7,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 're
 import L from 'leaflet'; // Importamos Leaflet
 import 'leaflet/dist/leaflet.css';
 import SweetAlert from '../../components/SweetAlert';
+import jwtUtils from '../../utilities/jwtUtils';
 
 function AgregarDirecciones() {
   const [latitud, setLatitud] = useState(null);
@@ -49,7 +50,7 @@ function AgregarDirecciones() {
     e.preventDefault();
     setLoading(true);  // Activar el loading mientras se envían los datos
 
-    const token = localStorage.getItem("jwt");
+    const token = jwtUtils.getTokenFromCookie();
     const decoded = JSON.parse(atob(token.split('.')[1])); // Decodificando el JWT
 
     // Verificar que idUsuario esté presente

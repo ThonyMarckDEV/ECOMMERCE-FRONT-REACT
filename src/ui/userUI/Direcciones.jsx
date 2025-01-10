@@ -3,11 +3,12 @@ import LoadingScreen from '../../components/home/LoadingScreen';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
+import jwtUtils from '../../utilities/jwtUtils';
 
 function Direcciones() {
   const [direcciones, setDirecciones] = useState([]);
   const [loading, setLoading] = useState(false); // Estado para controlar el loading
-  const [userToken, setUserToken] = useState(localStorage.getItem('jwt'));
+  const [userToken, setUserToken] = useState(jwtUtils.getTokenFromCookie());
 
   useEffect(() => {
     if (userToken) {

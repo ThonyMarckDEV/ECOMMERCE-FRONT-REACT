@@ -4,6 +4,7 @@ import LoadingScreen from '../../components/home/LoadingScreen';
 import { verificarYRenovarToken } from '../../js/authToken';
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
+import jwtUtils from '../../utilities/jwtUtils';
 
 function Perfil() {
   const [perfilData, setPerfilData] = useState({
@@ -27,7 +28,7 @@ function Perfil() {
   const [showDniNote, setShowDniNote] = useState(false);
   const [isDniLocked, setIsDniLocked] = useState(false);
 
-  const token = localStorage.getItem('jwt');
+  const token = jwtUtils.getTokenFromCookie();
   const idUsuario = getIdUsuario(token);
   const perfilRef = useRef(null);
   

@@ -8,11 +8,12 @@ import PedidoCard from '../../components/userComponents/PedidoCard.jsx';
 import nopedidos from '../../img/nopedidos.png'; // Asegúrate de que la ruta sea correcta
 import LoadingScreen from '../../components/home/LoadingScreen'; // Asegúrate de importar el componente
 import SweetAlert from '../../components/SweetAlert';
+import jwtUtils from '../../utilities/jwtUtils.jsx';
 
 const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [token, setToken] = useState(localStorage.getItem('jwt'));
+    const [token, setToken] = useState(jwtUtils.getTokenFromCookie());
     const [isLoading, setIsLoading] = useState(false);
 
     // Estados para manejar los modales

@@ -3,6 +3,7 @@ import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin'; /
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen
+import jwtUtils from '../../utilities/jwtUtils';
 
 function AgregarCategoria() {
   const [nombreCategoria, setNombreCategoria] = useState('');
@@ -16,7 +17,7 @@ function AgregarCategoria() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('jwt'); // Obtener el token JWT del localStorage
+    const token = jwtUtils.getTokenFromCookie();
 
     if (!nombreCategoria || !imagen) {
       SweetAlert.showMessageAlert('Error', 'El nombre de la categoría y la imagen son obligatorios.', 'error');

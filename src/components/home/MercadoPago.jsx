@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import  API_BASE_URL  from '../../js/urlHelper.js';
 import LoadingScreen from './LoadingScreen';
 import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
+import jwtUtils from '../../utilities/jwtUtils.jsx';
 
 const MercadoPago = ({ pedido }) => {
     const [loading, setLoading] = useState(false);
@@ -44,7 +45,7 @@ const MercadoPago = ({ pedido }) => {
     }, []);
 
     const actualizarComprobante = async () => {
-        const token = localStorage.getItem('jwt');
+        const token = jwtUtils.getTokenFromCookie();
         
         try {
             const response = await fetch(`${API_BASE_URL}/api/actualizar-comprobante`, {
@@ -82,7 +83,7 @@ const MercadoPago = ({ pedido }) => {
         setLoading(true);
         setError(null);
 
-        const token = localStorage.getItem('jwt');
+        const token = jwtUtils.getTokenFromCookie();
         const decodedToken = decodeJWT(token);
         const correoUsuario = decodedToken ? decodedToken.correo : null;
 

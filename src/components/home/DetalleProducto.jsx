@@ -65,7 +65,7 @@ function DetalleProducto({ productoId, onClose }) {
   };
 
   const handleAddToCart = () => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     if (!token) {
         setShowModalLogin(true);
         return;

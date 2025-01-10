@@ -3,6 +3,7 @@ import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin'; /
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen
+import jwtUtils from '../../utilities/jwtUtils';
 
 function Configuracion() {
   const [facturacionElectronica, setFacturacionElectronica] = useState(false);
@@ -12,7 +13,7 @@ function Configuracion() {
   useEffect(() => {
     const fetchEstadoFacturacion = async () => {
       setLoading(true);
-      const token = localStorage.getItem('jwt');
+      const token = jwtUtils.getTokenFromCookie();
       try {
         const response = await fetch(`${API_BASE_URL}/api/configuracion/facturacion-electronica`, {
           method: 'GET',
@@ -42,7 +43,7 @@ function Configuracion() {
   // Cambiar el estado de la facturación electrónica
   const toggleFacturacionElectronica = async () => {
     setLoading(true);
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     try {
       const response = await fetch(`${API_BASE_URL}/api/configuracion/facturacion-electronica`, {
         method: 'PUT',

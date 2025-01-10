@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Para redirigir
 import API_BASE_URL from '../../js/urlHelper';
+import jwtUtils from '../../utilities/jwtUtils';
 
 const CategoriesGrid = () => {
   const [categories, setCategories] = useState([]);

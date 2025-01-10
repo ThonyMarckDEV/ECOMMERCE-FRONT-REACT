@@ -4,6 +4,7 @@ import API_BASE_URL from '../js/urlHelper';
 import Notification from '../components/home/Notificacion';
 import LoadingScreen from '../components/home/LoadingScreen';
 import verificarCorreo from '../img/verificar_correo.png';
+import jwtUtils from '../utilities/jwtUtils';
 
 const VerificarCorreo = () => {
   const [notification, setNotification] = useState(null);
@@ -14,7 +15,7 @@ const VerificarCorreo = () => {
   useEffect(() => {
     const verifyAndRefreshToken = async () => {
       const token_veririficador = searchParams.get('token_veririficador');
-      const token = localStorage.getItem('jwt'); // Verificar si existe JWT en localStorage
+      const token = jwtUtils.getTokenFromCookie();
 
       if (token_veririficador) {
         try {

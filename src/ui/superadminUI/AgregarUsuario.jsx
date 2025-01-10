@@ -3,6 +3,7 @@ import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin'; /
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen
+import jwtUtils from '../../utilities/jwtUtils';
 
 function AgregarUsuario() {
   const [rol, setRol] = useState('');
@@ -14,7 +15,7 @@ function AgregarUsuario() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('jwt'); // Obtener el token JWT del localStorage
+    const token = jwtUtils.getTokenFromCookie();
 
     if ( !nombres || !apellidos || !correo || !password) {
       SweetAlert.showMessageAlert('Error', 'Todos los campos son obligatorios.', 'error');

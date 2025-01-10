@@ -3,6 +3,7 @@ import ReactPaginate from 'react-paginate';
 import API_BASE_URL from '../../js/urlHelper';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import SweetAlert from '../../components/SweetAlert';
+import jwtUtils from '../../utilities/jwtUtils';
 
 const CategoryTable = () => {
   const [categorias, setCategorias] = useState([]);
@@ -28,7 +29,7 @@ const CategoryTable = () => {
 
   // Obtener las categorías paginadas
   const fetchCategorias = async (page = 0) => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     try {
       setLoading(true);
 
@@ -82,7 +83,7 @@ const CategoryTable = () => {
 
   // Cambiar el estado de una categoría
   const cambiarEstado = async (idCategoria, estadoActual) => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
 
     setLoading(true);
@@ -157,7 +158,7 @@ const CategoryTable = () => {
   };
 
   const handleUpdate = async () => {
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     try {
       setLoading(true);
   

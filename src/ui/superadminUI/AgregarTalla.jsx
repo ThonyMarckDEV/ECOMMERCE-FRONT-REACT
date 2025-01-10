@@ -3,6 +3,7 @@ import Sidebar from '../../components/superAdminComponents/SidebarSuperAdmin';
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen'; // Importar el componente de carga
+import jwtUtils from '../../utilities/jwtUtils';
 
 function AgregarTalla() {
   const [nombreTalla, setNombreTalla] = useState('');
@@ -10,7 +11,7 @@ function AgregarTalla() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('jwt'); // Obtener el token JWT del localStorage
+    const token = jwtUtils.getTokenFromCookie();
 
     if (!nombreTalla) {
       SweetAlert.showMessageAlert('Error', 'El nombre de la talla es obligatorio', 'error');

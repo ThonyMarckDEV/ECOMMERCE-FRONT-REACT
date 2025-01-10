@@ -12,6 +12,7 @@ import logoyape from '../../img/yapelogo.png';
 import mercadopagologo from '../../img/mercadopago.png';
 import visalogo from '../../img/visalogo.jpg';
 import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
+import jwtUtils from '../../utilities/jwtUtils';
 
 function Carrito() { 
   const [productos, setProductos] = useState([]);
@@ -24,7 +25,7 @@ function Carrito() {
       await verificarYRenovarToken();
       setIsLoading(true);
   
-      const token = localStorage.getItem('jwt');
+      const token = jwtUtils.getTokenFromCookie();
       const idUsuario = getIdUsuario(token);
   
       if (!idUsuario) {
@@ -83,7 +84,7 @@ function Carrito() {
     setIsLoading(true);
     try {
       await verificarYRenovarToken();
-      const token = localStorage.getItem('jwt');
+      const token = jwtUtils.getTokenFromCookie();
       const payload = JSON.parse(atob(token.split('.')[1]));
       const idUsuario = payload.idUsuario;
   
@@ -148,7 +149,7 @@ function Carrito() {
 
   const proceedToCheckout = async (idDireccion) => {
     const total = calcularTotal();
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     const payload = JSON.parse(atob(token.split('.')[1]));
     const idCarrito = payload.idCarrito;
     const idUsuario = payload.idUsuario;
@@ -219,7 +220,7 @@ const actualizarCantidad = async (idDetalle, cantidad, tempProduct) => {
       );
     }
 
-    const token = localStorage.getItem('jwt');
+    const token = jwtUtils.getTokenFromCookie();
     const idUsuario = getIdUsuario(token);
 
     if (!token || !idUsuario) {
@@ -279,7 +280,7 @@ const actualizarCantidad = async (idDetalle, cantidad, tempProduct) => {
   const eliminarProducto = async (idDetalle) => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('jwt');
+      const token = jwtUtils.getTokenFromCookie();
 
       const response = await fetch(`${API_BASE_URL}/api/carrito_detalle/${idDetalle}`, {
         method: 'DELETE',
