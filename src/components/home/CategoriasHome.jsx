@@ -46,9 +46,12 @@ const Categories = forwardRef((props, ref) => {
   // Manejar el cambio de página
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    if (ref.current) {
-      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Usar un setTimeout para asegurar que el estado se haya actualizado antes de hacer scroll
+    setTimeout(() => {
+      if (ref.current) {
+        ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 0);
   };
 
   return (
@@ -93,20 +96,36 @@ const Categories = forwardRef((props, ref) => {
           </div>
 
           {/* Paginación */}
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-8 items-center">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="mx-1 px-4 py-2 rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              &larr; Anterior
+            </button>
+
             {Array.from({ length: totalPages }, (_, index) => (
               <button
                 key={index + 1}
                 onClick={() => handlePageChange(index + 1)}
                 className={`mx-1 px-4 py-2 rounded-full ${
                   currentPage === index + 1
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-black text-white'
                     : 'bg-gray-200 text-gray-700'
                 }`}
               >
                 {index + 1}
               </button>
             ))}
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="mx-1 px-4 py-2 rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Siguiente &rarr;
+            </button>
           </div>
         </div>
       </div>
