@@ -25,9 +25,10 @@ const ProductoEditarModal = ({ producto, onClose }) => {
   };
 
   const handleModeloCreated = (nuevoModelo) => {
-    setModelos([...modelos, nuevoModelo]);
-    setShowNuevoModelo(false);
+    setModelos([...modelos, nuevoModelo]); // Agrega el nuevo modelo al estado
+    setShowNuevoModelo(false); // Cierra el modal de nuevo modelo
   };
+
 
   const handleDeleteModelo = async (idModelo) => {
     const result = await Swal.fire({
@@ -40,7 +41,7 @@ const ProductoEditarModal = ({ producto, onClose }) => {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
     });
-
+  
     if (result.isConfirmed) {
       setIsLoading(true);
       const token = jwtUtils.getTokenFromCookie();
@@ -51,17 +52,14 @@ const ProductoEditarModal = ({ producto, onClose }) => {
             'Authorization': `Bearer ${token}`,
           },
         });
-
+  
         if (!response.ok) {
           throw new Error('Error al eliminar el modelo');
         }
-
-        // Update the local state by removing the deleted modelo
+  
+        // Actualiza el estado local eliminando el modelo
         setModelos(modelos.filter(modelo => modelo.idModelo !== idModelo));
         SweetAlert.showMessageAlert('¡Éxito!', 'Modelo eliminado exitosamente', 'success');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
       } catch (error) {
         console.error('Error:', error);
         SweetAlert.showMessageAlert('Error', 'Hubo un error al eliminar el modelo', 'error');

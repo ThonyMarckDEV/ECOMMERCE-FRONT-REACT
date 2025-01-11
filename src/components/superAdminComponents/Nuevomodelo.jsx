@@ -1,5 +1,4 @@
-// NuevoModelo.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
@@ -10,6 +9,13 @@ const NuevoModelo = ({ idProducto, onClose, onModeloCreated }) => {
   const [nombreModelo, setNombreModelo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMounted, setIsMounted] = useState(true);
+
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,20 +37,23 @@ const NuevoModelo = ({ idProducto, onClose, onModeloCreated }) => {
 
       if (!response.ok) {
         throw new Error('Error al crear el modelo');
-        SweetAlert.showMessageAlert('Error','Error al crear el modelo','error');
       }
 
       const data = await response.json();
-      onModeloCreated(data);
-      SweetAlert.showMessageAlert('Exito','Modelo Creado Exitosamente','success');
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      if (isMounted) {
+        onModeloCreated(data); // Llama a la función para actualizar la lista de modelos
+        SweetAlert.showMessageAlert('Éxito', 'Modelo Creado Exitosamente', 'success');
+        onClose(); // Cierra el modal después de crear el modelo
+      }
     } catch (err) {
-      setError('Ha ocurrido un error al crear el modelo');
-      SweetAlert.showMessageAlert('Error','Ha ocurrido un error al crear el modelo','error');
+      if (isMounted) {
+        setError('Ha ocurrido un error al crear el modelo');
+        SweetAlert.showMessageAlert('Error', 'Ha ocurrido un error al crear el modelo', 'error');
+      }
     } finally {
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
   };
 

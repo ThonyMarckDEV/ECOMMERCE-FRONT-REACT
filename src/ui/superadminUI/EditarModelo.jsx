@@ -13,13 +13,13 @@ function EditarModelo({ modelo, onClose }) {
   const [loading, setLoading] = useState(false);
   const [changingEstado, setChangingEstado] = useState(false);
   const [imagenes, setImagenes] = useState(
-    modelo.imagenes.map((imagen, index) => ({
+    modelo?.imagenes?.map((imagen, index) => ({
       ...imagen,
       idImagen: imagen.idImagen || `temp-${index}`,
       newFile: null,
-      objectUrl: null
-    }))
-  );
+      objectUrl: null,
+    })) || []
+  );  
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +37,7 @@ function EditarModelo({ modelo, onClose }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png']
+      'image/*': ['.jpeg', '.jpg', '.png' , '.avif' , '.wemp']
     },
     maxSize: 5242880,
     multiple: true
@@ -277,19 +277,19 @@ function EditarModelo({ modelo, onClose }) {
     setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
   };
 
-  // Eliminar imagen existente
+
   const handleRemoveExistingImage = async (idImagen) => {
-     const result = await Swal.fire({
-          title: '¿Eliminar imagen?',
-          text: '¿Estás seguro que deseas eliminar la imagen? Esta acción no se puede deshacer.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar',
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-        });
-    
+    const result = await Swal.fire({
+      title: '¿Eliminar imagen?',
+      text: '¿Estás seguro que deseas eliminar la imagen? Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    });
+  
     if (result.isConfirmed) {
       setLoading(true);
       try {
@@ -297,22 +297,22 @@ function EditarModelo({ modelo, onClose }) {
         const response = await fetch(`${API_BASE_URL}/api/eliminarImagenModelo/${idImagen}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
+  
         if (!response.ok) {
           throw new Error('No se pudo eliminar la imagen');
         }
-
+  
+        // Actualizar el estado local eliminando la imagen
         setImagenes((prevImagenes) => prevImagenes.filter((img) => img.idImagen !== idImagen));
+  
         SweetAlert.showMessageAlert('Éxito', 'Imagen eliminada correctamente', 'success');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
       } catch (error) {
         console.error('Error al eliminar la imagen:', error);
         SweetAlert.showMessageAlert('Error', 'No se pudo eliminar la imagen', 'error');
-      }finally {
+      } finally {
         setLoading(false);
       }
     }
@@ -355,7 +355,7 @@ function EditarModelo({ modelo, onClose }) {
                     'Arrastra imágenes aquí o haz clic para seleccionar'}
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
-                  Formatos permitidos: JPG, JPEG, PNG (máx. 5MB)
+                  Formatos permitidos: JPG, JPEG, PNG , AVIF , WEMP (máx. 5MB)
                 </p>
               </div>
   
