@@ -7,6 +7,7 @@ import {
   AiOutlineUser,
   AiOutlineDown,
   AiOutlineMenu,
+  AiOutlineProduct,
   AiOutlineMenuFold,
 } from 'react-icons/ai';
 
@@ -15,6 +16,7 @@ function SidebarSuperAdmin() {
   const [openUsuarios, setOpenUsuarios] = useState(false);
   const [openTallas, setOpenTallas] = useState(false);
   const [openCategorias, setOpenCategorias] = useState(false);
+  const [openProductos, setOpenProductos] = useState(false);
 
   // Cierra la sidebar al hacer clic fuera (solo en móviles)
   useEffect(() => {
@@ -137,6 +139,35 @@ function SidebarSuperAdmin() {
                     <li>
                       <a href="/superAdmin/categorias/editar" className="hover:text-gray-400 transition-all duration-300">
                         Editar Categorías
+                      </a>
+                    </li>
+                  </ul>
+                )}
+              </li>
+
+                      
+              {/* Productos */}
+              <li className="mb-4">
+                <div
+                  className="flex items-center justify-between text-lg bg-white text-black hover:bg-gray-100 p-2 rounded-lg cursor-pointer transition-all duration-300"
+                  onClick={() => setOpenProductos(!openProductos)}
+                >
+                  <div className="flex items-center">
+                    <AiOutlineProduct className="mr-4 text-xl" />
+                    <span>Producto</span>
+                  </div>
+                  <AiOutlineDown className={`transition-transform ${openProductos ? 'rotate-180' : ''}`} />
+                </div>
+                {openProductos && (
+                  <ul className="ml-8 mt-2 space-y-2">
+                    <li>
+                      <a href="/superAdmin/productos/agregar" className="hover:text-gray-400 transition-all duration-300">
+                        Agregar Productos
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/superAdmin/productos/editar" className="hover:text-gray-400 transition-all duration-300">
+                        Editar Productos
                       </a>
                     </li>
                   </ul>

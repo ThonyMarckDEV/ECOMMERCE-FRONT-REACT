@@ -38,7 +38,8 @@ import ProtectedRouteRolCliente from './utilities/ProtectedRouteRolCliente';
 import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
 import ProtectedRouteToken from './utilities/ProtectedRouteToken';
 import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
-
+import AgregarProducto from './ui/superadminUI/AgregarProducto';
+import EditarProducto from './ui/superadminUI/EditarProducto';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
@@ -122,6 +123,8 @@ function AppContent() {
       <Route path="/superAdmin/tallas/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarTalla />} />} />
       <Route path="/superAdmin/tallas/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarTalla />} />} />
       <Route path="/superAdmin/configuracion" element={<ProtectedRouteRolSuperAdmin element={<Configuracion />} />} />
+      <Route path="/superAdmin/productos/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarProducto />} />} />
+      <Route path="/superAdmin/productos/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarProducto />} />} />
 
       {/* RUTAS ROL ADMIN*/}
       <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
