@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
+function PaginationCategories({ currentPage, totalPages, onPageChange, categoriasRef }) {
   const handlePrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
+      scrollToCategorias();
     }
   };
 
   const handleNext = () => {
     if (currentPage < totalPages) {
       onPageChange(currentPage + 1);
+      scrollToCategorias();
+    }
+  };
+
+  const handlePageClick = (page) => {
+    onPageChange(page);
+    scrollToCategorias();
+  };
+
+  const scrollToCategorias = () => {
+    if (categoriasRef.current) {
+      categoriasRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -32,7 +45,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
         <button
           key={page}
-          onClick={() => onPageChange(page)}
+          onClick={() => handlePageClick(page)}
           className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${
             currentPage === page
               ? 'bg-black text-white'
@@ -59,4 +72,4 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   );
 }
 
-export default Pagination;
+export default PaginationCategories;
