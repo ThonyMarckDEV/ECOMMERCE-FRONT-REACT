@@ -48,7 +48,6 @@ function DetalleProducto({ productoId, onClose }) {
     };
   }, [productoId]);
 
-
   const handleIncrease = () => {
     setCantidad((prevCantidad) => prevCantidad + 1);
   };
@@ -168,7 +167,7 @@ function DetalleProducto({ productoId, onClose }) {
     return `${API_BASE_URL}/storage/${relativePath}`;
   };
 
-const handleMouseMove = (e) => {
+  const handleMouseMove = (e) => {
     const image = e.target;
     const container = image.parentElement;
     
@@ -200,7 +199,12 @@ const handleMouseMove = (e) => {
     image.style.cursor = 'zoom-in'; // Add zoom cursor on hover
   };
 
-return (
+  const handleThumbnailClick = (index) => {
+    setImagenIndex(index);
+    setIsImageLoading(true);
+  };
+
+  return (
     <>
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[50] p-0 sm:p-4">
             <div className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl max-w-4xl relative overflow-y-auto">
@@ -252,6 +256,25 @@ return (
                                 />
                             </div>
                             <div className="zoom-overlay" style={{ display: 'none' }}></div>
+                        </div>
+
+                        {/* Thumbnails container */}
+                        <div className="flex flex-wrap gap-2 mt-4">
+                            {modeloSeleccionado?.imagenes.map((imagen, index) => (
+                                <div
+                                    key={index}
+                                    className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${
+                                        imagenIndex === index ? 'border-black' : 'border-transparent'
+                                    }`}
+                                    onClick={() => handleThumbnailClick(index)}
+                                >
+                                    <img
+                                        src={buildImageUrl(imagen.urlImagen)}
+                                        alt={`Thumbnail ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            ))}
                         </div>
                     </div>
 
