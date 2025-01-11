@@ -52,7 +52,7 @@ const NuevoModelo = ({ idProducto, onClose, onModeloCreated }) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       {isLoading && <LoadingScreen />}
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="border-b p-4 flex items-center justify-between bg-yellow-500">
+        <div className="border-b p-4 flex items-center justify-between bg-gray-900">
           <h2 className="text-xl font-semibold text-white">Nuevo Modelo</h2>
           <button
             onClick={onClose}
@@ -94,7 +94,7 @@ const NuevoModelo = ({ idProducto, onClose, onModeloCreated }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Guardando...' : 'Guardar'}
             </button>

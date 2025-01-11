@@ -77,7 +77,7 @@ const ProductoEditarModal = ({ producto, onClose }) => {
         {isLoading && <LoadingScreen />}
         <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="border-b p-4 flex items-center justify-between bg-yellow-500">
+          <div className="border-b p-4 flex items-center justify-between bg-gray-900">
             <div className="flex items-center gap-2">
               <Package className="h-6 w-6 text-white" />
               <h2 className="text-xl font-semibold text-white">
@@ -113,7 +113,7 @@ const ProductoEditarModal = ({ producto, onClose }) => {
                 <h3 className="text-lg font-semibold text-gray-800">Modelos</h3>
                 <button
                   onClick={() => setShowNuevoModelo(true)}
-                  className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors flex items-center gap-2"
                 >
                   <Plus className="h-4 w-4" />
                   Nuevo Modelo
@@ -138,7 +138,7 @@ const ProductoEditarModal = ({ producto, onClose }) => {
                         </span>
                         <div className="flex items-center gap-2">
                           <button
-                            className="px-3 py-1 text-sm text-yellow-500 hover:text-yellow-700 hover:bg-yellow-50 rounded-md transition-colors flex items-center gap-2"
+                            className="px-3 py-1 text-sm text-gray-900 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors flex items-center gap-2"
                             onClick={() => setSelectedModelo(modelo)}
                           >
                             <Pencil className="h-4 w-4" />

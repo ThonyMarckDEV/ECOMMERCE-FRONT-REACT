@@ -7,7 +7,7 @@ function EditarProducto() {
       <Sidebar />
 
       <div className="flex-1 p-8 bg-gray-100 overflow-auto">
-        <h2 className="text-2xl font-bold mb-4 text-yellow-500">Lista de Productos</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Lista de Productos</h2>
         <div className="overflow-x-auto">
           <ProductTable />
         </div>

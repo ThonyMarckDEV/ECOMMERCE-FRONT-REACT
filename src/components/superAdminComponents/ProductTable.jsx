@@ -271,7 +271,7 @@ function ProductTable() {
                       ) : (
                         <>
                           <button
-                            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                            className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
                             onClick={() => handleEditClick(producto)}
                           >
                             Editar
@@ -303,7 +303,7 @@ function ProductTable() {
             onPageChange={handlePageClick}
             containerClassName={'flex justify-center space-x-4'}
             pageClassName={'px-4 py-2 border rounded-lg'}
-            activeClassName={'bg-yellow-500 text-white'}
+            activeClassName={'bg-gray-900 text-white'}
           />
         </div>
 
