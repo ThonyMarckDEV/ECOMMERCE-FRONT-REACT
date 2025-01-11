@@ -6,6 +6,8 @@ import VerificarCorreoToken from './ui/VerificarCorreoToken';
 import Mantenimiento from './components/home/Mantenimiento'; // Componente de mantenimiento
 import API_BASE_URL from './js/urlHelper';
 
+import WelcomeScreen from './components/WelcomeScreen'; // Importa el componente de pantal
+
 // Componentes Home
 import Home from './ui/Home';
 import Productos from './ui/Productos';
@@ -54,16 +56,121 @@ import FireworksEffect from './effects/FireworksEffect';
 import jwtUtils from './utilities/jwtUtils';
 
 
+// function AppContent() {
+//   const [enMantenimiento, setEnMantenimiento] = useState(false);
+//   const [mensajeMantenimiento, setMensajeMantenimiento] = useState('');
+//   const location = useLocation();
+
+//   // Verificar estado de mantenimiento al cargar
+//   useEffect(() => {
+//     const verificarMantenimiento = async () => {
+//       try {
+//         const response = await fetch(`${API_BASE_URL}/api/status-mantenimiento`); // Ruta de tu API Laravel
+//         if (response.ok) {
+//           const data = await response.json();
+//           if (data.estado === 1) {
+//             setEnMantenimiento(true);
+//             setMensajeMantenimiento(data.mensaje);
+//           } else {
+//             setEnMantenimiento(false);
+//           }
+//         } else {
+//           console.error('Error al obtener el estado de mantenimiento.');
+//         }
+//       } catch (error) {
+//         console.error('Error en la solicitud de mantenimiento:', error);
+//       }
+//     };
+
+//     verificarMantenimiento();
+//   }, [location.pathname]);
+
+//   // Actualizar la actividad del usuario si no está en mantenimiento
+//   useEffect(() => {
+//     const token = jwtUtils.getTokenFromCookie();
+//     if (!enMantenimiento && token) {
+
+//       updateLastActivity();
+        
+//         const intervalId = setInterval(() => {
+//           updateLastActivity();
+//         }, 10000);
+
+//         return () => clearInterval(intervalId);
+//     }
+//   }, [location.pathname, enMantenimiento]);
+
+//   if (enMantenimiento) {
+//     return <Mantenimiento mensaje={mensajeMantenimiento} />;
+//   }
+
+//   return (
+//     <Routes>
+    
+//       {/* ACA VAN EFECTOS */}
+//       {/*<SnowEffect />  Agrega el efecto de nieve aquí */}
+    
+//       <Route path="/" element={<ProtectedRouteHome element={<><FireworksEffect /><Home /></>} />} />
+
+//       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
+//       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
+//       <Route path="/productos" element={<ProtectedRouteHome element={<Productos />} />} />
+
+//       {/* RUTAS ROL SUPERADMIN */}
+//       <Route path="/superAdmin" element={<ProtectedRouteRolSuperAdmin element={<SuperAdmin />} />} />
+//       <Route path="/superAdmin/usuarios/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarUsuario />} />} />
+//       <Route path="/superAdmin/usuarios/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarUsuario />} />} />
+//       <Route path="/superAdmin/categorias/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarCategoria />} />} />
+//       <Route path="/superAdmin/categorias/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarCategoria />} />} />
+//       <Route path="/superAdmin/tallas/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarTalla />} />} />
+//       <Route path="/superAdmin/tallas/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarTalla />} />} />
+//       <Route path="/superAdmin/configuracion" element={<ProtectedRouteRolSuperAdmin element={<Configuracion />} />} />
+//       <Route path="/superAdmin/productos/agregar" element={<ProtectedRouteRolSuperAdmin element={<AgregarProducto />} />} />
+//       <Route path="/superAdmin/productos/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarProducto />} />} />
+
+//       {/* RUTAS ROL ADMIN*/}
+//       <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
+      
+
+//       {/* RUTAS ROL CLIENTE */}
+//       <Route path="/menuUsuario" element={<ProtectedRouteRolCliente element={<MenuUser />} allowedRoles={['cliente']} />} />
+//       <Route path="/pedidos" element={<ProtectedRouteRolCliente element={<Pedidos />} allowedRoles={['cliente']} />} />
+//       <Route path="/carrito" element={<ProtectedRouteRolCliente element={<Carrito />} allowedRoles={['cliente']} />} />
+
+    
+//       <Route path="/verificar-correo" element={<ProtectedRouteToken element={<VerificarCorreo />} />} />
+//       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
+
+//       <Route path="*" element={<Navigate to="/" replace />} />
+//     </Routes>
+//   );
+// }
+
+// function App() {
+//   return (
+//     <Router>
+//       <CartProvider>
+//         <AppContent />
+//       </CartProvider>
+//     </Router>
+//   );
+// }
+
+// export default App;
+
+
 function AppContent() {
   const [enMantenimiento, setEnMantenimiento] = useState(false);
   const [mensajeMantenimiento, setMensajeMantenimiento] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true); // Estado para controlar la visibilidad de WelcomeScreen
   const location = useLocation();
 
   // Verificar estado de mantenimiento al cargar
   useEffect(() => {
     const verificarMantenimiento = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/status-mantenimiento`); // Ruta de tu API Laravel
+        const response = await fetch(`${API_BASE_URL}/api/status-mantenimiento`);
         if (response.ok) {
           const data = await response.json();
           if (data.estado === 1) {
@@ -77,26 +184,40 @@ function AppContent() {
         }
       } catch (error) {
         console.error('Error en la solicitud de mantenimiento:', error);
+      } finally {
+        setIsLoading(false); // Finaliza la carga
       }
     };
 
+    // Temporizador para mostrar WelcomeScreen durante 5 segundos
+    const welcomeScreenTimer = setTimeout(() => {
+      setShowWelcomeScreen(false); // Oculta WelcomeScreen después de 5 segundos
+    }, 1500);
+
     verificarMantenimiento();
+
+    return () => {
+      clearTimeout(welcomeScreenTimer); // Limpia el temporizador si el componente se desmonta
+    };
   }, [location.pathname]);
 
   // Actualizar la actividad del usuario si no está en mantenimiento
   useEffect(() => {
     const token = jwtUtils.getTokenFromCookie();
     if (!enMantenimiento && token) {
-
       updateLastActivity();
-        
-        const intervalId = setInterval(() => {
-          updateLastActivity();
-        }, 10000);
 
-        return () => clearInterval(intervalId);
+      const intervalId = setInterval(() => {
+        updateLastActivity();
+      }, 10000);
+
+      return () => clearInterval(intervalId);
     }
   }, [location.pathname, enMantenimiento]);
+
+  if (isLoading || showWelcomeScreen) {
+    return <WelcomeScreen />; // Muestra la pantalla de carga mientras se verifica el estado o durante 5 segundos
+  }
 
   if (enMantenimiento) {
     return <Mantenimiento mensaje={mensajeMantenimiento} />;
@@ -104,10 +225,9 @@ function AppContent() {
 
   return (
     <Routes>
-    
       {/* ACA VAN EFECTOS */}
       {/*<SnowEffect />  Agrega el efecto de nieve aquí */}
-    
+
       <Route path="/" element={<ProtectedRouteHome element={<><FireworksEffect /><Home /></>} />} />
 
       <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
@@ -128,14 +248,12 @@ function AppContent() {
 
       {/* RUTAS ROL ADMIN*/}
       <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
-      
 
       {/* RUTAS ROL CLIENTE */}
       <Route path="/menuUsuario" element={<ProtectedRouteRolCliente element={<MenuUser />} allowedRoles={['cliente']} />} />
       <Route path="/pedidos" element={<ProtectedRouteRolCliente element={<Pedidos />} allowedRoles={['cliente']} />} />
       <Route path="/carrito" element={<ProtectedRouteRolCliente element={<Carrito />} allowedRoles={['cliente']} />} />
 
-    
       <Route path="/verificar-correo" element={<ProtectedRouteToken element={<VerificarCorreo />} />} />
       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
 
