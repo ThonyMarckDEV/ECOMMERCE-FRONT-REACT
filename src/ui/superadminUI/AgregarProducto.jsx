@@ -5,7 +5,6 @@ import LoaderScreen from '../../components/home/LoadingScreen';
 import API_BASE_URL from '../../js/urlHelper';
 import { Upload, X } from 'lucide-react';
 import jwtUtils from '../../utilities/jwtUtils';
-import { TallasModal } from '../../components/superAdminComponents/TallasModal';
 
 function AgregarProducto() {
 
@@ -190,13 +189,12 @@ function AgregarProducto() {
     }
   };
 
- 
   const handleStockChange = (modeloIndex, tallaId, value) => {
     setModeloTallas(prev => ({
       ...prev,
       [modeloIndex]: {
         ...prev[modeloIndex],
-        [tallaId]: parseInt(value) || 0
+        [tallaId]: value === '' ? '' : parseInt(value) || 0 // Permite valores vacíos
       }
     }));
   };
@@ -440,7 +438,7 @@ function AgregarProducto() {
                         </div>
                       </div>
 
-                      <div className="mt-4 md:col-span-2"> 
+                      <div className="mt-4 md:col-span-2">
                         <h4 className="text-sm font-medium text-gray-700 mb-2">Tallas para este modelo</h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {tallas.map((talla) => {
@@ -461,8 +459,13 @@ function AgregarProducto() {
                                     <input
                                       type="number"
                                       min="0"
-                                      value={modeloTallas[index]?.[talla.idTalla] || 0}
+                                      value={modeloTallas[index]?.[talla.idTalla] ?? ''} // Muestra 0 o cadena vacía
                                       onChange={(e) => handleStockChange(index, talla.idTalla, e.target.value)}
+                                      onBlur={(e) => {
+                                        if (e.target.value === '') {
+                                          handleStockChange(index, talla.idTalla, 0); // Convierte cadena vacía a 0
+                                        }
+                                      }}
                                       className="w-20 p-1 border rounded"
                                       onClick={(e) => e.stopPropagation()}
                                     />
@@ -473,6 +476,7 @@ function AgregarProducto() {
                           })}
                         </div>
                       </div>
+
                     </div>
                   </div>
                 ))}
