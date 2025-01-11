@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { X, Save, Image, Upload, Trash2, Loader2 } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { X, Save, Image, Upload, Trash2, Loader2, Plus } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
@@ -11,12 +11,11 @@ function EditarModelo({ modelo, onClose }) {
   const [nombreModelo, setNombreModelo] = useState(modelo.nombreModelo);
   const [descripcion, setDescripcion] = useState(modelo.descripcion);
   const [loading, setLoading] = useState(false);
-  const [changingEstado, setChangingEstado] = useState(false); // Define changingEstado
-  // Asegurarnos de que todas las imágenes tengan un ID único
+  const [changingEstado, setChangingEstado] = useState(false);
   const [imagenes, setImagenes] = useState(
     modelo.imagenes.map((imagen, index) => ({
       ...imagen,
-      idImagen: imagen.idImagen || `temp-${index}`, // ID temporal si no existe
+      idImagen: imagen.idImagen || `temp-${index}`,
       newFile: null,
       objectUrl: null
     }))
@@ -24,6 +23,13 @@ function EditarModelo({ modelo, onClose }) {
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Nuevos estados para el manejo de tallas
+  const [stocks, setStocks] = useState([]);
+  const [tallas, setTallas] = useState([]);
+  const [nuevaTalla, setNuevaTalla] = useState('');
+  const [nuevaCantidad, setNuevaCantidad] = useState('');
+
+  // Mantener todos los handlers existentes...
   const onDrop = useCallback((acceptedFiles) => {
     setFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
   }, []);
@@ -36,6 +42,147 @@ function EditarModelo({ modelo, onClose }) {
     maxSize: 5242880,
     multiple: true
   });
+
+    // Nuevos efectos y handlers para tallas
+    useEffect(() => {
+      cargarTallasYStock();
+    }, []);
+  
+    const cargarTallasYStock = async () => {
+      try {
+        const token = jwtUtils.getTokenFromCookie();
+        
+        // Realizar ambas solicitudes en paralelo
+        const [tallasResponse, stockResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/tallas`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_BASE_URL}/api/listarStockPorModelo/${modelo.idModelo}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+        ]);
+    
+        // Verificar si ambas respuestas son exitosas
+        if (!tallasResponse.ok || !stockResponse.ok) {
+          throw new Error('Error al cargar datos');
+        }
+    
+        // Convertir las respuestas a JSON
+        const [tallasData, stockData] = await Promise.all([
+          tallasResponse.json(),
+          stockResponse.json()
+        ]);
+    
+        // Actualizar el estado con los datos obtenidos
+        setTallas(tallasData);
+        setStocks(stockData);
+      } catch (error) {
+        console.error('Error:', error);
+        SweetAlert.showMessageAlert('Error', 'Error al cargar las tallas', 'error');
+      }
+    };
+  
+    const agregarStock = async () => {
+      // Validar que los campos no estén vacíos
+      if (!nuevaTalla || !nuevaCantidad) {
+        SweetAlert.showMessageAlert('Error', 'Por favor complete todos los campos', 'error');
+        return;
+      }
+    
+      // Verificar si la talla ya existe en el stock
+      const tallaExistente = stocks.find(stock => stock.idTalla === nuevaTalla);
+      if (tallaExistente) {
+        SweetAlert.showMessageAlert('Error', 'La talla seleccionada ya está agregada', 'error');
+        return;
+      }
+    
+      setLoading(true);
+      try {
+        const token = jwtUtils.getTokenFromCookie();
+        const response = await fetch(`${API_BASE_URL}/api/agregarStock`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            idModelo: modelo.idModelo,
+            idTalla: nuevaTalla,
+            cantidad: parseInt(nuevaCantidad)
+          }),
+        });
+    
+        if (!response.ok) throw new Error('Error al agregar stock');
+    
+        SweetAlert.showMessageAlert('Éxito', 'Talla agregada correctamente', 'success');
+        setNuevaTalla('');
+        setNuevaCantidad('');
+        await cargarTallasYStock();
+      } catch (error) {
+        console.error('Error:', error);
+        SweetAlert.showMessageAlert('Error', 'Error al agregar la talla, ya esta agregada', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const actualizarStock = async (idStock, nuevaCantidad) => {
+      setLoading(true);
+      try {
+        const token = jwtUtils.getTokenFromCookie();
+        const response = await fetch(`${API_BASE_URL}/api/actualizarStock/${idStock}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ cantidad: nuevaCantidad }),
+        });
+  
+        if (!response.ok) throw new Error('Error al actualizar stock');
+        await cargarTallasYStock();
+        SweetAlert.showMessageAlert('Exito', 'Stock actualizado correctamente', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        SweetAlert.showMessageAlert('Error', 'Error al actualizar el stock', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const eliminarStock = async (idStock) => {
+      const result = await Swal.fire({
+        title: '¿Eliminar talla?',
+        text: '¿Estás seguro que deseas eliminar esta talla? Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+      });
+  
+      if (result.isConfirmed) {
+        setLoading(true);
+        try {
+          const token = jwtUtils.getTokenFromCookie();
+          const response = await fetch(`${API_BASE_URL}/api/eliminarStock/${idStock}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+  
+          if (!response.ok) throw new Error('Error al eliminar talla');
+  
+          await cargarTallasYStock();
+          SweetAlert.showMessageAlert('Éxito', 'Talla eliminada correctamente', 'success');
+        } catch (error) {
+          console.error('Error:', error);
+          SweetAlert.showMessageAlert('Error', 'Error al eliminar la talla', 'error');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
   const handleReplaceImage = (idImagen, file) => {
     if (!idImagen) {
@@ -277,7 +424,6 @@ function EditarModelo({ modelo, onClose }) {
                   ))}
                 </div>
               </div>
-            </div>
   
             {/* Form Fields */}
             <div className="space-y-4">
@@ -291,6 +437,88 @@ function EditarModelo({ modelo, onClose }) {
                   onChange={(e) => setNombreModelo(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+              </div>
+            </div>
+          </div>
+
+             {/* Nueva sección de Tallas */}
+             <div className="mt-8">
+              <h3 className="text-lg font-medium mb-4">Gestión de Tallas</h3>
+              
+              {/* Agregar nueva talla */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h4 className="text-sm font-medium mb-3">Agregar Nueva Talla</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <select
+                    value={nuevaTalla}
+                    onChange={(e) => setNuevaTalla(e.target.value)}
+                    className="border rounded-md p-2"
+                  >
+                    <option value="">Seleccionar Talla</option>
+                    {tallas.map((talla) => (
+                      <option key={talla.idTalla} value={talla.idTalla}>
+                        {talla.nombreTalla}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    value={nuevaCantidad}
+                    onChange={(e) => setNuevaCantidad(e.target.value)}
+                    placeholder="Cantidad"
+                    min="0"
+                    className="border rounded-md p-2"
+                  />
+                  <button
+                    onClick={agregarStock}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Agregar
+                  </button>
+                </div>
+              </div>
+
+              {/* Lista de tallas existentes */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-4 py-2 text-left">Talla</th>
+                      <th className="px-4 py-2 text-left">Cantidad</th>
+                      <th className="px-4 py-2 text-center">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stocks.map((stock) => (
+                      <tr key={stock.idStock} className="border-b">
+                        <td className="px-4 py-2">{stock.nombreTalla}</td>
+                        <td className="px-4 py-2">
+                          <input
+                            type="number"
+                            defaultValue={stock.cantidad}
+                            min="0"
+                            className="border rounded-md p-1 w-24"
+                            onBlur={(e) => {
+                              const newValue = parseInt(e.target.value);
+                              if (newValue !== stock.cantidad) {
+                                actualizarStock(stock.idStock, newValue);
+                              }
+                            }}
+                          />
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                          <button
+                            onClick={() => eliminarStock(stock.idStock)}
+                            className="text-red-500 hover:text-red-700 p-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

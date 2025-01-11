@@ -149,7 +149,7 @@ function SidebarSuperAdmin() {
               {/* Productos */}
               <li className="mb-4">
                 <div
-                  className="flex items-center justify-between text-lg bg-white text-black hover:bg-gray-100 p-2 rounded-lg cursor-pointer transition-all duration-300"
+                  className="flex items-center justify-between text-lg hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition-all duration-300"
                   onClick={() => setOpenProductos(!openProductos)}
                 >
                   <div className="flex items-center">

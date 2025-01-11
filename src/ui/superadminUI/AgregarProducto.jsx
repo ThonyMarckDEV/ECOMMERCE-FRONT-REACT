@@ -8,12 +8,15 @@ import jwtUtils from '../../utilities/jwtUtils';
 import { TallasModal } from '../../components/superAdminComponents/TallasModal';
 
 function AgregarProducto() {
+
+  // Add precio to the initial state
   const initialProductState = {
     idProducto: '',
     nombreProducto: '',
     descripcion: '',
     estado: 'activo',
-    idCategoria: ''
+    idCategoria: '',
+    precio: '' // Add precio field
   };
 
   const initialModeloState = {
@@ -31,10 +34,14 @@ function AgregarProducto() {
   const [selectedTallas, setSelectedTallas] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modeloTallas, setModeloTallas] = useState({});
+  const [modeloSelectedTallas, setModeloSelectedTallas] = useState({});
+
 
   useEffect(() => {
     cargarCategorias();
     cargarTallas();
+    // Initialize modeloSelectedTallas for the first model
+    setModeloSelectedTallas({ 0: [] });
   }, []);
 
   const cargarCategorias = async () => {
@@ -52,6 +59,80 @@ function AgregarProducto() {
       SweetAlert.showMessageAlert('Error', 'Error al cargar categorías', 'error');
     }
   };
+
+    // Modified to handle tallas per model
+    const handleTallaSelect = (modeloIndex, talla) => {
+      setModeloSelectedTallas(prev => {
+        const modelTallas = prev[modeloIndex] || [];
+        const exists = modelTallas.some(t => t.idTalla === talla.idTalla);
+        
+        const updatedTallas = exists
+          ? modelTallas.filter(t => t.idTalla !== talla.idTalla)
+          : [...modelTallas, talla];
+  
+        return {
+          ...prev,
+          [modeloIndex]: updatedTallas
+        };
+      });
+  
+      setModeloTallas(prev => {
+        const modeloStock = prev[modeloIndex] || {};
+        if (modeloStock[talla.idTalla]) {
+          const { [talla.idTalla]: removed, ...rest } = modeloStock;
+          return {
+            ...prev,
+            [modeloIndex]: rest
+          };
+        } else {
+          return {
+            ...prev,
+            [modeloIndex]: {
+              ...modeloStock,
+              [talla.idTalla]: 0
+            }
+          };
+        }
+      });
+    };
+  
+    const agregarNuevoModelo = () => {
+      const newIndex = modelos.length;
+      setModelos(prev => [...prev, initialModeloState]);
+      setSelectedFiles(prev => [...prev, null]);
+      setModeloSelectedTallas(prev => ({
+        ...prev,
+        [newIndex]: []
+      }));
+    };
+  
+    const eliminarModelo = (index) => {
+      setModelos(prev => prev.filter((_, i) => i !== index));
+      setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+      
+      // Remove tallas and stock for the deleted model
+      setModeloSelectedTallas(prev => {
+        const { [index]: removed, ...rest } = prev;
+        // Reindex remaining models
+        const reindexed = {};
+        Object.entries(rest).forEach(([key, value]) => {
+          const newKey = parseInt(key) > index ? parseInt(key) - 1 : key;
+          reindexed[newKey] = value;
+        });
+        return reindexed;
+      });
+  
+      setModeloTallas(prev => {
+        const { [index]: removed, ...rest } = prev;
+        // Reindex remaining models
+        const reindexed = {};
+        Object.entries(rest).forEach(([key, value]) => {
+          const newKey = parseInt(key) > index ? parseInt(key) - 1 : key;
+          reindexed[newKey] = value;
+        });
+        return reindexed;
+      });
+    };
 
   const cargarTallas = async () => {
     const token = jwtUtils.getTokenFromCookie();
@@ -109,34 +190,7 @@ function AgregarProducto() {
     }
   };
 
-  const handleTallaSelect = (talla) => {
-    setSelectedTallas(prev => {
-      const exists = prev.some(t => t.idTalla === talla.idTalla);
-      if (exists) {
-        setModeloTallas(prevModeloTallas => {
-          const newModeloTallas = { ...prevModeloTallas };
-          Object.keys(newModeloTallas).forEach(modeloIndex => {
-            delete newModeloTallas[modeloIndex][talla.idTalla];
-          });
-          return newModeloTallas;
-        });
-        return prev.filter(t => t.idTalla !== talla.idTalla);
-      } else {
-        setModeloTallas(prevModeloTallas => {
-          const newModeloTallas = { ...prevModeloTallas };
-          modelos.forEach((_, index) => {
-            if (!newModeloTallas[index]) {
-              newModeloTallas[index] = {};
-            }
-            newModeloTallas[index][talla.idTalla] = 0;
-          });
-          return newModeloTallas;
-        });
-        return [...prev, talla];
-      }
-    });
-  };
-
+ 
   const handleStockChange = (modeloIndex, tallaId, value) => {
     setModeloTallas(prev => ({
       ...prev,
@@ -155,6 +209,11 @@ function AgregarProducto() {
 
     if (!producto.idCategoria) {
       SweetAlert.showMessageAlert('Error', 'Debe seleccionar una categoría', 'error');
+      return false;
+    }
+
+    if (!producto.precio || producto.precio <= 0) {
+      SweetAlert.showMessageAlert('Error', 'El precio debe ser mayor a 0', 'error');
       return false;
     }
 
@@ -178,38 +237,6 @@ function AgregarProducto() {
     return true;
   };
 
-  const agregarNuevoModelo = () => {
-    setModelos(prev => [...prev, initialModeloState]);
-    setSelectedFiles(prev => [...prev, null]);
-    // Initialize stock for new model
-    setModeloTallas(prev => {
-      const newModeloTallas = { ...prev };
-      const newModeloIndex = modelos.length;
-      newModeloTallas[newModeloIndex] = {};
-      selectedTallas.forEach(talla => {
-        newModeloTallas[newModeloIndex][talla.idTalla] = 0;
-      });
-      return newModeloTallas;
-    });
-  };
-
-  const eliminarModelo = (index) => {
-    setModelos(prev => prev.filter((_, i) => i !== index));
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-    setModeloTallas(prev => {
-      const newModeloTallas = { ...prev };
-      delete newModeloTallas[index];
-      // Reindex remaining models
-      const reindexedTallas = {};
-      Object.keys(newModeloTallas)
-        .filter(key => parseInt(key) > index)
-        .forEach(key => {
-          reindexedTallas[parseInt(key) - 1] = newModeloTallas[key];
-        });
-      return reindexedTallas;
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -224,18 +251,19 @@ function AgregarProducto() {
     formData.append('descripcion', producto.descripcion.trim());
     formData.append('estado', producto.estado);
     formData.append('idCategoria', producto.idCategoria);
+    formData.append('precio', producto.precio); // Agregamos el precio al FormData
   
     modelos.forEach((modelo, index) => {
       formData.append(`modelos[${index}][nombreModelo]`, modelo.nombreModelo.trim());
       formData.append(`modelos[${index}][imagen]`, modelo.imagen);
-      // Add stock information
-      if (modeloTallas[index]) {
-        Object.entries(modeloTallas[index]).forEach(([tallaId, stock]) => {
-          formData.append(`modelos[${index}][tallas][${tallaId}]`, stock);
-        });
-      }
+      
+      // Add stock information per model
+      const modeloStock = modeloTallas[index] || {};
+      Object.entries(modeloStock).forEach(([tallaId, cantidad]) => {
+        formData.append(`modelos[${index}][tallas][${tallaId}]`, cantidad);
+      });
     });
-  
+
     try {
       const token = jwtUtils.getTokenFromCookie();
       const response = await fetch(`${API_BASE_URL}/api/agregarProductos`, {
@@ -246,11 +274,12 @@ function AgregarProducto() {
         }
       });
   
-      const data = await response.json();
-  
       if (!response.ok) {
-        throw new Error(data.message || 'Error al agregar el producto');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al agregar el producto');
       }
+
+      const data = await response.json();
       
       SweetAlert.showMessageAlert('Éxito', 'Producto agregado correctamente', 'success');
       resetForm();
@@ -274,6 +303,7 @@ function AgregarProducto() {
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Agregar Producto</h1>
           
           <form onSubmit={handleSubmit} className="space-y-8">
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Nombre del Producto</label>
@@ -284,6 +314,21 @@ function AgregarProducto() {
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   placeholder="Ingrese el nombre del producto"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Precio</label>
+                <input
+                  type="number"
+                  name="precio"
+                  value={producto.precio}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  placeholder="Ingrese el precio del producto"
+                  min="0"
+                  step="0.01"
                   required
                 />
               </div>
@@ -324,44 +369,6 @@ function AgregarProducto() {
                 </div>
               </div>
             </div>
-
-            <div className="border-t pt-8">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-800">Tallas del Producto</h2>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 transition"
-                >
-                  Agregar Tallas
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {selectedTallas.map((talla) => (
-                  <div key={talla.idTalla} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{talla.nombreTalla}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleTallaSelect(talla)}
-                        className="text-red-500 hover:text-red-600"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <TallasModal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              tallas={tallas}
-              selectedTallas={selectedTallas}
-              onTallaSelect={handleTallaSelect}
-            />
 
             <div className="border-t pt-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Modelos del Producto</h2>
@@ -432,31 +439,43 @@ function AgregarProducto() {
                           </div>
                         </div>
                       </div>
-                      
-                        {/* Agregar la sección de stock por tallas aquí */}
-                        {selectedTallas.length > 0 && (
-                          <div className="md:col-span-2 space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Stock por Talla</label>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              {selectedTallas.map((talla) => (
-                                <div key={talla.idTalla} className="space-y-1">
-                                  <label className="text-sm text-gray-600">{talla.nombreTalla}</label>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    value={modeloTallas[index]?.[talla.idTalla] || 0}
-                                    onChange={(e) => handleStockChange(index, talla.idTalla, e.target.value)}
-                                    className="w-full p-2 border border-gray-200 rounded focus:ring-2 focus:ring-blue-500"
-                                  />
+
+                      <div className="mt-4 md:col-span-2"> 
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Tallas para este modelo</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {tallas.map((talla) => {
+                            const isSelected = modeloSelectedTallas[index]?.some(
+                              t => t.idTalla === talla.idTalla
+                            );
+                            return (
+                              <div
+                                key={talla.idTalla}
+                                className={`p-2 rounded border cursor-pointer ${
+                                  isSelected ? 'bg-blue-100 border-blue-500' : 'border-gray-200'
+                                }`}
+                                onClick={() => handleTallaSelect(index, talla)}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span>{talla.nombreTalla}</span>
+                                  {isSelected && (
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      value={modeloTallas[index]?.[talla.idTalla] || 0}
+                                      onChange={(e) => handleStockChange(index, talla.idTalla, e.target.value)}
+                                      className="w-20 p-1 border rounded"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  )}
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
-                  ))}
-
+                  </div>
+                ))}
 
                 <button
                   type="button"
