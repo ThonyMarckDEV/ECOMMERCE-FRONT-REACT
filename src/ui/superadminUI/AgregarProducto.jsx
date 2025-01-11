@@ -19,14 +19,14 @@ function AgregarProducto() {
   const initialModeloState = {
     idModelo: '',
     nombreModelo: '',
-    imagen: null,
+    imagenes: [],
   };
 
   const [producto, setProducto] = useState(initialProductState);
   const [modelos, setModelos] = useState([initialModeloState]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([null]);
+  const [selectedFiles, setSelectedFiles] = useState([[]]);
   const [tallas, setTallas] = useState([]);
   const [selectedTallas, setSelectedTallas] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,7 +91,7 @@ function AgregarProducto() {
   const agregarNuevoModelo = () => {
     const newIndex = modelos.length;
     setModelos((prev) => [...prev, initialModeloState]);
-    setSelectedFiles((prev) => [...prev, null]);
+    setSelectedFiles((prev) => [...prev, []]);
     setModeloSelectedTallas((prev) => ({
       ...prev,
       [newIndex]: [],
@@ -140,7 +140,7 @@ function AgregarProducto() {
   const resetForm = () => {
     setProducto(initialProductState); // Reinicia el estado del producto
     setModelos([initialModeloState]); // Reinicia los modelos
-    setSelectedFiles([null]); // Reinicia los archivos seleccionados
+    setSelectedFiles([[]]); // Reinicia los archivos seleccionados
     setModeloTallas({}); // Reinicia las tallas de los modelos
     setModeloSelectedTallas({ 0: [] }); // Reinicia las tallas seleccionadas
   
@@ -163,70 +163,74 @@ function AgregarProducto() {
     );
   };
 
-  const handleImagenChange = (index, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        SweetAlert.showMessageAlert(
-          'Error',
-          'Por favor seleccione un archivo de imagen válido',
-          'error'
-        );
-        e.target.value = '';
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        SweetAlert.showMessageAlert(
-          'Error',
-          'El archivo no debe exceder los 5 MB',
-          'error'
-        );
-        e.target.value = '';
-        return;
-      }
-
+  const handleImagenChange = (modeloIndex, e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
       const newSelectedFiles = [...selectedFiles];
-      newSelectedFiles[index] = URL.createObjectURL(file);
-      setSelectedFiles(newSelectedFiles);
+      const newModelos = [...modelos];
 
-      setModelos((prev) =>
-        prev.map((modelo, i) =>
-          i === index ? { ...modelo, imagen: file } : modelo
-        )
-      );
+      files.forEach((file) => {
+        if (!file.type.startsWith('image/')) {
+          SweetAlert.showMessageAlert(
+            'Error',
+            'Por favor seleccione un archivo de imagen válido',
+            'error'
+          );
+          e.target.value = '';
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          SweetAlert.showMessageAlert(
+            'Error',
+            'El archivo no debe exceder los 5 MB',
+            'error'
+          );
+          e.target.value = '';
+          return;
+        }
+
+        const fileUrl = URL.createObjectURL(file);
+        newSelectedFiles[modeloIndex].push(fileUrl);
+        newModelos[modeloIndex].imagenes.push(file);
+      });
+
+      setSelectedFiles(newSelectedFiles);
+      setModelos(newModelos);
     }
   };
 
-  const handleDrop = (index, e) => {
+  const handleDrop = (modeloIndex, e) => {
     e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        SweetAlert.showMessageAlert(
-          'Error',
-          'Por favor seleccione un archivo de imagen válido',
-          'error'
-        );
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        SweetAlert.showMessageAlert(
-          'Error',
-          'El archivo no debe exceder los 5 MB',
-          'error'
-        );
-        return;
-      }
-
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
       const newSelectedFiles = [...selectedFiles];
-      newSelectedFiles[index] = URL.createObjectURL(file);
-      setSelectedFiles(newSelectedFiles);
+      const newModelos = [...modelos];
 
-      setModelos((prev) =>
-        prev.map((modelo, i) =>
-          i === index ? { ...modelo, imagen: file } : modelo
-        )
-      );
+      files.forEach((file) => {
+        if (!file.type.startsWith('image/')) {
+          SweetAlert.showMessageAlert(
+            'Error',
+            'Por favor seleccione un archivo de imagen válido',
+            'error'
+          );
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          SweetAlert.showMessageAlert(
+            'Error',
+            'El archivo no debe exceder los 5 MB',
+            'error'
+          );
+          return;
+        }
+
+        const fileUrl = URL.createObjectURL(file);
+        newSelectedFiles[modeloIndex].push(fileUrl);
+        newModelos[modeloIndex].imagenes.push(file);
+      });
+
+      setSelectedFiles(newSelectedFiles);
+      setModelos(newModelos);
     }
   };
 
@@ -242,6 +246,17 @@ function AgregarProducto() {
         [tallaId]: value === '' ? '' : parseInt(value) || 0,
       },
     }));
+  };
+
+  const eliminarImagen = (modeloIndex, imagenIndex) => {
+    const newSelectedFiles = [...selectedFiles];
+    const newModelos = [...modelos];
+
+    newSelectedFiles[modeloIndex].splice(imagenIndex, 1);
+    newModelos[modeloIndex].imagenes.splice(imagenIndex, 1);
+
+    setSelectedFiles(newSelectedFiles);
+    setModelos(newModelos);
   };
 
   const validateForm = () => {
@@ -291,10 +306,10 @@ function AgregarProducto() {
         return false;
       }
 
-      if (!modelos[i].imagen) {
+      if (modelos[i].imagenes.length === 0) {
         SweetAlert.showMessageAlert(
           'Error',
-          `Debe seleccionar una imagen para el modelo ${i + 1}`,
+          `Debe seleccionar al menos una imagen para el modelo ${i + 1}`,
           'error'
         );
         return false;
@@ -337,7 +352,9 @@ function AgregarProducto() {
   
     modelos.forEach((modelo, index) => {
       formData.append(`modelos[${index}][nombreModelo]`, modelo.nombreModelo.trim());
-      formData.append(`modelos[${index}][imagen]`, modelo.imagen);
+      modelo.imagenes.forEach((imagen, imagenIndex) => {
+        formData.append(`modelos[${index}][imagenes][${imagenIndex}]`, imagen);
+      });
   
       const modeloStock = modeloTallas[index] || {};
       Object.entries(modeloStock).forEach(([tallaId, cantidad]) => {
@@ -490,7 +507,7 @@ function AgregarProducto() {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Imagen del Modelo</label>
+                        <label className="text-sm font-medium text-gray-700">Imágenes del Modelo</label>
                         <div
                           className="relative"
                           onDrop={(e) => handleDrop(index, e)}
@@ -498,33 +515,47 @@ function AgregarProducto() {
                         >
                           <input
                             type="file"
-                            name="imagen"
+                            name="imagenes"
                             onChange={(e) => handleImagenChange(index, e)}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            id={`imagen-${index}`}
+                            id={`imagenes-${index}`}
                             accept=".jpeg, .jpg, .png, .avif, .webp"
+                            multiple
                           />
                           <div
                             className={`flex items-center justify-center w-full p-3 border-2 border-dashed 
-                              ${selectedFiles[index] ? 'border-green-500' : 'border-gray-300'} 
+                              ${selectedFiles[index].length > 0 ? 'border-green-500' : 'border-gray-300'} 
                               rounded-lg cursor-pointer hover:border-blue-500 transition`}
                           >
-                            {selectedFiles[index] ? (
+                            {selectedFiles[index].length > 0 ? (
                               <div className="relative w-full">
-                                <img
-                                  src={selectedFiles[index]}
-                                  alt="Preview"
-                                  className="h-32 mx-auto object-contain"
-                                />
+                                <div className="grid grid-cols-3 gap-4">
+                                  {selectedFiles[index].map((fileUrl, imagenIndex) => (
+                                    <div key={imagenIndex} className="relative">
+                                      <img
+                                        src={fileUrl}
+                                        alt="Preview"
+                                        className="h-32 w-full object-cover rounded"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => eliminarImagen(index, imagenIndex)}
+                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
                                 <span className="mt-2 block text-sm text-center text-green-600">
-                                  Imagen seleccionada - Click para cambiar
+                                  Imágenes seleccionadas - Click para cambiar
                                 </span>
                               </div>
                             ) : (
                               <div className="text-center">
                                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
                                 <span className="mt-2 block text-sm text-gray-600">
-                                  Arrastra y suelta una imagen o haz clic para seleccionar
+                                  Arrastra y suelta imágenes o haz clic para seleccionar
                                 </span>
                                 <span className="block text-xs text-gray-500">
                                   Formatos permitidos: .jpeg, .jpg, .png, .avif, .webp (Max. 5 MB)
