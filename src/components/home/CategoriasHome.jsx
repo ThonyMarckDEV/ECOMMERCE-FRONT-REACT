@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../js/urlHelper';
-import Pagination from './Pagination';
+import Pagination from './PaginationCategories';
 
 const CategoriesGrid = () => {
   const [categories, setCategories] = useState([]);
