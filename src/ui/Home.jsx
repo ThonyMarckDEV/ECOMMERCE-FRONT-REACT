@@ -16,8 +16,8 @@ const NavBarHome = lazy(() => import('../components/home/NavBarHome'));
 const CarruselHome = lazy(() => import('../components/home/CarruselHome'));
 const CategoriasHome = lazy(() => import('../components/home/CategoriasHome'));
 const Footer = lazy(() => import('../components/home/Footer'));
-//const Testimonios = lazy(() => import('../components/home/Testimonios'));
-//const OfertasDestacadas = lazy(() => import('../components/home/OfertasDestacadas'));
+const Testimonios = lazy(() => import('../components/home/Testimonios'));
+const OfertasDestacadas = lazy(() => import('../components/home/OfertasDestacadas'));
 //const MarcasColaboradoras = lazy(() => import('../components/home/MarcasColaboradoras'));
 
 
