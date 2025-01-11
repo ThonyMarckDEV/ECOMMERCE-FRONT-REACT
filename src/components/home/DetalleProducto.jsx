@@ -168,59 +168,6 @@ function DetalleProducto({ productoId, onClose }) {
     return `${API_BASE_URL}/storage/${relativePath}`;
   };
 
-//   const handleMouseMove = (e) => {
-//     const zoomOverlay = document.querySelector('.zoom-overlay');
-//     const imageContainer = e.target;
-    
-//     // Get image container dimensions and position
-//     const { left, top, width, height } = imageContainer.getBoundingClientRect();
-    
-//     // Calculate mouse position relative to image
-//     const x = e.clientX - left;
-//     const y = e.clientY - top;
-    
-//     // Calculate zoom position in percentage
-//     const zoomX = (x / width) * 100;
-//     const zoomY = (y / height) * 100;
-
-//     // Set zoom overlay dimensions
-//     const zoomWidth = 200;
-//     const zoomHeight = 150;
-    
-//     // Calculate zoom overlay position to center mouse
-//     let zoomOverlayX = e.pageX - (zoomWidth / 2);
-//     let zoomOverlayY = e.pageY - (zoomHeight / 2);
-    
-//     // Get modal boundaries
-//     const modalRect = imageContainer.closest('.relative').getBoundingClientRect();
-    
-//     // Keep zoom overlay within modal bounds
-//     zoomOverlayX = Math.max(modalRect.left, Math.min(zoomOverlayX, modalRect.right - zoomWidth));
-//     zoomOverlayY = Math.max(modalRect.top, Math.min(zoomOverlayY, modalRect.bottom - zoomHeight));
-    
-//     // Apply styles to zoom overlay
-//     Object.assign(zoomOverlay.style, {
-//         display: 'block',
-//         position: 'fixed',
-//         left: `${zoomOverlayX}px`,
-//         top: `${zoomOverlayY}px`,
-//         width: `${zoomWidth}px`,
-//         height: `${zoomHeight}px`,
-//         backgroundImage: `url(${imageContainer.src})`,
-//         backgroundSize: `${width * 2.5}px ${height * 2.5}px`,
-//         backgroundPosition: `${zoomX}% ${zoomY}%`,
-//         border: '2px solid black',
-//         borderRadius: '4px',
-//         pointerEvents: 'none',
-//         zIndex: '1000'
-//     });
-// };
-
-// const handleMouseLeave = () => {
-//     const zoomOverlay = document.querySelector('.zoom-overlay');
-//     zoomOverlay.style.display = 'none';
-// };
-
 const handleMouseMove = (e) => {
     const image = e.target;
     const container = image.parentElement;
