@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../js/urlHelper';
-import Pagination from './PaginationCategories';
 
-const CategoriesGrid = () => {
+const Categories = forwardRef((props, ref) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,10 +46,13 @@ const CategoriesGrid = () => {
   // Manejar el cambio de página
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    if (ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white" ref={ref}>
       <div className="max-w-7xl mx-auto py-8 px-4">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Categorías</h2>
         <div className="relative">
@@ -90,17 +92,26 @@ const CategoriesGrid = () => {
             })}
           </div>
 
-          {!loading && totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          )}
+          {/* Paginación */}
+          <div className="flex justify-center mt-8">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                className={`mx-1 px-4 py-2 rounded-full ${
+                  currentPage === index + 1
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
-};
+});
 
-export default CategoriesGrid;
+export default Categories;
