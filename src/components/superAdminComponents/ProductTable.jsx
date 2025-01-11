@@ -151,17 +151,6 @@ function ProductTable() {
 
   return (
     <div>
-     {/* Contenedor del buscador */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Buscar..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg"
-        />
-      </div>
-
         {/* Contenedor de la tabla con desplazamiento horizontal */}
         <div className="overflow-auto">
           {(loading || changingEstado) && <LoadingScreen />}
