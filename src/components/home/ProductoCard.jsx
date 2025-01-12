@@ -16,6 +16,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
       ? `${API_BASE_URL}/storage/${selectedModelo.imagenes[0]?.urlImagen}`
       : '/img/default-product.png'
   );
+  const [activeImageIndex, setActiveImageIndex] = useState(0); // Estado para la imagen activa
 
   const handleImageLoad = () => setIsLoading(false);
   const handleImageError = () => {
@@ -25,6 +26,12 @@ const ProductoCard = memo(({ producto, onClick }) => {
 
   const handleModeloChange = (modelo, e) => {
     e.stopPropagation(); // Evita activar el onClick de la tarjeta
+
+    // Si el modelo seleccionado es el mismo que el actual, no hacer nada
+    if (modelo.nombreModelo === selectedModelo.nombreModelo) {
+      return;
+    }
+
     setSelectedModelo(modelo);
     const newImgSrc =
       modelo.imagenes[0]?.urlImagen
@@ -32,6 +39,22 @@ const ProductoCard = memo(({ producto, onClick }) => {
         : '/img/default-product.png';
     setImgSrc(newImgSrc);
     setIsLoading(!!modelo.imagenes[0]?.urlImagen); // Solo mostrar cargador si hay imagen
+    setActiveImageIndex(0); // Reiniciar el índice de la imagen activa al cambiar de modelo
+  };
+
+  const handleImageNavigation = (index) => {
+    // Si la imagen seleccionada es la misma que la actual, no hacer nada
+    if (index === activeImageIndex) {
+      return;
+    }
+
+    setActiveImageIndex(index);
+    const newImgSrc =
+      selectedModelo.imagenes[index]?.urlImagen
+        ? `${API_BASE_URL}/storage/${selectedModelo.imagenes[index]?.urlImagen}`
+        : '/img/default-product.png';
+    setImgSrc(newImgSrc);
+    setIsLoading(true); // Mostrar cargador mientras la nueva imagen se carga
   };
 
   return (
@@ -44,10 +67,31 @@ const ProductoCard = memo(({ producto, onClick }) => {
         <img
           src={imgSrc}
           alt={selectedModelo.nombreModelo}
-          className={`w-full h-full object-contain rounded-md ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          className={`w-full h-full object-contain rounded-md transition-opacity duration-300 ${
+            isLoading ? 'opacity-0' : 'opacity-100'
+          }`}
           onLoad={handleImageLoad}
           onError={handleImageError}
+          key={imgSrc} // Forzar recarga de la imagen al cambiar el src
         />
+
+        {/* Navegación de imágenes (esquina derecha) */}
+        {selectedModelo.imagenes.length > 1 && (
+          <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 rounded-full px-2 py-1 flex flex-col space-y-1">
+            {selectedModelo.imagenes.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                  index === activeImageIndex ? 'bg-white' : 'bg-gray-400'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation(); // Evita activar el onClick de la tarjeta
+                  handleImageNavigation(index);
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <h2 className="text-sm font-bold mb-2 text-gray-900">{producto.nombreProducto}</h2>
@@ -63,7 +107,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
       ) : (
         <p className="text-sm font-semibold text-gray-800">S/.{producto.precioOriginal}</p>
       )}
-      
+
       <div className="mt-3">
         <h3 className="text-sm font-semibold text-gray-700">Modelo: {selectedModelo.nombreModelo}</h3>
         <div className="flex flex-wrap gap-2 mt-2">
@@ -84,7 +128,7 @@ const ProductoCard = memo(({ producto, onClick }) => {
       <div className="mt-3">
         <h4 className="text-sm font-semibold text-gray-700">
           {selectedModelo.tallas.every((talla) => talla.nombreTalla === "Sin talla")
-            ? "Stock Disponible:" // Cambia el título si todas las tallas son "Sin talla"
+            ? "Stock Disponible:"
             : "Tallas Disponibles:"}
         </h4>
         <ul className="list-disc pl-4 text-xs">
@@ -97,13 +141,8 @@ const ProductoCard = memo(({ producto, onClick }) => {
           ))}
         </ul>
       </div>
-
     </div>
   );
 });
 
 export default ProductoCard;
-
-
-
-
