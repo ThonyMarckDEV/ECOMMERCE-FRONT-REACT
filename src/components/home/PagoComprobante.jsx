@@ -79,64 +79,6 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
     maxFiles: 1
   });
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     setLoading(true);
-  //     setError(null);
-
-  //     if (!idPedido) {
-  //       setError('No se encontró un ID de pedido válido.');
-  //       return;
-  //     }
-
-  //     const formData = new FormData();
-  //     formData.append('idPedido', idPedido);
-  //     formData.append('comprobante', uploadedFile);
-  //     formData.append('metodo_pago', selectedTab);
-
-  //     const token = jwtUtils.getTokenFromCookie();
-  //     if (!token) {
-  //       setError('No se encontró un token de autenticación.');
-  //       return;
-  //     }
-
-  //     const response = await fetch(`${API_BASE_URL}/api/recibirPagoComprobante`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`
-  //       },
-  //       body: formData
-  //     });
-
-  //     const data = await response.json();
-      
-  //     if (data.success) {
-  //       await SweetAlert.showMessageAlert(
-  //         '¡Éxito!',
-  //         'Comprobante enviado exitosamente. Tu pedido será verificado pronto.',
-  //         'success'
-  //       );
-        
-  //       if (onSuccess) {
-  //         onSuccess();
-  //       }
-        
-  //       const currentUrl = new URL(window.location.href);
-  //       currentUrl.searchParams.set('status', 'approved');
-  //       currentUrl.searchParams.set('external_reference', idPedido);
-  //       window.history.pushState({}, '', currentUrl.toString());
-        
-  //       handleClose();
-  //     } else {
-  //       setError(data.message || 'Error al procesar el pago');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error al enviar comprobante:', error);
-  //     setError('Error al procesar el pago');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleSubmit = async () => {
     try {
