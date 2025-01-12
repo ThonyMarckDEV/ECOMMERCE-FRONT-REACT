@@ -102,7 +102,7 @@ const Pedidos = () => {
         if (!confirmacion) return;
 
         setLoading(true);
-
+        await verificarYRenovarToken();
         try {
             const response = await fetch(`${API_BASE_URL}/api/cancelarPedido`, {
                 method: 'DELETE',

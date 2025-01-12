@@ -8,6 +8,7 @@ import yapeLogo from '../../img/yapelogo.png';
 import plinLogo from '../../img/plinlogo.png';
 import yapeQR from '../../img/yapeqr.jpg';
 import plinQR from '../../img/plinqr.png';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) => {
   const [selectedTab, setSelectedTab] = useState('yape');
@@ -100,7 +101,7 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
         setError('No se encontró un token de autenticación.');
         return;
       }
-  
+      await verificarYRenovarToken();
       const response = await fetch(`${API_BASE_URL}/api/recibirPagoComprobante`, {
         method: 'POST',
         headers: {

@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import SweetAlert from '../../components/SweetAlert';
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const CategoryTable = () => {
   const [categorias, setCategorias] = useState([]);
@@ -30,6 +31,7 @@ const CategoryTable = () => {
   // Obtener las categorías paginadas
   const fetchCategorias = async (page = 0) => {
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       setLoading(true);
 
@@ -87,6 +89,7 @@ const CategoryTable = () => {
     const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
 
     setLoading(true);
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/cambiarEstadoCategoria/${idCategoria}`, {
         method: 'PUT',
@@ -178,7 +181,7 @@ const CategoryTable = () => {
       if (imagenFile) {
         formData.append('imagen', imagenFile);
       }
-  
+      await verificarYRenovarToken();
       // Make sure to use the correct ID in the URL
       const response = await fetch(`${API_BASE_URL}/api/actualizarCategoria/${editingId}`, {
         method: 'POST', // Change to POST and override with _method

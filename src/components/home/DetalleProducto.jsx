@@ -108,7 +108,6 @@ function DetalleProducto({ productoId, onClose }) {
       
         setLoading(true);
         verificarYRenovarToken();
-      
         fetch(`${API_BASE_URL}/api/agregarCarrito`, {
           method: 'POST',
           headers: {

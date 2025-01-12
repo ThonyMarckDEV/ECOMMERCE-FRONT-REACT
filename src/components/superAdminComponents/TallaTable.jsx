@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const TallaTable = () => {
   const [tallas, setTallas] = useState([]); // Datos de tallas
@@ -23,6 +24,7 @@ const TallaTable = () => {
   // Obtener las tallas paginadas
   const fetchTallas = async (page = 0) => {
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken(); // Verificar y renovar el token de acceso
     try {
       setLoading(true);
 
@@ -93,6 +95,7 @@ const TallaTable = () => {
   // Actualizar la talla en la API
   const handleUpdate = async () => {
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken(); // Verificar y renovar el token de acceso
     try {
       setLoading(true);
 

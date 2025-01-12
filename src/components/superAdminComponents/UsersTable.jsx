@@ -4,6 +4,7 @@ import LoadingScreen from '../../components/home/LoadingScreen';
 import SweetAlert from '../../components/SweetAlert';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const UsersTable = () => {
   const [userData, setUserData] = useState([]);
@@ -28,6 +29,7 @@ const UsersTable = () => {
   const fetchUsers = useCallback(async (filterParams = filters) => {
     setLoading(true);
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const params = new URLSearchParams({
         page: currentPage + 1,
@@ -122,6 +124,7 @@ const UsersTable = () => {
   const toggleStatus = async (id) => {
     setLoading(true);
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/listarUsuariosAdmin/${id}/cambiar-estado`, {
         method: 'PATCH',
@@ -154,6 +157,7 @@ const UsersTable = () => {
   const editarUsuario = async (id, nuevosDatos) => {
     setLoading(true);
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/listarUsuariosAdmin/${id}`, {
         method: 'PUT',

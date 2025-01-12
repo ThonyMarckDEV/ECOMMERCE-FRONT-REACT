@@ -6,6 +6,7 @@ import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
 import Swal from 'sweetalert2';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function EditarModelo({ modelo, onClose }) {
   const [nombreModelo, setNombreModelo] = useState(modelo.nombreModelo);
@@ -49,6 +50,7 @@ function EditarModelo({ modelo, onClose }) {
     }, []);
   
     const cargarTallasYStock = async () => {
+      await verificarYRenovarToken();
       try {
         const token = jwtUtils.getTokenFromCookie();
         
@@ -97,6 +99,7 @@ function EditarModelo({ modelo, onClose }) {
       }
     
       setLoading(true);
+      await verificarYRenovarToken();
       try {
         const token = jwtUtils.getTokenFromCookie();
         const response = await fetch(`${API_BASE_URL}/api/agregarStock`, {
@@ -128,6 +131,7 @@ function EditarModelo({ modelo, onClose }) {
   
     const actualizarStock = async (idStock, nuevaCantidad) => {
       setLoading(true);
+      await verificarYRenovarToken();
       try {
         const token = jwtUtils.getTokenFromCookie();
         const response = await fetch(`${API_BASE_URL}/api/actualizarStock/${idStock}`, {
@@ -164,6 +168,7 @@ function EditarModelo({ modelo, onClose }) {
   
       if (result.isConfirmed) {
         setLoading(true);
+        await verificarYRenovarToken();
         try {
           const token = jwtUtils.getTokenFromCookie();
           const response = await fetch(`${API_BASE_URL}/api/eliminarStock/${idStock}`, {
@@ -222,6 +227,7 @@ function EditarModelo({ modelo, onClose }) {
 
   const handleSave = async () => {
     setLoading(true);
+    await verificarYRenovarToken();
     try {
       const token = jwtUtils.getTokenFromCookie();
       const formData = new FormData();
@@ -243,8 +249,7 @@ function EditarModelo({ modelo, onClose }) {
         formData.append(`imagenesReemplazadas[${index}]`, imagen.newFile); // Archivo reemplazado
         formData.append(`idImagenesReemplazadas[${index}]`, imagen.idImagen); // ID de la imagen reemplazada
       });
-    
-     
+  
       // Enviar la solicitud al servidor
       const response = await fetch(
         `${API_BASE_URL}/api/editarModeloyImagen/${modelo.idModelo}`,
@@ -292,6 +297,7 @@ function EditarModelo({ modelo, onClose }) {
   
     if (result.isConfirmed) {
       setLoading(true);
+      await verificarYRenovarToken();
       try {
         const token = jwtUtils.getTokenFromCookie();
         const response = await fetch(`${API_BASE_URL}/api/eliminarImagenModelo/${idImagen}`, {

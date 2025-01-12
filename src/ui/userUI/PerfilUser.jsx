@@ -72,7 +72,7 @@ function Perfil() {
     if (isDniLocked) return;
 
     setIsLoading(true);
-
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/validate-dni/${dni}`, {
         method: 'GET',
@@ -103,12 +103,6 @@ function Perfil() {
     }
 
     setIsLoading(false);
-
-    // if (!skipNotifications) {
-    //   setTimeout(() => {
-    //     setNotification(null);
-    //   }, 3000);
-    // }
   };
 
   const handleChange = (e) => {

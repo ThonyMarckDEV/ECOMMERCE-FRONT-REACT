@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function AgregarUsuario() {
   const [rol, setRol] = useState('');
@@ -28,7 +29,7 @@ function AgregarUsuario() {
     formData.append('apellidos', apellidos);
     formData.append('correo', correo);
     formData.append('password', password);
-
+    await verificarYRenovarToken();
     try {
       setLoading(true); // Activar el loader
 

@@ -6,6 +6,7 @@ import EditarProductoModal from '../../ui/adminUI/ProductoEditarModalAdmin';
 import ReactPaginate from 'react-paginate';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function ProductTableAdmin() {
   const [productos, setProductos] = useState([]);
@@ -35,6 +36,7 @@ function ProductTableAdmin() {
 
   const cargarProductos = async (page) => {
     setLoading(true);
+    await verificarYRenovarToken();
     try {
       const token = jwtUtils.getTokenFromCookie();
       const response = await fetch(`${API_BASE_URL}/api/listarProductos?page=${page}&search=${searchTerm}&filters=${JSON.stringify(filters)}`, {
@@ -59,6 +61,7 @@ function ProductTableAdmin() {
 
   const toggleEstadoProducto = async (idProducto, estadoActual) => {
     setChangingEstado(true); // Activar el loader de toda la pantalla
+    await verificarYRenovarToken();
     try {
       const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
       const token = jwtUtils.getTokenFromCookie();
@@ -110,6 +113,7 @@ function ProductTableAdmin() {
   // Actualizar producto
   const handleUpdateProducto = async (idProducto) => {
     setLoading(true); // Activar el loader de toda la pantalla
+    await verificarYRenovarToken();
     try {
       const token = jwtUtils.getTokenFromCookie();
       const response = await fetch(`${API_BASE_URL}/api/actualizarProducto/${idProducto}`, {

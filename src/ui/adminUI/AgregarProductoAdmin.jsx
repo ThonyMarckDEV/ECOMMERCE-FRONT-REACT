@@ -5,6 +5,7 @@ import LoaderScreen from '../../components/home/LoadingScreen';
 import API_BASE_URL from '../../js/urlHelper';
 import { Upload, X } from 'lucide-react';
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function AgregarProductoAdmin() {
   const initialProductState = {
@@ -41,6 +42,7 @@ function AgregarProductoAdmin() {
 
   const cargarCategorias = async () => {
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/categoriasproductos`, {
         headers: {
@@ -123,6 +125,7 @@ function AgregarProductoAdmin() {
 
   const cargarTallas = async () => {
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/tallas`, {
         headers: {
@@ -361,7 +364,7 @@ function AgregarProductoAdmin() {
         formData.append(`modelos[${index}][tallas][${tallaId}]`, cantidad);
       });
     });
-  
+   await verificarYRenovarToken();
     try {
       const token = jwtUtils.getTokenFromCookie();
       const response = await fetch(`${API_BASE_URL}/api/agregarProductos`, {

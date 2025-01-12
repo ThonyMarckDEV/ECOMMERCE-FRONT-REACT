@@ -7,6 +7,7 @@ import jwtUtils from '../../utilities/jwtUtils';
 import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import Swal from 'sweetalert2';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const ProductoEditarModalAdmin = ({ producto, onClose }) => {
   const [modelos, setModelos] = useState(producto?.modelos || []);
@@ -45,6 +46,7 @@ const ProductoEditarModalAdmin = ({ producto, onClose }) => {
     if (result.isConfirmed) {
       setIsLoading(true);
       const token = jwtUtils.getTokenFromCookie();
+      await verificarYRenovarToken();
       try {
         const response = await fetch(`${API_BASE_URL}/api/EliminarModelo/${idModelo}`, {
           method: 'DELETE',

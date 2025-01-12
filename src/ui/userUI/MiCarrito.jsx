@@ -159,7 +159,7 @@ function Carrito() {
         setIsLoading(false);
         return;
     }
-
+    await verificarYRenovarToken();
     try {
         const response = await fetch(`${API_BASE_URL}/api/pedido`, {
             method: 'POST',
@@ -201,6 +201,7 @@ function Carrito() {
 
   
 const actualizarCantidad = async (idDetalle, cantidad, tempProduct) => {
+  await verificarYRenovarToken();
   try {
     if (isNaN(cantidad) || cantidad < 1) {
       SweetAlert.showMessageAlert('Error', 'La cantidad debe ser un número mayor que 0.', 'error');
@@ -278,6 +279,7 @@ const actualizarCantidad = async (idDetalle, cantidad, tempProduct) => {
 };
 
   const eliminarProducto = async (idDetalle) => {
+    await verificarYRenovarToken();
     try {
       setIsLoading(true);
       const token = jwtUtils.getTokenFromCookie();

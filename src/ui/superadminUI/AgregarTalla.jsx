@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen'; // Importar el componente de carga
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function AgregarTalla() {
   const [nombreTalla, setNombreTalla] = useState('');
@@ -17,7 +18,7 @@ function AgregarTalla() {
       SweetAlert.showMessageAlert('Error', 'El nombre de la talla es obligatorio', 'error');
       return;
     }
-
+    await verificarYRenovarToken();
     try {
       setLoading(true);
 

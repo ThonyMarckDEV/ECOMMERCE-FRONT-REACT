@@ -5,6 +5,7 @@ import Notification from '../components/home/Notificacion';
 import LoadingScreen from '../components/home/LoadingScreen';
 import verificarCorreo from '../img/verificar_correo.png';
 import jwtUtils from '../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const VerificarCorreo = () => {
   const [notification, setNotification] = useState(null);
@@ -18,6 +19,7 @@ const VerificarCorreo = () => {
       const token = jwtUtils.getTokenFromCookie();
 
       if (token_veririficador) {
+        await verificarYRenovarToken();
         try {
           // Verificar el token de la URL
           const verifyResponse = await fetch(`${API_BASE_URL}/api/verificar-token`, {

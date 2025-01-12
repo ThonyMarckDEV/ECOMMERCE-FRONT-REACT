@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function Configuracion() {
   const [facturacionElectronica, setFacturacionElectronica] = useState(false);
@@ -15,6 +16,7 @@ function Configuracion() {
     const fetchConfiguracion = async () => {
       setLoading(true);
       const token = jwtUtils.getTokenFromCookie();
+      await verificarYRenovarToken();
       try {
         // Obtener estado de facturación electrónica
         const responseFacturacion = await fetch(`${API_BASE_URL}/api/configuracion/facturacion-electronica`, {
@@ -62,6 +64,7 @@ function Configuracion() {
   const toggleFacturacionElectronica = async () => {
     setLoading(true);
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/configuracion/facturacion-electronica`, {
         method: 'PUT',
@@ -91,6 +94,7 @@ function Configuracion() {
   const cambiarMetodoPago = async (metodo) => {
     setLoading(true);
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/configuracion/metodo-pago`, {
         method: 'PUT',

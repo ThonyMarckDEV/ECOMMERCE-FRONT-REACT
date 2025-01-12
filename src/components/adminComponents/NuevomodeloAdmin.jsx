@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const NuevoModeloAdmin = ({ idProducto, onClose, onModeloCreated }) => {
   const [nombreModelo, setNombreModelo] = useState('');
@@ -22,6 +23,7 @@ const NuevoModeloAdmin = ({ idProducto, onClose, onModeloCreated }) => {
     setIsLoading(true);
     setError('');
     const token = jwtUtils.getTokenFromCookie();
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/agregarModelo`, {
         method: 'POST',

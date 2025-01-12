@@ -1,6 +1,7 @@
 import React, { useEffect, useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../js/urlHelper';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const Categories = forwardRef((props, ref) => {
   const [categories, setCategories] = useState([]);

@@ -4,6 +4,7 @@ import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
 import LoaderScreen from '../../components/home/LoadingScreen'; // Importar tu componente LoaderScreen
 import jwtUtils from '../../utilities/jwtUtils';
+import { verificarYRenovarToken } from '../../js/authToken';
 
 function AgregarCategoria() {
   const [nombreCategoria, setNombreCategoria] = useState('');
@@ -28,7 +29,7 @@ function AgregarCategoria() {
     formData.append('nombreCategoria', nombreCategoria);
     formData.append('descripcion', descripcion);
     formData.append('imagen', imagen);
-
+    await verificarYRenovarToken(); // Verificar si el token está caducado y renovarlo si es necesario
     try {
       setLoading(true); // Activar el loader
 

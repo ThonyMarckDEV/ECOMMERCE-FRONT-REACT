@@ -5,6 +5,7 @@ import LoadingScreen from './LoadingScreen';
 import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
 import jwtUtils from '../../utilities/jwtUtils.jsx';
 import PagoComprobante from '../../components/home/PagoComprobante'; // Importar PagoComprobante
+import { verificarYRenovarToken } from '../../js/authToken';
 
 const MercadoPago = ({ pedido }) => {
     const [loading, setLoading] = useState(false);
@@ -48,7 +49,7 @@ const MercadoPago = ({ pedido }) => {
 
     const actualizarComprobante = async () => {
         const token = jwtUtils.getTokenFromCookie();
-        
+        await verificarYRenovarToken();
         try {
             const response = await fetch(`${API_BASE_URL}/api/actualizar-comprobante`, {
                 method: 'POST',
@@ -102,7 +103,7 @@ const MercadoPago = ({ pedido }) => {
                 setLoading(false);
                 return;
             }
-    
+            await verificarYRenovarToken();
             const tipoPagoResponse = await fetch(`${API_BASE_URL}/api/tipo-pago`, {
                 method: 'GET',
                 headers: {
@@ -141,7 +142,6 @@ const MercadoPago = ({ pedido }) => {
     
                 // Actualiza el comprobante (si es necesario)
                 await actualizarComprobante();
-    
                 // Crea la preferencia de pago
                 const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
                     method: 'POST',

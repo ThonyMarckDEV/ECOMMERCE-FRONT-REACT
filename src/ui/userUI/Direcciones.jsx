@@ -20,6 +20,7 @@ function Direcciones() {
 
   const fetchDirecciones = async () => {
     setLoading(true); // Iniciar loader antes de la solicitud
+    await verificarYRenovarToken();
     try {
       // Decodificar el token y obtener el idUsuario
       const decodedToken = JSON.parse(atob(userToken.split('.')[1]));
@@ -49,6 +50,7 @@ function Direcciones() {
 
   const setDireccionUsando = async (idDireccion) => {
     setLoading(true); // Iniciar loader antes de la solicitud
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/setDireccionUsando/${idDireccion}`, {
         method: 'PUT',
@@ -85,6 +87,7 @@ function Direcciones() {
 
   const eliminarDireccion = async (idDireccion) => {
     setLoading(true); // Iniciar loader antes de la solicitud
+    await verificarYRenovarToken();
     try {
       const response = await fetch(`${API_BASE_URL}/api/eliminarDireccion/${idDireccion}`, {
         method: 'DELETE',
