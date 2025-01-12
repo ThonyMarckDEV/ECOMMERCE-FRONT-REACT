@@ -33,8 +33,9 @@ const Destacadas = () => {
     fetchProductosDestacados();
   }, [currentPage]);
 
-  const handleProductoClick = (productoId) => {
-    navigate(`/producto/${productoId}`);
+  const handleProductoClick = (nombreProducto) => {
+    const urlProducto = `${window.location.origin}/productos?texto=${encodeURIComponent(nombreProducto)}`;
+    window.location.href = urlProducto; // Redirige a la URL construida
   };
 
   // Calcular el total de páginas
@@ -68,8 +69,8 @@ const Destacadas = () => {
               return (
                 <div
                   key={key}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105"
-                  onClick={() => handleProductoClick(producto.idProducto)}
+                  className="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 cursor-pointer"
+                  onClick={() => handleProductoClick(producto.nombreProducto)}
                 >
                   <img
                     src={imageUrl}

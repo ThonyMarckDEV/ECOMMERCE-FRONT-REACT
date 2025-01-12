@@ -18,6 +18,30 @@ function FiltradoProductos({ onFilter }) {
   });
   const [isOpen, setIsOpen] = useState(false);
 
+  // Leer parámetros de la URL y actualizar el estado del filtro
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const texto = searchParams.get('texto') || '';
+    const categoria = searchParams.get('categoria') || '';
+    const precioInicial = parseFloat(searchParams.get('precioInicial')) || 0;
+    const precioFinal = parseFloat(searchParams.get('precioFinal')) || precioMaximo;
+
+    setFiltro({
+      texto,
+      categoria,
+      precioInicial,
+      precioFinal,
+    });
+
+    // Aplicar filtros automáticamente al cargar la página
+    onFilter({
+      texto,
+      categoria,
+      precioInicial,
+      precioFinal,
+    });
+  }, [location.search, precioMaximo]);
+
   useEffect(() => {
     const obtenerPrecioMaximo = async () => {
       try {
