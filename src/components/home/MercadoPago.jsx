@@ -4,11 +4,13 @@ import  API_BASE_URL  from '../../js/urlHelper.js';
 import LoadingScreen from './LoadingScreen';
 import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
 import jwtUtils from '../../utilities/jwtUtils.jsx';
+import PagoComprobante from '../../components/home/PagoComprobante'; // Importar PagoComprobante
 
 const MercadoPago = ({ pedido }) => {
     const [loading, setLoading] = useState(false);
     const [mercadoPago, setMercadoPago] = useState(null);
     const [error, setError] = useState(null);
+    const [showPagoComprobante, setShowPagoComprobante] = useState(false);
 
     useEffect(() => {
         const scriptId = "mercadoPagoScript";
@@ -76,53 +78,103 @@ const MercadoPago = ({ pedido }) => {
 
     const handlePago = async () => {
         if (!mercadoPago) {
-            setError("MercadoPago no está disponible.");
+            setError("MercadoPago no está disponible. Por favor, intenta más tarde.");
             return;
         }
-
+    
         setLoading(true);
         setError(null);
-
-        const token = jwtUtils.getTokenFromCookie();
-        const decodedToken = decodeJWT(token);
-        const correoUsuario = decodedToken ? decodedToken.correo : null;
-
-        if (!correoUsuario) {
-            setLoading(false);
-            setError('No se pudo obtener el correo del usuario.');
-            return;
-        }
-
+    
         try {
-            // Primero actualizar el comprobante
-            await actualizarComprobante();
+            // Validar que existe el ID del pedido
+            if (!pedido?.idPedido) {
+                setError('No se encontró un ID de pedido válido.');
+                setLoading(false);
+                return;
+            }
 
-            // Luego proceder con la creación de la preferencia de pago
-            const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
-                method: 'POST',
+            const token = jwtUtils.getTokenFromCookie();
+            const decodedToken = decodeJWT(token);
+            const correoUsuario = decodedToken ? decodedToken.correo : null;
+        
+            if (!correoUsuario) {
+                setError('No se pudo obtener el correo del usuario.');
+                setLoading(false);
+                return;
+            }
+    
+            const tipoPagoResponse = await fetch(`${API_BASE_URL}/api/tipo-pago`, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    idPedido: pedido.idPedido,
-                    detalles: pedido.detalles,
-                    total: pedido.total,
-                    correo: correoUsuario,
-                    tipo_comprobante: pedido.tipoComprobante,
-                    ruc_data: pedido.tipoComprobante === 'factura' ? pedido.rucData : null
-                }),
             });
-
-            const data = await response.json();
-
-            if (data.success) {
-                mercadoPago.checkout({
-                    preference: { id: data.preference_id },
-                    autoOpen: true,
+    
+            if (!tipoPagoResponse.ok) {
+                setError('Error al obtener el tipo de pago. Intenta nuevamente.');
+                return;
+            }
+    
+            const tipoPagoData = await tipoPagoResponse.json();
+    
+            if (!tipoPagoData || !tipoPagoData.success) {
+                setError(tipoPagoData?.message || 'Error al obtener el tipo de pago.');
+                return;
+            }
+    
+            const tipoPago = tipoPagoData.tipo_pago;
+    
+            if (tipoPago === 'comprobante') {
+                // Actualiza el comprobante (si es necesario)
+                await actualizarComprobante();
+                setShowPagoComprobante(true);
+                return;
+            }
+    
+            // Si el tipo de pago es "mercadopago", proceder con el flujo de MercadoPago
+            if (tipoPago === 'mercadopago') {
+                // Verifica que los datos del pedido estén completos
+                if (!pedido?.idPedido || !pedido?.detalles || !pedido?.total) {
+                    setError('Datos del pedido incompletos. Intenta nuevamente.');
+                    return;
+                }
+    
+                // Actualiza el comprobante (si es necesario)
+                await actualizarComprobante();
+    
+                // Crea la preferencia de pago
+                const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        idPedido: pedido.idPedido,
+                        detalles: pedido.detalles,
+                        total: pedido.total,
+                        correo: correoUsuario,
+                        tipo_comprobante: pedido.tipoComprobante,
+                        ruc_data: pedido.tipoComprobante === 'factura' ? pedido.rucData : null,
+                    }),
                 });
-            } else {
-                setError(data.message || 'Error al crear la preferencia de pago.');
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    setError(errorData?.message || 'Error al crear la preferencia de pago.');
+                    return;
+                }
+    
+                const data = await response.json();
+    
+                if (data.success) {
+                    mercadoPago.checkout({
+                        preference: { id: data.preference_id },
+                        autoOpen: true,
+                    });
+                } else {
+                    setError(data.message || 'Error al crear la preferencia de pago.');
+                }
             }
         } catch (error) {
             console.error('Error al procesar el pago:', error);
@@ -159,6 +211,17 @@ const MercadoPago = ({ pedido }) => {
                 >
                     {loading ? 'Procesando...' : 'Pagar Pedido'}
                 </button>
+            )}
+            {showPagoComprobante && (
+                <PagoComprobante
+                    isOpen={showPagoComprobante}
+                    onClose={() => setShowPagoComprobante(false)}
+                    idPedido={pedido.idPedido}
+                    onSuccess={() => {
+                        // Esto refrescará la lista de pedidos
+                        window.location.reload();
+                    }}
+                />
             )}
         </div>
     );
