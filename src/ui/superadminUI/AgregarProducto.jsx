@@ -364,7 +364,9 @@ function AgregarProducto() {
         formData.append(`modelos[${index}][tallas][${tallaId}]`, cantidad);
       });
     });
+  
     await verificarYRenovarToken();
+  
     try {
       const token = jwtUtils.getTokenFromCookie();
       const response = await fetch(`${API_BASE_URL}/api/agregarProductos`, {
@@ -376,8 +378,12 @@ function AgregarProducto() {
       });
   
       if (!response.ok) {
-        const errorData = await response.text(); // Captura la respuesta como texto
-        console.error('Error en la respuesta del servidor:', errorData);
+        const errorData = await response.json(); // Captura la respuesta como JSON
+        if (response.status === 409) {
+          // Si el error es 409, muestra el mensaje de error en SweetAlert
+          SweetAlert.showMessageAlert('Error', errorData.message, 'error');
+          return; // Detiene la ejecución
+        }
         throw new Error('Error en la respuesta del servidor');
       }
   
@@ -392,7 +398,6 @@ function AgregarProducto() {
     } catch (error) {
       console.error('Error en la respuesta del servidor:', error.message);
       SweetAlert.showMessageAlert('Error', error.message, 'error');
-      resetForm(); // Limpia el formulario en caso de error
     } finally {
       setLoading(false);
     }
