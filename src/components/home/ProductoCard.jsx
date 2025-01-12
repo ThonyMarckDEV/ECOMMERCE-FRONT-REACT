@@ -76,22 +76,26 @@ const ProductoCard = memo(({ producto, onClick }) => {
         />
 
         {/* Navegación de imágenes (esquina derecha) */}
-        {selectedModelo.imagenes.length > 1 && (
-          <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 rounded-full px-2 py-1 flex flex-col space-y-1">
-            {selectedModelo.imagenes.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                  index === activeImageIndex ? 'bg-white' : 'bg-gray-400'
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation(); // Evita activar el onClick de la tarjeta
-                  handleImageNavigation(index);
-                }}
-              />
-            ))}
-          </div>
-        )}
+          {selectedModelo.imagenes.length > 1 && (
+            <div
+              className="absolute bottom-2 right-2 bg-black bg-opacity-50 rounded-full px-2 py-1 flex flex-col space-y-1"
+              onClick={(e) => e.stopPropagation()} // Detener la propagación del evento
+            >
+              {selectedModelo.imagenes.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    index === activeImageIndex ? 'bg-white' : 'bg-gray-400'
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Evita activar el onClick de la tarjeta
+                    handleImageNavigation(index);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+                
       </div>
 
       <h2 className="text-sm font-bold mb-2 text-gray-900">{producto.nombreProducto}</h2>
