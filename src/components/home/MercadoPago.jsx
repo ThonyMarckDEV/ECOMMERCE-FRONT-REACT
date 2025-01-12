@@ -217,6 +217,7 @@ const MercadoPago = ({ pedido }) => {
                     isOpen={showPagoComprobante}
                     onClose={() => setShowPagoComprobante(false)}
                     idPedido={pedido.idPedido}
+                    total={pedido.total}  // Add this line
                     onSuccess={() => {
                         // Esto refrescará la lista de pedidos
                         window.location.reload();

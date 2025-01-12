@@ -1,27 +1,58 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { X, Upload, CheckCircle } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 import SweetAlert from '../../components/SweetAlert';
+import yapeLogo from '../../img/yapelogo.png';
+import plinLogo from '../../img/plinlogo.png';
+import yapeQR from '../../img/yapeqr.jpg';
+import plinQR from '../../img/plinqr.png';
 
-const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
+const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) => {
   const [selectedTab, setSelectedTab] = useState('yape');
   const [uploadedFile, setUploadedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true);
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setIsMounted(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
+  const openImageModal = (event) => {
+    event.preventDefault();
+    setIsImageModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsImageModalOpen(false);
+  };
+
+  const formatTotal = (amount) => {
+    const numAmount = Number(amount);
+    return !isNaN(numAmount) ? numAmount.toFixed(2) : '0.00';
+  };
 
   const qrCodes = {
-    yape: '/api/placeholder/200/200',
-    plin: '/api/placeholder/200/200',
-    bcp: '/api/placeholder/200/200'
+    yape: yapeQR,
+    plin: plinQR,
   };
 
   const tabIcons = {
-    yape: '/api/placeholder/24/24',
-    plin: '/api/placeholder/24/24',
-    bcp: '/api/placeholder/24/24'
+    yape: yapeLogo,
+    plin: plinLogo,
   };
 
   const onDrop = useCallback(acceptedFiles => {
@@ -80,25 +111,22 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Mostrar mensaje de éxito
         await SweetAlert.showMessageAlert(
           '¡Éxito!',
           'Comprobante enviado exitosamente. Tu pedido será verificado pronto.',
           'success'
         );
         
-        // Llamar al callback de éxito para actualizar la lista de pedidos
         if (onSuccess) {
           onSuccess();
         }
         
-        // Simular la redirección como en MercadoPago
         const currentUrl = new URL(window.location.href);
         currentUrl.searchParams.set('status', 'approved');
         currentUrl.searchParams.set('external_reference', idPedido);
         window.history.pushState({}, '', currentUrl.toString());
         
-        onClose();
+        handleClose();
       } else {
         setError(data.message || 'Error al procesar el pago');
       }
@@ -114,9 +142,15 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-4xl p-6 relative">
+      <div
+        className={`
+          bg-white rounded-xl w-full max-w-4xl p-6 relative
+          transition-all duration-300 ease-in-out transform
+          ${isMounted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+        `}
+      >
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
         >
           <X size={24} />
@@ -124,13 +158,18 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
 
         <div className="grid grid-cols-2 gap-8">
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Pago por Comprobante
-            </h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Pago por Comprobante
+              </h2>
+              <div className="text-xl font-semibold text-black">
+                Total: S/ {formatTotal(total)}
+              </div>
+            </div>
 
             <div className="w-full">
               <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg">
-                {['yape', 'plin', 'bcp'].map((tab) => (
+                {['yape', 'plin'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setSelectedTab(tab)}
@@ -142,7 +181,7 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
                   >
                     <div className="flex items-center justify-center space-x-2">
                       <img 
-                        src={tabIcons[tab]} 
+                        src={tabIcons[tab]}
                         alt={`${tab} logo`}
                         className="w-6 h-6 object-contain"
                       />
@@ -161,7 +200,7 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
                       className="w-48 h-48 object-contain"
                     />
                     <p className="text-sm text-gray-600 text-center">
-                      Escanea el código QR para realizar el pago con {selectedTab.toUpperCase()}
+                      Escanea el código QR para realizar el pago de S/ {formatTotal(total)} con {selectedTab.toUpperCase()}
                     </p>
                   </div>
                 </div>
@@ -192,7 +231,8 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
                         <img
                           src={previewUrl}
                           alt="Preview del comprobante"
-                          className="w-full h-auto rounded-lg shadow-md"
+                          className="w-24 h-24 object-cover rounded-lg shadow-md cursor-pointer"
+                          onClick={openImageModal}
                         />
                       </div>
                     )}
@@ -226,7 +266,7 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
                 w-full py-6 text-lg font-medium text-white rounded-xl
                 transition-all duration-200
                 ${uploadedFile && !loading
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
+                  ? 'bg-black hover:bg-gray-800 text-white py-2 px-4 rounded'
                   : 'bg-gray-300 cursor-not-allowed'}
               `}
             >
@@ -235,6 +275,24 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, onSuccess }) => {
           </div>
         </div>
       </div>
+
+      {isImageModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-4 max-w-xs relative">
+            <button
+              onClick={closeImageModal}
+              className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+            >
+              <X size={20} />
+            </button>
+            <img
+              src={previewUrl}
+              alt="Comprobante de pago"
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
