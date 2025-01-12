@@ -13,31 +13,37 @@ function AgregarTalla() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = jwtUtils.getTokenFromCookie();
-
+  
     if (!nombreTalla) {
       SweetAlert.showMessageAlert('Error', 'El nombre de la talla es obligatorio', 'error');
       return;
     }
+  
     await verificarYRenovarToken();
+  
     try {
       setLoading(true);
-
+  
       const response = await fetch(`${API_BASE_URL}/api/agregarTalla`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ nombreTalla }),
       });
-
+  
       if (response.ok) {
         SweetAlert.showMessageAlert('¡Éxito!', 'Talla agregada exitosamente', 'success');
         setNombreTalla('');
       } else {
         const errorData = await response.json();
-        console.error('Error al agregar talla:', errorData);
-        SweetAlert.showMessageAlert('Error', 'Hubo un error al agregar la talla', 'error');
+        if (response.status === 409) {
+          // Si el error es 409, muestra el mensaje de error en SweetAlert
+          SweetAlert.showMessageAlert('Error', errorData.message, 'error');
+        } else {
+          SweetAlert.showMessageAlert('Error', 'Hubo un error al agregar la talla', 'error');
+        }
       }
     } catch (error) {
       console.error('Error al agregar talla:', error);
