@@ -5,7 +5,7 @@ import Notification from '../components/home/Notificacion';
 import LoadingScreen from '../components/home/LoadingScreen';
 import verificarCorreo from '../img/verificar_correo.png';
 import jwtUtils from '../utilities/jwtUtils';
-import { verificarYRenovarToken } from '../../js/authToken';
+import { verificarYRenovarToken } from '../js/authToken';
 
 const VerificarCorreo = () => {
   const [notification, setNotification] = useState(null);
