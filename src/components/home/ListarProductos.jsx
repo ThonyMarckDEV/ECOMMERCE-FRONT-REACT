@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../js/urlHelper';
 import DetalleProducto from './DetalleProducto';
-import { AiOutlineLoading3Quarters, AiOutlineSearch, AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineLoading3Quarters, AiOutlineSearch, AiOutlineClose, AiOutlineFilter } from 'react-icons/ai';
 import ProductoCard from './ProductoCard';
 import Pagination from './Pagination';
 
@@ -16,44 +16,53 @@ function ListarProductos({ filtro }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [currentSort, setCurrentSort] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  const searchInputRef = useRef(null); // Referencia para el input de búsqueda
+  const searchInputRef = useRef(null);
+  const sortMenuRef = useRef(null);
 
   const categoriaURL = new URLSearchParams(location.search).get('categoria');
 
-  // Cargar búsquedas recientes del localStorage al iniciar
+  const sortOptions = [
+    { value: 'az', label: 'A-Z' },
+    { value: 'za', label: 'Z-A' },
+    { value: 'price_asc', label: 'Precio: Menor a Mayor' },
+    { value: 'price_desc', label: 'Precio: Mayor a Menor' }
+  ];
+
   useEffect(() => {
     const savedSearches = localStorage.getItem('recentSearches');
     if (savedSearches) {
       setRecentSearches(JSON.parse(savedSearches));
     }
+
+    // Obtener el ordenamiento actual de la URL
+    const sortParam = new URLSearchParams(location.search).get('sort');
+    if (sortParam) {
+      setCurrentSort(sortParam);
+    }
   }, []);
 
-  // Guardar búsqueda en localStorage
   const saveSearch = (term) => {
     if (!term.trim()) return;
-    
     const searches = recentSearches.filter(s => s !== term);
     const newSearches = [term, ...searches].slice(0, 5);
-    
     setRecentSearches(newSearches);
     localStorage.setItem('recentSearches', JSON.stringify(newSearches));
   };
 
-  // Eliminar búsqueda del historial
   const removeSearch = (searchToRemove) => {
     const newSearches = recentSearches.filter(search => search !== searchToRemove);
     setRecentSearches(newSearches);
     localStorage.setItem('recentSearches', JSON.stringify(newSearches));
   };
 
-  // Manejar la búsqueda
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
       saveSearch(searchTerm.trim());
-      // Actualizar filtro con el término de búsqueda
       const searchParams = new URLSearchParams(location.search);
       searchParams.set('texto', searchTerm);
       searchParams.set('page', '1');
@@ -63,7 +72,16 @@ function ListarProductos({ filtro }) {
     }
   };
 
-  // Limpiar búsqueda
+  const handleSort = (sortValue) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('sort', sortValue);
+    searchParams.set('page', '1');
+    navigate(`/productos?${searchParams.toString()}`);
+    setCurrentSort(sortValue);
+    setShowSortMenu(false);
+    setCurrentPage(1);
+  };
+
   const handleClearSearch = () => {
     setSearchTerm('');
     const searchParams = new URLSearchParams(location.search);
@@ -74,11 +92,13 @@ function ListarProductos({ filtro }) {
     setShowRecentSearches(false);
   };
 
-  // Ocultar sugerencias al hacer clic fuera del input
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
         setShowRecentSearches(false);
+      }
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setShowSortMenu(false);
       }
     };
 
@@ -98,6 +118,7 @@ function ListarProductos({ filtro }) {
     if (filtro.categoria || categoriaURL) filtroQuery.append('categoria', filtro.categoria || categoriaURL);
     if (filtro.precioInicial !== undefined) filtroQuery.append('precioInicial', filtro.precioInicial);
     if (filtro.precioFinal !== undefined) filtroQuery.append('precioFinal', filtro.precioFinal);
+    if (currentSort) filtroQuery.append('sort', currentSort);
     filtroQuery.append('page', currentPage);
 
     fetch(`${API_BASE_URL}/api/productos?${filtroQuery.toString()}`)
@@ -124,7 +145,7 @@ function ListarProductos({ filtro }) {
     return () => {
       isMounted = false;
     };
-  }, [filtro, categoriaURL, currentPage]);
+  }, [filtro, categoriaURL, currentPage, currentSort]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -133,7 +154,6 @@ function ListarProductos({ filtro }) {
     navigate(`/productos?${searchParams.toString()}`);
   };
 
-  // Componente de búsquedas recientes
   const RecentSearches = () => (
     <div className="absolute top-full left-0 mt-1 w-full bg-white border rounded-md shadow-lg z-50">
       <div className="p-2">
@@ -196,80 +216,109 @@ function ListarProductos({ filtro }) {
     );
   }
 
-  return (
-    <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
-      <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10 animate-fade-in">
-        Productos
-      </h1>
-
-      {/* Barra de búsqueda */}
-      <div className="w-full max-w-2xl mx-auto mb-8 px-4 relative" ref={searchInputRef}>
-        <form onSubmit={handleSearch} className="relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onFocus={() => setShowRecentSearches(true)}
-            className="w-full px-4 py-2 pr-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Buscar productos..."
-          />
-          <button
-            type="submit"
-            className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            <AiOutlineSearch size={20} />
-          </button>
-          {searchTerm && (
-            <button
-              type="button"
-              onClick={handleClearSearch}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <AiOutlineClose size={20} />
-            </button>
-          )}
-        </form>
-        
-        {/* Mostrar búsquedas recientes cuando el input está enfocado */}
-        {showRecentSearches && <RecentSearches />}
-      </div>
-
-      <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full animate-fade-in-down">
-          {productos.length > 0 ? (
-            productos.map((producto) => (
-              <ProductoCard
-                key={producto.idProducto}
-                producto={producto}
-                onClick={() => setProductoSeleccionado(producto.idProducto)}
-                className="animate-scale-up"
-              />
-            ))
-          ) : (
-            <p className="text-gray-700 col-span-full text-center animate-bounce-in">
-              No se encontraron productos con los filtros aplicados.
-            </p>
-          )}
+    return (
+      <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
+        <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10 animate-fade-in">
+          Productos
+        </h1>
+  
+        {/* Search bar and filters container with higher z-index */}
+        <div className="w-full max-w-2xl mx-auto mb-8 px-4 relative z-50" ref={searchInputRef}>
+          <form onSubmit={handleSearch} className="relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setShowRecentSearches(true)}
+              className="w-full px-4 py-2 pr-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Buscar productos..."
+            />
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 flex items-center">
+              {/* Sort button with explicit z-index */}
+              <div className="relative" ref={sortMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowSortMenu(!showSortMenu)}
+                  className="p-2 text-gray-400 hover:text-gray-600"
+                >
+                  <AiOutlineFilter size={20} />
+                </button>
+                
+                {/* Sort menu with higher z-index */}
+                {showSortMenu && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-[100]">
+                    <div className="py-1">
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleSort(option.value)}
+                          className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors duration-150
+                            ${currentSort === option.value 
+                              ? 'bg-blue-50 text-blue-600 font-medium' 
+                              : 'text-gray-700'}`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+  
+              {/* Search and clear buttons */}
+              <button type="submit" className="p-2 text-gray-400 hover:text-gray-600">
+                <AiOutlineSearch size={20} />
+              </button>
+  
+              {searchTerm && (
+                <button type="button" onClick={handleClearSearch} className="p-2 text-gray-400 hover:text-gray-600">
+                  <AiOutlineClose size={20} />
+                </button>
+              )}
+            </div>
+          </form>
+          
+          {/* Recent searches with higher z-index */}
+          {showRecentSearches && <RecentSearches />}
         </div>
-
-        <div className="w-full flex justify-center mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+  
+        {/* Products grid with lower z-index */}
+        <div className="w-full z-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full animate-fade-in-down">
+            {productos.length > 0 ? (
+              productos.map((producto) => (
+                <ProductoCard
+                  key={producto.idProducto}
+                  producto={producto}
+                  onClick={() => setProductoSeleccionado(producto)}
+                  className="animate-scale-up z-0"
+                />
+              ))
+            ) : (
+              <p className="text-gray-700 col-span-full text-center animate-bounce-in">
+                No se encontraron productos con los filtros aplicados.
+              </p>
+            )}
+          </div>
+  
+          <div className="w-full flex justify-center mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
+  
+        {productoSeleccionado && (
+          <DetalleProducto
+            productoId={productoSeleccionado}
+            onClose={() => setProductoSeleccionado(null)}
+            className="animate-flip-in z-[200]"
+          />
+        )}
       </div>
-
-      {productoSeleccionado && (
-        <DetalleProducto
-          productoId={productoSeleccionado}
-          onClose={() => setProductoSeleccionado(null)}
-          className="animate-flip-in"
-        />
-      )}
-    </div>
-  );
-}
-
-export default ListarProductos;
+    );
+  }
+  
+  export default ListarProductos;

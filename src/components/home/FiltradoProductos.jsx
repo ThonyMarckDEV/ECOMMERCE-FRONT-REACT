@@ -15,30 +15,47 @@ function FiltradoProductos({ onFilter }) {
     categoria: '',
     precioInicial: 0,
     precioFinal: 0,
+    sort: ''
   });
   const [isOpen, setIsOpen] = useState(false);
+  // Nueva bandera para rastrear si el usuario ha modificado el rango de precios
+  const [precioModificado, setPrecioModificado] = useState(false);
 
-  // Leer parámetros de la URL y actualizar el estado del filtro
+  const sortOptions = [
+    { value: '', label: 'Sin ordenar' },
+    { value: 'az', label: 'A-Z' },
+    { value: 'za', label: 'Z-A' },
+    { value: 'price_asc', label: 'Precio: Menor a Mayor' },
+    { value: 'price_desc', label: 'Precio: Mayor a Menor' }
+  ];
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const texto = searchParams.get('texto') || '';
     const categoria = searchParams.get('categoria') || '';
     const precioInicial = parseFloat(searchParams.get('precioInicial')) || 0;
     const precioFinal = parseFloat(searchParams.get('precioFinal')) || precioMaximo;
+    const sort = searchParams.get('sort') || '';
+
+    // Si hay precios en la URL, marca como modificado
+    if (searchParams.has('precioInicial') || searchParams.has('precioFinal')) {
+      setPrecioModificado(true);
+    }
 
     setFiltro({
       texto,
       categoria,
       precioInicial,
       precioFinal,
+      sort
     });
 
-    // Aplicar filtros automáticamente al cargar la página
     onFilter({
       texto,
       categoria,
       precioInicial,
       precioFinal,
+      sort
     });
   }, [location.search, precioMaximo]);
 
@@ -87,6 +104,7 @@ function FiltradoProductos({ onFilter }) {
   };
 
   const handlePriceChange = (value) => {
+    setPrecioModificado(true);
     setFiltro((prevFiltro) => ({
       ...prevFiltro,
       precioInicial: value[0],
@@ -98,8 +116,13 @@ function FiltradoProductos({ onFilter }) {
     const searchParams = new URLSearchParams();
     if (filtro.texto) searchParams.set('texto', filtro.texto);
     if (filtro.categoria) searchParams.set('categoria', filtro.categoria);
-    searchParams.set('precioInicial', filtro.precioInicial);
-    searchParams.set('precioFinal', filtro.precioFinal);
+    if (filtro.sort) searchParams.set('sort', filtro.sort);
+    
+    // Solo incluye los precios en la URL si han sido modificados
+    if (precioModificado) {
+      searchParams.set('precioInicial', filtro.precioInicial);
+      searchParams.set('precioFinal', filtro.precioFinal);
+    }
 
     navigate(`/productos?${searchParams.toString()}`);
     onFilter(filtro);
@@ -107,18 +130,20 @@ function FiltradoProductos({ onFilter }) {
   };
 
   const handleResetFilters = () => {
+    setPrecioModificado(false);
     const resetFiltro = {
       texto: '',
       categoria: '',
       precioInicial: 0,
       precioFinal: precioMaximo,
+      sort: ''
     };
     setFiltro(resetFiltro);
     onFilter(resetFiltro);
     setIsOpen(false);
     navigate('/productos');
   };
-
+  
   return (
     <>
       {/* Botón para mostrar/ocultar el filtrador */}
@@ -195,6 +220,23 @@ function FiltradoProductos({ onFilter }) {
                 S/.{filtro.precioInicial} - S/.{filtro.precioFinal}
               </div>
             </div>
+          </div>
+
+           {/* New sorting option */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Ordenar por</label>
+            <select
+              name="sort"
+              value={filtro.sort}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-3">
