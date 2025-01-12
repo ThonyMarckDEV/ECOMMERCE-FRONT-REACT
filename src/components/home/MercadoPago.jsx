@@ -219,8 +219,9 @@ const MercadoPago = ({ pedido }) => {
                     idPedido={pedido.idPedido}
                     total={pedido.total}  // Add this line
                     onSuccess={() => {
-                        // Esto refrescará la lista de pedidos
-                        window.location.reload();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
                     }}
                 />
             )}

@@ -141,12 +141,13 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto p-4">
       <div
         className={`
           bg-white rounded-xl w-full max-w-4xl p-6 relative
           transition-all duration-300 ease-in-out transform
           ${isMounted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+          overflow-y-auto max-h-[90vh] md:max-h-[80vh]
         `}
       >
         <button
@@ -156,7 +157,7 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
           <X size={24} />
         </button>
 
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -253,6 +254,27 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
               </div>
             </div>
 
+            {/* Nota de advertencia */}
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+              <div className="flex items-center">
+                <svg
+                  className="w-5 h-5 text-yellow-400 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="text-sm text-yellow-700">
+                  Por razones de seguridad, el comprobante será revisado por un administrador para proceder con su pedido. Por favor, evita suspensiones de tu cuenta adjuntando capturas falsas o imágenes no relacionadas. Gracias.
+                </p>
+              </div>
+            </div>
+
             {error && (
               <p className="text-red-500 text-sm text-center">
                 {error}
@@ -263,10 +285,10 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
               onClick={handleSubmit}
               disabled={!uploadedFile || loading}
               className={`
-                w-full py-6 text-lg font-medium text-white rounded-xl
+                w-full py-3 md:py-4 text-lg font-medium text-white rounded-xl
                 transition-all duration-200
                 ${uploadedFile && !loading
-                  ? 'bg-black hover:bg-gray-800 text-white py-2 px-4 rounded'
+                  ? 'bg-black hover:bg-gray-800'
                   : 'bg-gray-300 cursor-not-allowed'}
               `}
             >
