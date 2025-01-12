@@ -22,7 +22,7 @@ const ProtectedRoute = ({ element }) => {
         return <Navigate to="/superAdmin" />;
         return element;
       case 'admin':
-        return <Navigate to="/admin" />;
+        return <Navigate to="/admin/productos/agregar" />;
         return element;
     }
   }
