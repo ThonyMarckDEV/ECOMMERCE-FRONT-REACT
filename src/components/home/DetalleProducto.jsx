@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import { useNavigate } from 'react-router-dom';
-import CheckLogin from '../home/CheckLogin'; 
+import CheckLogin from '../home/CheckLogin';
 import { AiOutlineMinus, AiOutlinePlus, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import LoadingScreen from './LoadingScreen';
 import jwtUtils from '../../utilities/jwtUtils';
 import { verificarYRenovarToken } from '../../js/authToken';
-import { useCart } from '../../context/CartContext'; 
-import SweetAlert from '../../components/SweetAlert'; // Importar SweetAlert
+import { useCart } from '../../context/CartContext';
+import SweetAlert from '../../components/SweetAlert';
+import { FaShareAlt } from "react-icons/fa"; // Importar el ícono de compartir
 
 function DetalleProducto({ productoId, onClose }) {
   const [producto, setProducto] = useState(null);
@@ -21,7 +22,7 @@ function DetalleProducto({ productoId, onClose }) {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [tallaSeleccionada, setTallaSeleccionada] = useState(null);
   const navigate = useNavigate();
-  const { updateCartCount } = useCart(); 
+  const { updateCartCount } = useCart();
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -47,6 +48,71 @@ function DetalleProducto({ productoId, onClose }) {
       document.body.style.overflow = 'auto';
     };
   }, [productoId]);
+
+  const generarEnlaceCompartir = () => {
+    const nombreProducto = producto?.nombreProducto || "Este producto";
+    // Construir la URL con el parámetro "texto"
+    const urlProducto = `${window.location.origin}/productos?texto=${encodeURIComponent(nombreProducto)}`;
+    const mensaje = `¡Mira ${nombreProducto} que encontré! 🛍️✨`;
+    return { mensaje, urlProducto };
+  };
+  
+  const handleCompartir = async () => {
+    const { mensaje, urlProducto } = generarEnlaceCompartir();
+  
+    // Verificar si el navegador soporta la API de compartir
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: producto?.nombreProducto || "Producto",
+          text: mensaje,
+          url: urlProducto,
+        });
+      } catch (error) {
+        console.error("Error al compartir:", error);
+      }
+    } else {
+      // Si el navegador no soporta la API de compartir, mostrar opciones alternativas
+      const opciones = [
+        {
+          nombre: "WhatsApp",
+          accion: () => {
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+              `${mensaje}\n\n${urlProducto}`
+            )}`;
+            window.open(url, "_blank");
+          },
+        },
+        {
+          nombre: "Facebook",
+          accion: () => {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+              urlProducto
+            )}&quote=${encodeURIComponent(mensaje)}`;
+            window.open(url, "_blank");
+          },
+        },
+        {
+          nombre: "Copiar enlace",
+          accion: () => {
+            navigator.clipboard.writeText(`${mensaje}\n\n${urlProducto}`);
+            alert("Enlace copiado al portapapeles.");
+          },
+        },
+      ];
+  
+      // Mostrar un menú con las opciones de compartir
+      const opcionSeleccionada = prompt(
+        "Elige una opción para compartir:\n" +
+          opciones.map((opcion, index) => `${index + 1}. ${opcion.nombre}`).join("\n")
+      );
+  
+      if (opcionSeleccionada) {
+        const opcion = opciones[parseInt(opcionSeleccionada) - 1];
+        if (opcion) opcion.accion();
+      }
+    }
+  };
 
   const handleIncrease = () => {
     setCantidad((prevCantidad) => prevCantidad + 1);
@@ -221,210 +287,257 @@ function DetalleProducto({ productoId, onClose }) {
 
   return (
     <>
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[50] p-0 sm:p-4">
-            <div className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl max-w-4xl relative overflow-y-auto">
-                {/* Close button - adjusted for mobile */}
-                <button 
-                    onClick={onClose} 
-                    className="fixed sm:absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-white sm:bg-black/10 hover:bg-black/20 transition-colors"
-                >
-                    <span className="text-black text-xl">&times;</span>
-                </button>
-
-                {loading && <LoadingScreen />}
-
-                <div className={`flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8 ${loading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
-                    {/* Left column - Image */}
-                    <div className="p-4 sm:p-6 md:p-8 pt-14 sm:pt-6">
-                        <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden">
-                            {modeloSeleccionado?.imagenes.length > 1 && (
-                                <>
-                                    <button
-                                        onClick={handlePrevImage}
-                                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
-                                    >
-                                        <span className="text-black">←</span>
-                                    </button>
-                                    <button
-                                        onClick={handleNextImage}
-                                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
-                                    >
-                                        <span className="text-black">→</span>
-                                    </button>
-                                </>
-                            )}
-                            
-                            <div className="relative w-full h-full">
-                                {isImageLoading && (
-                                    <div className="absolute inset-0 flex justify-center items-center bg-gray-50">
-                                        <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black/40" />
-                                    </div>
-                                )}
-                                <img
-                                    src={buildImageUrl(modeloSeleccionado?.imagenes[imagenIndex]?.urlImagen)}
-                                    alt={modeloSeleccionado?.nombreModelo}
-                                    className="w-full h-full object-contain"
-                                    onLoad={handleImageLoad}
-                                    onError={handleImageError}
-                                    onMouseMove={handleMouseMove}
-                                    onMouseLeave={handleMouseLeave}
-                                />
-                            </div>
-                            <div className="zoom-overlay" style={{ display: 'none' }}></div>
-                        </div>
-
-                        {/* Thumbnails container */}
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            {modeloSeleccionado?.imagenes.map((imagen, index) => (
-                                <div
-                                    key={index}
-                                    className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${
-                                        imagenIndex === index ? 'border-black' : 'border-transparent'
-                                    }`}
-                                    onClick={() => handleThumbnailClick(index)}
-                                >
-                                    <img
-                                        src={buildImageUrl(imagen.urlImagen)}
-                                        alt={`Thumbnail ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                            ))}
-                        </div>
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[50] p-0 sm:p-4">
+        <div className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl max-w-4xl relative overflow-y-auto">
+          {/* Close button - adjusted for mobile */}
+          <button
+            onClick={onClose}
+            className="fixed sm:absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-white sm:bg-black/10 hover:bg-black/20 transition-colors"
+          >
+            <span className="text-black text-xl">&times;</span>
+          </button>
+  
+          {loading && <LoadingScreen />}
+  
+          <div
+            className={`flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8 ${
+              loading ? "opacity-0" : "opacity-100"
+            } transition-opacity duration-300`}
+          >
+            {/* Left column - Image */}
+            <div className="p-4 sm:p-6 md:p-8 pt-14 sm:pt-6">
+              <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden">
+                {modeloSeleccionado?.imagenes.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevImage}
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
+                    >
+                      <span className="text-black">←</span>
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
+                    >
+                      <span className="text-black">→</span>
+                    </button>
+                  </>
+                )}
+  
+                <div className="relative w-full h-full">
+                  {isImageLoading && (
+                    <div className="absolute inset-0 flex justify-center items-center bg-gray-50">
+                      <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black/40" />
                     </div>
-
-                    {/* Right column - Product details */}
-                    <div className="px-4 sm:px-6 md:p-8 pb-6 flex flex-col h-full">
-                        <h2 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">{producto?.nombreProducto}</h2>
-                        
-                        {/* Product price */}
-                        <div className="text-lg sm:text-xl font-semibold text-black mb-4">
-                            {producto?.tieneOferta ? (
-                            <>
-                                <span className="line-through text-gray-500 mr-2">S/.{producto.precioOriginal}</span>
-                                <span className="text-red-600">S/.{producto.precioDescuento}</span>
-                            </>
-                            ) : (
-                            <span>S/.{producto?.precioOriginal}</span>
-                            )}
-                        </div>
-
-                        {modeloSeleccionado && (
-                            <>
-                            {/* Models selector */}
-                            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                                <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
-                                <div className="flex flex-wrap gap-2">
-                                {producto?.modelos.map((modelo) => (
-                                    <button
-                                    key={modelo.nombreModelo}
-                                    onClick={() => handleModeloChange(modelo)}
-                                    className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                        ${modeloSeleccionado.nombreModelo === modelo.nombreModelo 
-                                        ? 'bg-black text-white' 
-                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                        }`}
-                                    >
-                                    {modelo.nombreModelo}
-                                    </button>
-                                ))}
-                                </div>
-                            </div>
-
-                                 {/* Sizes selector - Solo se muestra si no es "Sin talla" o "Stock" */}
-                                {modeloSeleccionado.tallas.some(talla => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock") ? (
-                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                                    <h3 className="text-sm font-medium text-gray-500">Stock disponible</h3>
-                                    <div className="text-sm text-gray-800">
-                                    {modeloSeleccionado.tallas.find(talla => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock")?.cantidad} unidades disponibles
-                                    </div>
-                                </div>
-                                ) : (
-                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                                    <h3 className="text-sm font-medium text-gray-500">Tallas disponibles</h3>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    {modeloSeleccionado.tallas.map((talla, index) => (
-                                        <label 
-                                        key={index} 
-                                        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 rounded-lg cursor-pointer transition-colors
-                                            ${tallaSeleccionada?.nombreTalla === talla.nombreTalla 
-                                            ? 'bg-black text-white' 
-                                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                            }`}
-                                        >
-                                        <span className="font-medium text-sm sm:text-base">{talla.nombreTalla}</span>
-                                        <span className="text-xs sm:text-sm opacity-75"> {talla.cantidad} Unit.</span>
-                                        <input
-                                            type="radio"
-                                            value={talla.nombreTalla}
-                                            checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
-                                            onChange={() => setTallaSeleccionada(talla)}
-                                            className="sr-only"
-                                        />
-                                        </label>
-                                    ))}
-                                    </div>
-                                </div>
-                                )}
-
-                                {/* Quantity selector */}
-                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                                    <h3 className="text-sm font-medium text-gray-500">Cantidad</h3>
-                                    <div className="flex items-center space-x-2">
-                                        <button 
-                                            onClick={handleDecrease}
-                                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                                        >
-                                            <AiOutlineMinus className="text-gray-600" />
-                                        </button>
-                                        <input
-                                            type="number"
-                                            value={cantidad}
-                                            onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
-                                            className="w-14 sm:w-16 h-8 sm:h-10 text-center border border-gray-200 rounded-lg text-gray-800"
-                                        />
-                                        <button 
-                                            onClick={handleIncrease}
-                                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                                        >
-                                            <AiOutlinePlus className="text-gray-600" />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="w-full p-4 bg-white border-t border-gray-100 sm:p-0 sm:bg-transparent sm:border-0">
-                                    <div className="sm:relative sm:bottom-0 sm:left-0 sm:right-0">
-                                        <button
-                                            onClick={handleAddToCart}
-                                            disabled={loading}
-                                            className={`w-full bg-black text-white py-3 sm:py-4 rounded-xl font-medium
-                                                hover:bg-black/90 transition-colors
-                                                ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                        >
-                                            {loading ? 'Agregando...' : 'Agregar al carrito'}
-                                        </button>
-                                    </div>
-                                </div>
-
-
-                            </>
-                        )}
-
-                        {!loading && error && (
-                            <p className="mt-4 text-red-500 text-sm text-center">{error}</p>
-                        )}
-                    </div>
+                  )}
+                  <img
+                    src={buildImageUrl(
+                      modeloSeleccionado?.imagenes[imagenIndex]?.urlImagen
+                    )}
+                    alt={modeloSeleccionado?.nombreModelo}
+                    className="w-full h-full object-contain"
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                  />
                 </div>
+                <div className="zoom-overlay" style={{ display: "none" }}></div>
+              </div>
+  
+              {/* Thumbnails container */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                {modeloSeleccionado?.imagenes.map((imagen, index) => (
+                  <div
+                    key={index}
+                    className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${
+                      imagenIndex === index ? "border-black" : "border-transparent"
+                    }`}
+                    onClick={() => handleThumbnailClick(index)}
+                  >
+                    <img
+                      src={buildImageUrl(imagen.urlImagen)}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
+  
+            {/* Right column - Product details */}
+            <div className="px-4 sm:px-6 md:p-8 pb-6 flex flex-col h-full">
+              <h2 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">
+                {producto?.nombreProducto}
+              </h2>
+  
+              {/* Product price */}
+              <div className="text-lg sm:text-xl font-semibold text-black mb-4">
+                {producto?.tieneOferta ? (
+                  <>
+                    <span className="line-through text-gray-500 mr-2">
+                      S/.{producto.precioOriginal}
+                    </span>
+                    <span className="text-red-600">
+                      S/.{producto.precioDescuento}
+                    </span>
+                  </>
+                ) : (
+                  <span>S/.{producto?.precioOriginal}</span>
+                )}
+              </div>
+  
+              {modeloSeleccionado && (
+                <>
+                  {/* Models selector */}
+                  <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                    <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {producto?.modelos.map((modelo) => (
+                        <button
+                          key={modelo.nombreModelo}
+                          onClick={() => handleModeloChange(modelo)}
+                          className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            modeloSeleccionado.nombreModelo === modelo.nombreModelo
+                              ? "bg-black text-white"
+                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          }`}
+                        >
+                          {modelo.nombreModelo}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+  
+                  {/* Sizes selector - Solo se muestra si no es "Sin talla" o "Stock" */}
+                  {modeloSeleccionado.tallas.some(
+                    (talla) =>
+                      talla.nombreTalla === "Sin talla" ||
+                      talla.nombreTalla === "Stock"
+                  ) ? (
+                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                      <h3 className="text-sm font-medium text-gray-500">
+                        Stock disponible
+                      </h3>
+                      <div className="text-sm text-gray-800">
+                        {
+                          modeloSeleccionado.tallas.find(
+                            (talla) =>
+                              talla.nombreTalla === "Sin talla" ||
+                              talla.nombreTalla === "Stock"
+                          )?.cantidad
+                        }{" "}
+                        unidades disponibles
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                      <h3 className="text-sm font-medium text-gray-500">
+                        Tallas disponibles
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {modeloSeleccionado.tallas.map((talla, index) => (
+                          <label
+                            key={index}
+                            className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 rounded-lg cursor-pointer transition-colors ${
+                              tallaSeleccionada?.nombreTalla === talla.nombreTalla
+                                ? "bg-black text-white"
+                                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            }`}
+                          >
+                            <span className="font-medium text-sm sm:text-base">
+                              {talla.nombreTalla}
+                            </span>
+                            <span className="text-xs sm:text-sm opacity-75">
+                              {" "}
+                              {talla.cantidad} Unit.
+                            </span>
+                            <input
+                              type="radio"
+                              value={talla.nombreTalla}
+                              checked={
+                                tallaSeleccionada?.nombreTalla ===
+                                talla.nombreTalla
+                              }
+                              onChange={() => setTallaSeleccionada(talla)}
+                              className="sr-only"
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+  
+                  {/* Quantity selector */}
+                  <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                    <h3 className="text-sm font-medium text-gray-500">
+                      Cantidad
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={handleDecrease}
+                        className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                      >
+                        <AiOutlineMinus className="text-gray-600" />
+                      </button>
+                      <input
+                        type="number"
+                        value={cantidad}
+                        onChange={(e) =>
+                          setCantidad(Math.max(1, parseInt(e.target.value) || 1))
+                        }
+                        className="w-14 sm:w-16 h-8 sm:h-10 text-center border border-gray-200 rounded-lg text-gray-800"
+                      />
+                      <button
+                        onClick={handleIncrease}
+                        className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                      >
+                        <AiOutlinePlus className="text-gray-600" />
+                      </button>
+                    </div>
+                  </div>
+  
+                  {/* Botón de agregar al carrito y compartir */}
+                  <div className="w-full p-4 bg-white border-t border-gray-100 sm:p-0 sm:bg-transparent sm:border-0">
+                    <div className="sm:relative sm:bottom-0 sm:left-0 sm:right-0">
+                      <button
+                        onClick={handleAddToCart}
+                        disabled={loading}
+                        className={`w-full bg-black text-white py-3 sm:py-4 rounded-xl font-medium hover:bg-black/90 transition-colors ${
+                          loading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        {loading ? "Agregando..." : "Agregar al carrito"}
+                      </button>
+  
+                      {/* Botón de compartir */}
+                      <button
+                        onClick={handleCompartir}
+                        className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-100 text-gray-800 py-3 sm:py-4 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                      >
+                        <FaShareAlt className="text-lg" /> {/* Ícono de compartir */}
+                        Compartir
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+  
+              {!loading && error && (
+                <p className="mt-4 text-red-500 text-sm text-center">{error}</p>
+              )}
+            </div>
+          </div>
         </div>
-
-        {showModalLogin && (
-            <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-50">
-                <CheckLogin setShowModal={handleCloseModalLogin} />
-            </div>
-        )}
+      </div>
+  
+      {showModalLogin && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-50">
+          <CheckLogin setShowModal={handleCloseModalLogin} />
+        </div>
+      )}
     </>
-);
+  );
 }
 
 export default DetalleProducto;

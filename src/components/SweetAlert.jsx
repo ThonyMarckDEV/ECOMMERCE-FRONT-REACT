@@ -80,6 +80,40 @@ const showConfirmationAlert = (title, message) => {
   });
 };
 
+// Función para mostrar una alerta con acciones personalizadas
+const showActionAlert = (title, message, actions, callback) => {
+  Swal.fire({
+    title: title,
+    text: message,
+    icon: 'question',
+    showCancelButton: false,
+    showConfirmButton: false,
+    html: `
+      <div>
+        ${actions
+          .map(
+            (action) =>
+              `<button class="swal2-confirm swal2-styled" style="margin: 5px;" onclick="window.selectedAction = '${action}'">${action}</button>`
+          )
+          .join('')}
+      </div>
+    `,
+    didOpen: () => {
+      // Asignar la acción seleccionada al hacer clic en un botón
+      document.querySelectorAll('.swal2-confirm').forEach((button) => {
+        button.addEventListener('click', () => {
+          Swal.close();
+        });
+      });
+    },
+  }).then((result) => {
+    if (window.selectedAction) {
+      callback(window.selectedAction);
+      window.selectedAction = null; // Limpiar la selección
+    }
+  });
+};
+
 const SweetAlert = {
   showBasicAlert,
   showMessageAlert,
@@ -88,6 +122,7 @@ const SweetAlert = {
   showInputAlert,
   showTimerAlert,
   showConfirmationAlert,
+  showActionAlert, // Agregar la nueva función
 };
 
 export default SweetAlert;
