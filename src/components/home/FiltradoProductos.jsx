@@ -149,7 +149,7 @@ function FiltradoProductos({ onFilter }) {
       {/* Botón para mostrar/ocultar el filtrador */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-4 bottom-4 z-[1001] bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors md:p-4 md:right-6 md:bottom-6"
+        className="fixed right-4 bottom-4 z-[40] bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors md:p-4 md:right-6 md:bottom-6"
         aria-label="Toggle filters"
       >
         <AiOutlineFilter className="w-6 h-6 md:w-8 md:h-8" />
