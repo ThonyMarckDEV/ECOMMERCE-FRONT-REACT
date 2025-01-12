@@ -63,71 +63,153 @@ function DetalleProducto({ productoId, onClose }) {
     setTallaSeleccionada(null); 
   };
 
-  const handleAddToCart = () => {
-    const token = jwtUtils.getTokenFromCookie();
-    if (!token) {
-        setShowModalLogin(true);
-        return;
-    }
+    // const handleAddToCart = () => {
+    //     const token = jwtUtils.getTokenFromCookie();
+    //     if (!token) {
+    //         setShowModalLogin(true);
+    //         return;
+    //     }
 
-    const idCarrito = jwtUtils.getIdCarrito(token);
-    const idUsuario = jwtUtils.getIdUsuario(token);
+    //     const idCarrito = jwtUtils.getIdCarrito(token);
+    //     const idUsuario = jwtUtils.getIdUsuario(token);
 
-    const precio = parseFloat(producto?.precio) || 0;
+    //     const precio = parseFloat(producto?.precio) || 0;
 
-    if (!idCarrito || !idUsuario || !tallaSeleccionada) {
-        SweetAlert.showMessageAlert('Error', 'Por favor selecciona una talla antes de agregar al carrito.', 'error'); // Mostrar SweetAlert de éxito
-        return;
-    }
+    //     if (!idCarrito || !idUsuario || !tallaSeleccionada) {
+    //         SweetAlert.showMessageAlert('Error', 'Por favor selecciona una talla antes de agregar al carrito.', 'error'); // Mostrar SweetAlert de éxito
+    //         return;
+    //     }
 
-    const data = {
-        idProducto: productoId,
-        cantidad: cantidad,
-        idCarrito: idCarrito,
-        idUsuario: idUsuario,
-        idModelo: modeloSeleccionado.idModelo,
-        idTalla: tallaSeleccionada.idTalla,
-    };
+    //     const data = {
+    //         idProducto: productoId,
+    //         cantidad: cantidad,
+    //         idCarrito: idCarrito,
+    //         idUsuario: idUsuario,
+    //         idModelo: modeloSeleccionado.idModelo,
+    //         idTalla: tallaSeleccionada.idTalla,
+    //     };
 
-    setLoading(true);
-    verificarYRenovarToken();
+    //     setLoading(true);
+    //     verificarYRenovarToken();
 
-    fetch(`${API_BASE_URL}/api/agregarCarrito`, {
-        method: 'POST',
-        headers: {
+    //     fetch(`${API_BASE_URL}/api/agregarCarrito`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${token}`
+    //         },
+    //         body: JSON.stringify(data)
+    //     })
+    //         .then((response) => {
+    //             if (!response.ok) {
+    //                 return response.json().then((data) => {
+    //                     // Si la respuesta no es exitosa, lanzamos el mensaje de error
+    //                     throw new Error(data.message || 'Error en la respuesta del servidor');
+    //                 });
+    //             }
+    //             return response.json();
+    //         })
+    //         .then((data) => {
+    //             if (data.success) {
+    //                 SweetAlert.showMessageAlert('Exito!', 'Producto agregado al carrito.', 'success'); // Mostrar SweetAlert de éxito
+    //                 updateCartCount(); 
+
+    //                 setCantidad(1); 
+    //                 setTallaSeleccionada(null);
+    //             } else {
+    //                 SweetAlert.showMessageAlert('Error', 'Error al agregar al carrito.', 'error'); // Mostrar SweetAlert de éxito
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error al agregar al carrito:', error);
+    //             SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error'); // Mostrar SweetAlert de éxito
+    //         })
+    //         .finally(() => {
+    //             setLoading(false);
+    //         });
+    // };
+
+    const handleAddToCart = () => {
+        const token = jwtUtils.getTokenFromCookie();
+        if (!token) {
+          setShowModalLogin(true);
+          return;
+        }
+      
+        const idCarrito = jwtUtils.getIdCarrito(token);
+        const idUsuario = jwtUtils.getIdUsuario(token);
+      
+        const precio = parseFloat(producto?.precio) || 0;
+      
+        // Verificar si la talla es "Stock" o "Sin talla"
+        const isTallaEspecial = modeloSeleccionado.tallas.some(
+          (talla) => talla.nombreTalla === "Stock" || talla.nombreTalla === "Sin talla"
+        );
+      
+        // Obtener el idTalla correspondiente
+        let idTalla;
+        if (isTallaEspecial) {
+          // Si es una talla especial, obtener el idTalla de la talla especial
+          const tallaEspecial = modeloSeleccionado.tallas.find(
+            (talla) => talla.nombreTalla === "Stock" || talla.nombreTalla === "Sin talla"
+          );
+          idTalla = tallaEspecial?.idTalla || null; // Usar el idTalla de la talla especial
+        } else {
+          // Si no es una talla especial, usar el idTalla de la talla seleccionada
+          if (!tallaSeleccionada) {
+            SweetAlert.showMessageAlert('Error', 'Por favor selecciona una talla antes de agregar al carrito.', 'error');
+            return;
+          }
+          idTalla = tallaSeleccionada.idTalla;
+        }
+      
+        const data = {
+          idProducto: productoId,
+          cantidad: cantidad,
+          idCarrito: idCarrito,
+          idUsuario: idUsuario,
+          idModelo: modeloSeleccionado.idModelo,
+          idTalla: idTalla, // Usar el idTalla obtenido
+        };
+      
+        setLoading(true);
+        verificarYRenovarToken();
+      
+        fetch(`${API_BASE_URL}/api/agregarCarrito`, {
+          method: 'POST',
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-    })
-        .then((response) => {
+          },
+          body: JSON.stringify(data)
+        })
+          .then((response) => {
             if (!response.ok) {
-                return response.json().then((data) => {
-                    // Si la respuesta no es exitosa, lanzamos el mensaje de error
-                    throw new Error(data.message || 'Error en la respuesta del servidor');
-                });
+              return response.json().then((data) => {
+                throw new Error(data.message || 'Error en la respuesta del servidor');
+              });
             }
             return response.json();
-        })
-        .then((data) => {
+          })
+          .then((data) => {
             if (data.success) {
-                SweetAlert.showMessageAlert('Exito!', 'Producto agregado al carrito.', 'success'); // Mostrar SweetAlert de éxito
-                updateCartCount(); 
-
-                setCantidad(1); 
-                setTallaSeleccionada(null);
+              SweetAlert.showMessageAlert('Éxito!', 'Producto agregado al carrito.', 'success');
+              updateCartCount();
+      
+              setCantidad(1);
+              setTallaSeleccionada(null);
             } else {
-                SweetAlert.showMessageAlert('Error', 'Error al agregar al carrito.', 'error'); // Mostrar SweetAlert de éxito
+              SweetAlert.showMessageAlert('Error', 'Error al agregar al carrito.', 'error');
             }
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             console.error('Error al agregar al carrito:', error);
-            SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error'); // Mostrar SweetAlert de éxito
-        })
-        .finally(() => {
+            SweetAlert.showMessageAlert('Error', 'Error al conectar con el servidor.', 'error');
+          })
+          .finally(() => {
             setLoading(false);
-        });
-};
+          });
+      };
 
   const handleCloseModalLogin = () => {
     setShowModalLogin(false);
@@ -316,32 +398,41 @@ function DetalleProducto({ productoId, onClose }) {
                                 </div>
                             </div>
 
-                                {/* Sizes selector */}
+                                 {/* Sizes selector - Solo se muestra si no es "Sin talla" o "Stock" */}
+                                {modeloSeleccionado.tallas.some(talla => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock") ? (
+                                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                                    <h3 className="text-sm font-medium text-gray-500">Stock disponible</h3>
+                                    <div className="text-sm text-gray-800">
+                                    {modeloSeleccionado.tallas.find(talla => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock")?.cantidad} unidades disponibles
+                                    </div>
+                                </div>
+                                ) : (
                                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                                     <h3 className="text-sm font-medium text-gray-500">Tallas disponibles</h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                        {modeloSeleccionado.tallas.map((talla, index) => (
-                                            <label 
-                                                key={index} 
-                                                className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 rounded-lg cursor-pointer transition-colors
-                                                    ${tallaSeleccionada?.nombreTalla === talla.nombreTalla 
-                                                        ? 'bg-black text-white' 
-                                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                                    }`}
-                                            >
-                                                <span className="font-medium text-sm sm:text-base">{talla.nombreTalla}</span>
-                                                <span className="text-xs sm:text-sm opacity-75"> {talla.cantidad} Unit.</span>
-                                                <input
-                                                    type="radio"
-                                                    value={talla.nombreTalla}
-                                                    checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
-                                                    onChange={() => setTallaSeleccionada(talla)}
-                                                    className="sr-only"
-                                                />
-                                            </label>
-                                        ))}
+                                    {modeloSeleccionado.tallas.map((talla, index) => (
+                                        <label 
+                                        key={index} 
+                                        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 rounded-lg cursor-pointer transition-colors
+                                            ${tallaSeleccionada?.nombreTalla === talla.nombreTalla 
+                                            ? 'bg-black text-white' 
+                                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                        <span className="font-medium text-sm sm:text-base">{talla.nombreTalla}</span>
+                                        <span className="text-xs sm:text-sm opacity-75"> {talla.cantidad} Unit.</span>
+                                        <input
+                                            type="radio"
+                                            value={talla.nombreTalla}
+                                            checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
+                                            onChange={() => setTallaSeleccionada(talla)}
+                                            className="sr-only"
+                                        />
+                                        </label>
+                                    ))}
                                     </div>
                                 </div>
+                                )}
 
                                 {/* Quantity selector */}
                                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">

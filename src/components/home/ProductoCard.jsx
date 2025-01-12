@@ -82,15 +82,22 @@ const ProductoCard = memo(({ producto, onClick }) => {
       </div>
 
       <div className="mt-3">
-        <h4 className="text-sm font-semibold text-gray-700">Tallas Disponibles:</h4>
+        <h4 className="text-sm font-semibold text-gray-700">
+          {selectedModelo.tallas.every((talla) => talla.nombreTalla === "Sin talla")
+            ? "Stock Disponible:" // Cambia el título si todas las tallas son "Sin talla"
+            : "Tallas Disponibles:"}
+        </h4>
         <ul className="list-disc pl-4 text-xs">
           {selectedModelo.tallas.map((talla) => (
             <li key={talla.nombreTalla}>
-              {talla.nombreTalla} - {talla.cantidad} disponibles
+              {talla.nombreTalla === "Sin talla"
+                ? `${talla.cantidad} stock disponible`
+                : `${talla.nombreTalla} - ${talla.cantidad} disponibles`}
             </li>
           ))}
         </ul>
       </div>
+
     </div>
   );
 });
