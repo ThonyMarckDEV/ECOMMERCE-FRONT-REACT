@@ -356,7 +356,7 @@ function ListarProductos({ filtro }) {
       </h1>
 
       {/* Barra de búsqueda y filtros */}
-      <div className="w-full max-w-2xl mx-auto mb-8 px-4 relative z-50" ref={searchInputRef}>
+      <div className="w-full max-w-2xl mx-auto mb-8 px-4 relative z-10" ref={searchInputRef}>
           <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
