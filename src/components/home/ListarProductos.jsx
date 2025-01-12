@@ -216,109 +216,117 @@ function ListarProductos({ filtro }) {
     );
   }
 
-    return (
-      <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
-        <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10 animate-fade-in">
-          Productos
-        </h1>
-  
-        {/* Search bar and filters container with higher z-index */}
-        <div className="w-full max-w-2xl mx-auto mb-8 px-4 relative z-50" ref={searchInputRef}>
-          <form onSubmit={handleSearch} className="relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={() => setShowRecentSearches(true)}
-              className="w-full px-4 py-2 pr-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Buscar productos..."
-            />
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 flex items-center">
-              {/* Sort button with explicit z-index */}
-              <div className="relative" ref={sortMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => setShowSortMenu(!showSortMenu)}
-                  className="p-2 text-gray-400 hover:text-gray-600"
-                >
-                  <AiOutlineFilter size={20} />
-                </button>
-                
-                {/* Sort menu with higher z-index */}
-                {showSortMenu && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-[100]">
-                    <div className="py-1">
-                      {sortOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => handleSort(option.value)}
-                          className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors duration-150
-                            ${currentSort === option.value 
-                              ? 'bg-blue-50 text-blue-600 font-medium' 
-                              : 'text-gray-700'}`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-  
-              {/* Search and clear buttons */}
-              <button type="submit" className="p-2 text-gray-400 hover:text-gray-600">
-                <AiOutlineSearch size={20} />
+  return (
+    <div className="bg-white min-h-screen p-4 flex flex-col items-center lg:items-start">
+      <h1 className="text-4xl font-bold text-center my-6 text-black lg:text-left lg:pl-10 animate-fade-in">
+        Productos
+      </h1>
+
+      {/* Barra de búsqueda y filtros */}
+      <div className="w-full max-w-2xl mx-auto mb-8 px-4 relative" ref={searchInputRef}>
+        <form onSubmit={handleSearch} className="relative">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => setShowRecentSearches(true)}
+            className="w-full px-4 py-2 pr-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Buscar productos..."
+          />
+          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 flex items-center">
+            {/* Botón de ordenamiento */}
+            <div className="relative" ref={sortMenuRef}>
+              <button
+                type="button"
+                onClick={() => setShowSortMenu(!showSortMenu)}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
+                <AiOutlineFilter size={20} />
               </button>
-  
-              {searchTerm && (
-                <button type="button" onClick={handleClearSearch} className="p-2 text-gray-400 hover:text-gray-600">
-                  <AiOutlineClose size={20} />
-                </button>
-              )}
-            </div>
-          </form>
-          
-          {/* Recent searches with higher z-index */}
-          {showRecentSearches && <RecentSearches />}
-        </div>
-  
-        {/* Products grid with lower z-index */}
-        <div className="w-full z-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full animate-fade-in-down">
-            {productos.length > 0 ? (
-              productos.map((producto) => (
-                <ProductoCard
-                  key={producto.idProducto}
-                  producto={producto}
-                  onClick={() => setProductoSeleccionado(producto)}
-                  className="animate-scale-up z-0"
-                />
-              ))
-            ) : (
-              <p className="text-gray-700 col-span-full text-center animate-bounce-in">
-                No se encontraron productos con los filtros aplicados.
-              </p>
+              
+               {/* Menú de ordenamiento mejorado */}
+               {showSortMenu && (
+              <div className="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-80">
+                <div className="py-1">
+                  {sortOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleSort(option.value)}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors duration-150
+                        ${currentSort === option.value 
+                          ? 'bg-blue-50 text-blue-600 font-medium' 
+                          : 'text-gray-700'}`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-  
-          <div className="w-full flex justify-center mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+
+
+            {/* Botón de búsqueda */}
+            <button
+              type="submit"
+              className="p-2 text-gray-400 hover:text-gray-600"
+            >
+              <AiOutlineSearch size={20} />
+            </button>
+
+            {/* Botón para limpiar búsqueda */}
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
+                <AiOutlineClose size={20} />
+              </button>
+            )}
           </div>
-        </div>
-  
-        {productoSeleccionado && (
-          <DetalleProducto
-            productoId={productoSeleccionado}
-            onClose={() => setProductoSeleccionado(null)}
-            className="animate-flip-in z-[200]"
-          />
-        )}
+        </form>
+        
+        {/* Mostrar búsquedas recientes cuando el input está enfocado */}
+        {showRecentSearches && <RecentSearches />}
       </div>
-    );
-  }
-  
-  export default ListarProductos;
+
+      <div className="w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center lg:justify-items-start w-full animate-fade-in-down">
+          {productos.length > 0 ? (
+            productos.map((producto) => (
+              <ProductoCard
+                key={producto.idProducto}
+                producto={producto}
+                onClick={() => setProductoSeleccionado(producto.idProducto)}
+                className="animate-scale-up"
+              />
+            ))
+          ) : (
+            <p className="text-gray-700 col-span-full text-center animate-bounce-in">
+              No se encontraron productos con los filtros aplicados.
+            </p>
+          )}
+        </div>
+
+        <div className="w-full flex justify-center mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </div>
+
+      {productoSeleccionado && (
+        <DetalleProducto
+          productoId={productoSeleccionado}
+          onClose={() => setProductoSeleccionado(null)}
+          className="animate-flip-in"
+        />
+      )}
+    </div>
+  );
+}
+
+export default ListarProductos;
