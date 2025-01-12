@@ -19,29 +19,31 @@ function AgregarCategoria() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = jwtUtils.getTokenFromCookie();
-
+  
     if (!nombreCategoria || !imagen) {
       SweetAlert.showMessageAlert('Error', 'El nombre de la categoría y la imagen son obligatorios.', 'error');
       return;
     }
-
+  
     const formData = new FormData();
     formData.append('nombreCategoria', nombreCategoria);
     formData.append('descripcion', descripcion);
     formData.append('imagen', imagen);
+  
     await verificarYRenovarToken(); // Verificar si el token está caducado y renovarlo si es necesario
+  
     try {
       setLoading(true); // Activar el loader
-
+  
       // Configurar la solicitud HTTP con el token JWT en el encabezado
       const response = await fetch(`${API_BASE_URL}/api/categorias`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData, // FormData incluye los datos del formulario, incluido el archivo
       });
-
+  
       if (response.ok) {
         SweetAlert.showMessageAlert('Éxito', 'Categoría agregada exitosamente', 'success');
         setNombreCategoria('');
@@ -50,8 +52,12 @@ function AgregarCategoria() {
         e.target.reset(); // Resetea el formulario, incluyendo el campo de imagen
       } else {
         const errorData = await response.json();
-        console.error('Error al agregar categoría:', errorData);
-        SweetAlert.showMessageAlert('Error', 'Hubo un error al agregar la categoría', 'error');
+        if (response.status === 409) {
+          // Si el error es 409, muestra el mensaje de error en SweetAlert
+          SweetAlert.showMessageAlert('Error', errorData.message, 'error');
+        } else {
+          SweetAlert.showMessageAlert('Error', 'Hubo un error al agregar la categoría', 'error');
+        }
       }
     } catch (error) {
       console.error('Error al agregar categoría:', error);
