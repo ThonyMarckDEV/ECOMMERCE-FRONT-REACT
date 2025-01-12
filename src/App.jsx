@@ -31,8 +31,8 @@ import AgregarUsuario from './ui/superadminUI/AgregarUsuario';
 import Configuracion from './ui/superadminUI/Configuracion';
 
 //ADMINUI
-import Admin from './ui/adminUI/Admin';
-
+import AgregarProductoAdmin from './ui/adminUI/AgregarProductoAdmin';
+import EditarProductoAdmin from './ui/adminUI/EditarProductoAdmin';
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
@@ -143,7 +143,8 @@ function AppContent() {
       <Route path="/superAdmin/productos/editar" element={<ProtectedRouteRolSuperAdmin element={<EditarProducto />} />} />
 
       {/* RUTAS ROL ADMIN*/}
-      <Route path="/admin" element={<ProtectedRouteRolAdmin element={<Admin />} />} />
+      <Route path="/admin/productos/agregar" element={<ProtectedRouteRolAdmin element={<AgregarProductoAdmin />} />} />
+      <Route path="/admin/productos/editar" element={<ProtectedRouteRolAdmin element={<EditarProductoAdmin />} />} />
 
       {/* RUTAS ROL CLIENTE */}
       <Route path="/menuUsuario" element={<ProtectedRouteRolCliente element={<MenuUser />} allowedRoles={['cliente']} />} />

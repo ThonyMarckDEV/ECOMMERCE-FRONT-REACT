@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import LogoutButton from './LogoutButton';
 import {
-  AiFillSetting,
-  AiOutlineFileText,
-  AiOutlineUser,
+  AiOutlineProduct,
   AiOutlineDown,
   AiOutlineMenu,
 } from 'react-icons/ai';
 
 function SidebarAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [openUsuarios, setOpenUsuarios] = useState(false);
-  const [openTallas, setOpenTallas] = useState(false);
-  const [openCategorias, setOpenCategorias] = useState(false);
+  const [openProductos, setOpenProductos] = useState(false);
 
   // Cierra la sidebar al hacer clic fuera (solo en móviles)
   useEffect(() => {
@@ -46,33 +42,34 @@ function SidebarAdmin() {
             <h2 className="text-3xl font-bold mb-8 text-center text-white">Menú</h2>
             <ul>
 
-              {/* Usuarios */}
+              {/* Productos */}
               <li className="mb-4">
                 <div
                   className="flex items-center justify-between text-lg hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition-all duration-300"
-                  onClick={() => setOpenUsuarios(!openUsuarios)}
+                  onClick={() => setOpenProductos(!openProductos)}
                 >
                   <div className="flex items-center">
-                    <AiOutlineUser className="mr-4 text-xl" />
-                    <span>Usuarios</span>
+                    <AiOutlineProduct className="mr-4 text-xl" />
+                    <span>Producto</span>
                   </div>
-                  <AiOutlineDown className={`transition-transform ${openUsuarios ? 'rotate-180' : ''}`} />
+                  <AiOutlineDown className={`transition-transform ${openProductos ? 'rotate-180' : ''}`} />
                 </div>
-                {openUsuarios && (
+                {openProductos && (
                   <ul className="ml-8 mt-2 space-y-2">
                     <li>
-                      <a href="/superAdmin/usuarios/agregar" className="hover:text-gray-400 transition-all duration-300">
-                        Agregar Usuarios
+                      <a href="/admin/productos/agregar" className="hover:text-gray-400 transition-all duration-300">
+                        Agregar Productos
                       </a>
                     </li>
                     <li>
-                      <a href="/superAdmin/usuarios/editar" className="hover:text-gregrayen-400 transition-all duration-300">
-                        Editar Usuarios
+                      <a href="/admin/productos/editar" className="hover:text-gray-400 transition-all duration-300">
+                        Editar Productos
                       </a>
                     </li>
                   </ul>
                 )}
               </li>
+
 
 
             </ul>

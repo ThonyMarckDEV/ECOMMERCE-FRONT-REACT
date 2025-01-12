@@ -24,7 +24,7 @@ const ProtectedRouteCliente = ({ element, allowedRoles }) => {
  
      // Redirigir dependiendo del rol
      if (userRole === 'admin') {
-       return <Navigate to="/admin" />;
+       return <Navigate to="/admin/productos/agregar" />;
        
      } else if (userRole === 'superadmin') {
        return <Navigate to="/superAdmin" />;

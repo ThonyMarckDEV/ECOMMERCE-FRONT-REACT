@@ -26,7 +26,7 @@ const ProtectedRouteRolSuperAdmin = ({ element }) => {
     if (userRole === 'cliente') {
       return <Navigate to="/" />;
     }else if (userRole === 'admin'){
-      return <Navigate to="/admin" />;
+      return <Navigate to="/admin/productos/agregar" />;
     }
     return element;
   } catch (error) {
