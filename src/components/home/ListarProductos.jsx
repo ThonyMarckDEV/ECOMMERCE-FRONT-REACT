@@ -295,23 +295,21 @@ function ListarProductos({ filtro }) {
               <li 
                 key={index} 
                 className="flex items-center justify-between py-1 px-2 hover:bg-gray-100 rounded cursor-pointer"
+                onClick={() => {
+                  setSearchTerm(search);
+                  setShowRecentSearches(false);
+                  const searchParams = new URLSearchParams(location.search);
+                  searchParams.set('texto', search);
+                  searchParams.set('page', '1');
+                  navigate(`/productos?${searchParams.toString()}`);
+                }}
               >
-                <span 
-                  className="text-gray-600"
-                  onClick={() => {
-                    setSearchTerm(search);
-                    setShowRecentSearches(false);
-                    const searchParams = new URLSearchParams(location.search);
-                    searchParams.set('texto', search);
-                    searchParams.set('page', '1');
-                    navigate(`/productos?${searchParams.toString()}`);
-                  }}
-                >
+                <span className="text-gray-600">
                   {search}
                 </span>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Evitar que el clic se propague al contenedor
                     removeSearch(search);
                   }}
                   className="text-gray-400 hover:text-gray-600"
