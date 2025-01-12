@@ -17,7 +17,7 @@ const CarruselHome = lazy(() => import('../components/home/CarruselHome'));
 const CategoriasHome = lazy(() => import('../components/home/CategoriasHome'));
 const Footer = lazy(() => import('../components/home/Footer'));
 //const Testimonios = lazy(() => import('../components/home/Testimonios'));
-//const OfertasDestacadas = lazy(() => import('../components/home/OfertasDestacadas'));
+const Destacadas = lazy(() => import('../components/home/Destacadas'));
 //const MarcasColaboradoras = lazy(() => import('../components/home/MarcasColaboradoras'));
 
 
@@ -51,15 +51,15 @@ function Home() {
           <CarruselHome images={images} interval={7000} />
         </div>
 
-        {/* Sección de ofertas destacadas */}
-        {/* <div className="py-24 bg-gradient-to-b from-white to-gray-50 animate-fade-in">
+        {/* Sección de productos destacadas */}
+         <div className="py-24 bg-gradient-to-b from-white to-gray-50 animate-fade-in">
           <div className="container mx-auto px-8">
             <h2 className="text-5xl font-extrabold text-center mb-16 text-gray-800">
-              Ofertas <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Destacadas</span>
+              Productos <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Destacados</span>
             </h2>
-            {/* <OfertasDestacadas />
+             <Destacadas />
           </div>
-        </div> */}
+        </div>
 
         {/* Grid de categorías debajo del carrusel */}
         <div ref={categoriasRef} className="py-32 bg-gradient-to-b from-gray-50 to-white animate-fade-in">
