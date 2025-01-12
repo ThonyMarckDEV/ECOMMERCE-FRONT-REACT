@@ -270,7 +270,7 @@ const PagoComprobante = ({ isOpen, onClose, idPedido, total = 0, onSuccess }) =>
                   />
                 </svg>
                 <p className="text-sm text-yellow-700">
-                  Por razones de seguridad, el comprobante será revisado por un administrador para proceder con su pedido. Por favor, evita suspensiones de tu cuenta adjuntando capturas falsas o imágenes no relacionadas. Gracias.
+                  Por razones de seguridad, el comprobante será revisado por un administrador para proceder con su pedido. Por favor, evita problemas legales y suspensiones de tu cuenta adjuntando capturas falsas o imágenes no relacionadas. Gracias.
                 </p>
               </div>
             </div>
