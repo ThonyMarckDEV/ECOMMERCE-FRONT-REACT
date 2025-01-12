@@ -57,7 +57,9 @@ function ProductosCarrito({ productos, actualizarCantidad, eliminarProducto, isL
             <h2 className="text-xl font-semibold text-black">{producto.nombreProducto}</h2>
             <p className="text-gray-600 text-sm mb-2">{producto.descripcion || 'Sin descripción'}</p>
             <p className="text-sm text-gray-600 mb-2">Modelo: {producto.nombreModelo || 'N/A'}</p>
-            <p className="text-sm text-gray-600 mb-2">Talla: {producto.nombreTalla || 'N/A'}</p>
+            {producto.nombreTalla !== "Sin talla" && (
+              <p className="text-sm text-gray-600 mb-2">Talla: {producto.nombreTalla || 'N/A'}</p>
+            )}
             <div className="flex justify-between items-center mb-4">
               {tieneDescuento ? (
                 <>
