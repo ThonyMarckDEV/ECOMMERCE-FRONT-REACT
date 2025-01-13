@@ -284,239 +284,266 @@ function DetalleProducto({ productoId, onClose }) {
   };
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[50] p-0 sm:p-4">
-        <div className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl max-w-4xl relative overflow-y-auto">
-          <button
-            onClick={onClose}
-            className="fixed sm:absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-white sm:bg-black/10 hover:bg-black/20 transition-colors"
-          >
-            <span className="text-black text-xl">&times;</span>
-          </button>
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[50] p-0 sm:p-4">
+      <div className="bg-white w-full h-full sm:h-[90vh] sm:rounded-2xl max-w-5xl relative flex flex-col">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="fixed sm:absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-white sm:bg-black/10 hover:bg-black/20 transition-colors"
+        >
+          <span className="text-black text-xl">&times;</span>
+        </button>
 
-          {loading && <LoadingScreen />}
+        {loading && <LoadingScreen />}
 
-          <div className={`flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8 ${loading ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}>
-            {/* Left column - Image */}
-            <div className="p-4 sm:p-6 md:p-8 pt-14 sm:pt-6">
-              <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden">
-                {modeloSeleccionado?.imagenes.length > 1 && (
-                  <>
-                    <button
-                      onClick={handlePrevImage}
-                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
-                    >
-                      <span className="text-black">←</span>
-                    </button>
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
-                    >
-                      <span className="text-black">→</span>
-                    </button>
-                  </>
-                )}
-
-                <div className="relative w-full h-full">
-                  {isImageLoading && (
-                    <div className="absolute inset-0 flex justify-center items-center bg-gray-50">
-                      <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black/40" />
-                    </div>
+        {/* Main content container - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Product Details Section */}
+          <div className={`border-b border-gray-200 ${loading ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}>
+            <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto p-4">
+              {/* Left column - Image */}
+              <div className="pt-14 sm:pt-6">
+                <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden">
+                  {/* Image navigation buttons */}
+                  {modeloSeleccionado?.imagenes.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
+                      >
+                        <span className="text-black">←</span>
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center rounded-full bg-white/90 shadow-lg hover:bg-white transition-colors z-10"
+                      >
+                        <span className="text-black">→</span>
+                      </button>
+                    </>
                   )}
-                  <img
-                    src={buildImageUrl(modeloSeleccionado?.imagenes[imagenIndex]?.urlImagen)}
-                    alt={modeloSeleccionado?.nombreModelo}
-                    className="w-full h-full object-contain"
-                    onLoad={handleImageLoad}
-                    onError={handleImageError}
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                  />
+
+                  {/* Main image */}
+                  <div className="relative w-full h-full">
+                    {isImageLoading && (
+                      <div className="absolute inset-0 flex justify-center items-center bg-gray-50">
+                        <AiOutlineLoading3Quarters className="animate-spin text-3xl text-black/40" />
+                      </div>
+                    )}
+                    <img
+                      src={buildImageUrl(modeloSeleccionado?.imagenes[imagenIndex]?.urlImagen)}
+                      alt={modeloSeleccionado?.nombreModelo}
+                      className="w-full h-full object-contain"
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      onMouseEnter={handleMouseEnter}
+                    />
+                  </div>
+                </div>
+
+                {/* Thumbnails */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {modeloSeleccionado?.imagenes.map((imagen, index) => (
+                    <div
+                      key={index}
+                      className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${imagenIndex === index ? "border-black" : "border-transparent"}`}
+                      onClick={() => handleThumbnailClick(index)}
+                    >
+                      <img
+                        src={buildImageUrl(imagen.urlImagen)}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Thumbnails container */}
-              <div className="flex flex-wrap gap-2 mt-4">
-                {modeloSeleccionado?.imagenes.map((imagen, index) => (
-                  <div
-                    key={index}
-                    className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${imagenIndex === index ? "border-black" : "border-transparent"}`}
-                    onClick={() => handleThumbnailClick(index)}
-                  >
-                    <img
-                      src={buildImageUrl(imagen.urlImagen)}
-                      alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+              {/* Right column - Product info */}
+              <div className="flex flex-col h-full">
+                <h2 className="text-xl sm:text-2xl font-medium mb-4">
+                  {producto?.nombreProducto}
+                </h2>
 
-            {/* Right column - Product details */}
-            <div className="px-4 sm:px-6 md:p-8 pb-6 flex flex-col h-full">
-              <h2 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">
-                {producto?.nombreProducto}
-              </h2>
-
-              {/* Product price */}
-              <div className="text-lg sm:text-xl font-semibold text-black mb-4">
-                {producto?.tieneOferta ? (
-                  <>
-                    <span className="line-through text-gray-500 mr-2">
-                      S/.{producto.precioOriginal}
-                    </span>
-                    <span className="text-red-600">
-                      S/.{producto.precioDescuento}
-                    </span>
-                  </>
-                ) : (
-                  <span>S/.{producto?.precioOriginal}</span>
-                )}
-              </div>
-
-              {modeloSeleccionado && (
-                <>
-                  {/* Models selector */}
-                  <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                    <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {producto?.modelos.map((modelo) => (
-                        <button
-                          key={modelo.nombreModelo}
-                          onClick={() => handleModeloChange(modelo)}
-                          className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${modeloSeleccionado.nombreModelo === modelo.nombreModelo ? "bg-black text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"}`}
-                        >
-                          {modelo.nombreModelo}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Sizes selector */}
-                  {modeloSeleccionado.tallas.some((talla) => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock") ? (
-                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                      <h3 className="text-sm font-medium text-gray-500">Stock disponible</h3>
-                      <div className="text-sm text-gray-800">
-                        {modeloSeleccionado.tallas.find((talla) => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock")?.cantidad} unidades disponibles
-                      </div>
-                    </div>
+                {/* Price */}
+                <div className="text-lg sm:text-xl font-semibold mb-4">
+                  {producto?.tieneOferta ? (
+                    <>
+                      <span className="line-through text-gray-500 mr-2">
+                        S/.{producto.precioOriginal}
+                      </span>
+                      <span className="text-red-600">
+                        S/.{producto.precioDescuento}
+                      </span>
+                    </>
                   ) : (
-                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                      <h3 className="text-sm font-medium text-gray-500">Tallas disponibles</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {modeloSeleccionado.tallas.map((talla, index) => (
-                          <label
-                            key={index}
-                            className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 rounded-lg cursor-pointer transition-colors ${tallaSeleccionada?.nombreTalla === talla.nombreTalla ? "bg-black text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"}`}
+                    <span>S/.{producto?.precioOriginal}</span>
+                  )}
+                </div>
+
+                {modeloSeleccionado && (
+                  <>
+                    {/* Models selector */}
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-sm font-medium text-gray-500">Modelo</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {producto?.modelos.map((modelo) => (
+                          <button
+                            key={modelo.nombreModelo}
+                            onClick={() => handleModeloChange(modelo)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                              modeloSeleccionado.nombreModelo === modelo.nombreModelo
+                                ? "bg-black text-white"
+                                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            }`}
                           >
-                            <span className="font-medium text-sm sm:text-base">{talla.nombreTalla}</span>
-                            <span className="text-xs sm:text-sm opacity-75"> {talla.cantidad} Unit.</span>
-                            <input
-                              type="radio"
-                              value={talla.nombreTalla}
-                              checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
-                              onChange={() => setTallaSeleccionada(talla)}
-                              className="sr-only"
-                            />
-                          </label>
+                            {modelo.nombreModelo}
+                          </button>
                         ))}
                       </div>
                     </div>
-                  )}
 
-                  {/* Quantity selector */}
-                  <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                    <h3 className="text-sm font-medium text-gray-500">Cantidad</h3>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={handleDecrease}
-                        className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                      >
-                        <AiOutlineMinus className="text-gray-600" />
-                      </button>
-                      <input
-                        type="number"
-                        value={cantidad}
-                        onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-14 sm:w-16 h-8 sm:h-10 text-center border border-gray-200 rounded-lg text-gray-800"
-                      />
-                      <button
-                        onClick={handleIncrease}
-                        className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                      >
-                        <AiOutlinePlus className="text-gray-600" />
-                      </button>
-                    </div>
-                  </div>
-
-                 {/* Replace the characteristics section with this enhanced version */}
-                  {caracteristicas && (
-                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium text-gray-500">Características</h3>
-                        {caracteristicas.length > 150 && (
-                          <button
-                            onClick={() => setIsCharacteristicsExpanded(!isCharacteristicsExpanded)}
-                            className="text-sm font-medium text-black hover:text-gray-700 transition-colors flex items-center gap-1"
-                          >
-                            {isCharacteristicsExpanded ? (
-                              <>
-                                Ver menos
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                </svg>
-                              </>
-                            ) : (
-                              <>
-                                Ver más
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
-                      <div className="bg-gray-50 rounded-xl p-4 relative overflow-hidden">
-                        <div className={`text-sm text-gray-800 whitespace-pre-wrap ${!isCharacteristicsExpanded ? 'max-h-32' : 'max-h-none'} transition-all duration-300 ease-in-out`}>
-                          {caracteristicas}
+                    {/* Sizes selector */}
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-sm font-medium text-gray-500">
+                        {modeloSeleccionado.tallas.some(
+                          (talla) => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock"
+                        )
+                          ? "Stock disponible"
+                          : "Tallas disponibles"}
+                      </h3>
+                      {modeloSeleccionado.tallas.some(
+                        (talla) => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock"
+                      ) ? (
+                        <div className="text-sm text-gray-800">
+                          {
+                            modeloSeleccionado.tallas.find(
+                              (talla) => talla.nombreTalla === "Sin talla" || talla.nombreTalla === "Stock"
+                            )?.cantidad
+                          }{" "}
+                          unidades disponibles
                         </div>
-                        
-                        {caracteristicas.length > 150 && !isCharacteristicsExpanded && (
-                          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent pointer-events-none" />
-                        )}
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {modeloSeleccionado.tallas.map((talla, index) => (
+                            <label
+                              key={index}
+                              className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
+                                tallaSeleccionada?.nombreTalla === talla.nombreTalla
+                                  ? "bg-black text-white"
+                                  : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                              }`}
+                            >
+                              <span className="font-medium text-sm">{talla.nombreTalla}</span>
+                              <span className="text-xs opacity-75">{talla.cantidad} Unit.</span>
+                              <input
+                                type="radio"
+                                value={talla.nombreTalla}
+                                checked={tallaSeleccionada?.nombreTalla === talla.nombreTalla}
+                                onChange={() => setTallaSeleccionada(talla)}
+                                className="sr-only"
+                              />
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Quantity selector */}
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-sm font-medium text-gray-500">Cantidad</h3>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={handleDecrease}
+                          className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                        >
+                          <AiOutlineMinus className="text-gray-600" />
+                        </button>
+                        <input
+                          type="number"
+                          value={cantidad}
+                          onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
+                          className="w-16 h-10 text-center border border-gray-200 rounded-lg"
+                        />
+                        <button
+                          onClick={handleIncrease}
+                          className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                        >
+                          <AiOutlinePlus className="text-gray-600" />
+                        </button>
                       </div>
                     </div>
-                  )}
-
-                  {/* Botón de agregar al carrito y compartir */}
-                  <div className="w-full p-4 bg-white border-t border-gray-100 sm:p-0 sm:bg-transparent sm:border-0">
-                    <div className="sm:relative sm:bottom-0 sm:left-0 sm:right-0">
-                      <button
-                        onClick={handleAddToCart}
-                        disabled={loading}
-                        className={`w-full bg-black text-white py-3 sm:py-4 rounded-xl font-medium hover:bg-black/90 transition-colors ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-                      >
-                        {loading ? "Agregando..." : "Agregar al carrito"}
-                      </button>
-
-                      <button
-                        onClick={handleCompartir}
-                        className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-100 text-gray-800 py-3 sm:py-4 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-                      >
-                        <FaShareAlt className="text-lg" />
-                        Compartir
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {!loading && error && (
-                <p className="mt-4 text-red-500 text-sm text-center">{error}</p>
-              )}
+                  </>
+                )}
+              </div>
             </div>
+          </div>
+
+          {/* Characteristics Section */}
+          {caracteristicas && (
+            <div className="p-4 bg-gray-50">
+              <div className="max-w-5xl mx-auto">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium">Características del producto</h3>
+                    {caracteristicas.length > 150 && (
+                      <button
+                        onClick={() => setIsCharacteristicsExpanded(!isCharacteristicsExpanded)}
+                        className="text-sm font-medium text-black hover:text-gray-700 transition-colors flex items-center gap-1"
+                      >
+                        {isCharacteristicsExpanded ? "Ver menos" : "Ver más"}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={`h-4 w-4 transform transition-transform ${
+                            isCharacteristicsExpanded ? "rotate-180" : ""
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  <div className="bg-white rounded-xl p-6 relative overflow-hidden">
+                    <div
+                      className={`text-gray-600 whitespace-pre-wrap ${
+                        !isCharacteristicsExpanded ? "max-h-32" : "max-h-none"
+                      } transition-all duration-300 ease-in-out`}
+                    >
+                      {caracteristicas}
+                    </div>
+                    {caracteristicas.length > 150 && !isCharacteristicsExpanded && (
+                      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Fixed bottom buttons */}
+        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+          <div className="max-w-5xl mx-auto flex gap-4">
+            <button
+              onClick={handleAddToCart}
+              disabled={loading}
+              className={`flex-1 bg-black text-white py-3 rounded-xl font-medium hover:bg-black/90 transition-colors ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Agregando..." : "Agregar al carrito"}
+            </button>
+            <button
+              onClick={handleCompartir}
+              className="flex items-center justify-center gap-2 bg-gray-100 text-gray-800 py-3 px-6 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+            >
+              <FaShareAlt className="text-lg" />
+              <span className="hidden sm:inline">Compartir</span>
+            </button>
           </div>
         </div>
       </div>
@@ -526,7 +553,7 @@ function DetalleProducto({ productoId, onClose }) {
           <CheckLogin setShowModal={handleCloseModalLogin} />
         </div>
       )}
-    </>
+    </div>
   );
 }
 
