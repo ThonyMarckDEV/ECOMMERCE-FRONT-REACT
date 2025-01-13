@@ -241,7 +241,7 @@ function ProductTable() {
                       className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
                     />
                   ) : (
-                    `$${producto.precio}`
+                    `S/.${producto.precio}`
                   )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700 border-b">
