@@ -33,12 +33,18 @@ function AgregarProducto() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modeloTallas, setModeloTallas] = useState({});
   const [modeloSelectedTallas, setModeloSelectedTallas] = useState({});
+  const [caracteristicas, setCaracteristicas] = useState('');
 
   useEffect(() => {
     cargarCategorias();
     cargarTallas();
     setModeloSelectedTallas({ 0: [] });
   }, []);
+
+  // Reemplazar las funciones de manejo de características con una simple función:
+  const handleCaracteristicasChange = (e) => {
+    setCaracteristicas(e.target.value);
+  };
 
   const cargarCategorias = async () => {
     const token = jwtUtils.getTokenFromCookie();
@@ -140,14 +146,15 @@ function AgregarProducto() {
     }
   };
 
+    // Modificar la función resetForm para incluir las características:
   const resetForm = () => {
-    setProducto(initialProductState); // Reinicia el estado del producto
-    setModelos([initialModeloState]); // Reinicia los modelos
-    setSelectedFiles([[]]); // Reinicia los archivos seleccionados
-    setModeloTallas({}); // Reinicia las tallas de los modelos
-    setModeloSelectedTallas({ 0: [] }); // Reinicia las tallas seleccionadas
-  
-    // Limpia los inputs de tipo file
+    setProducto(initialProductState);
+    setModelos([initialModeloState]);
+    setSelectedFiles([[]]);
+    setModeloTallas({});
+    setModeloSelectedTallas({ 0: [] });
+    setCaracteristicas('');
+    
     const fileInputs = document.querySelectorAll('input[type="file"]');
     fileInputs.forEach((input) => (input.value = ''));
   };
@@ -352,6 +359,11 @@ function AgregarProducto() {
     formData.append('estado', producto.estado);
     formData.append('idCategoria', producto.idCategoria);
     formData.append('precio', producto.precio);
+
+  // Agregar características al FormData
+    if (caracteristicas.trim()) {
+      formData.append('caracteristicas', caracteristicas.trim());
+    }
   
     modelos.forEach((modelo, index) => {
       formData.append(`modelos[${index}][nombreModelo]`, modelo.nombreModelo.trim());
@@ -480,6 +492,23 @@ function AgregarProducto() {
                   {producto.descripcion.length}/60 caracteres
                 </div>
               </div>
+
+              <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                Características del Producto (Opcional)
+              </h2>
+              <div className="space-y-2">
+                <textarea
+                  placeholder="Ingrese las características del producto"
+                  value={caracteristicas}
+                  onChange={handleCaracteristicasChange}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  rows="4"
+                />
+                <p className="text-sm text-gray-500">
+                  Ingrese las características del producto. Si no se especifica ninguna, se guardará como "Sin características disponibles". (Texto sin límite de caracteres)
+                </p>
+              </div>
+
             </div>
 
             {/* Modelos del producto */}
