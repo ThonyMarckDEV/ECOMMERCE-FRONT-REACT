@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Edit2, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import SweetAlert from '../../components/SweetAlert';
 import API_BASE_URL from '../../js/urlHelper';
 import EditarProductoModal from '../../ui/superadminUI/ProductoEditarModal';
@@ -18,6 +17,9 @@ function ProductTable() {
   const [formData, setFormData] = useState({
     nombreProducto: '',
     descripcion: '',
+    precio: '',
+    idCategoria: '',
+    caracteristicas: '',
     estado: 'activo'
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -90,63 +92,61 @@ function ProductTable() {
     }
   };
 
-  // Activar modo de edición
   const handleEditClick = (producto) => {
     setEditMode(producto.idProducto);
     setFormData({
-      nombreProducto: producto.nombreProducto,
-      descripcion: producto.descripcion
+        nombreProducto: producto.nombreProducto,
+        descripcion: producto.descripcion,
+        precio: producto.precio,
+        idCategoria: producto.idCategoria || '', // Asegúrate de que idCategoria no sea undefined
+        caracteristicas: producto.caracteristicas || '',
+        estado: producto.estado
     });
-  };
+};
 
-  // Cancelar edición
   const handleCancelEdit = () => {
     setEditMode(null);
   };
 
-  // Manejar cambios en los inputs de edición
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Actualizar producto
   const handleUpdateProducto = async (idProducto) => {
-    setLoading(true); // Activar el loader de toda la pantalla
-    await verificarYRenovarToken();
-    try {
-      const token = jwtUtils.getTokenFromCookie();
-      const response = await fetch(`${API_BASE_URL}/api/actualizarProducto/${idProducto}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-  
-      if (!response.ok) throw new Error('Error al actualizar producto');
-  
-      SweetAlert.showMessageAlert('Éxito', 'Producto actualizado correctamente', 'success');
-      setEditMode(null);
-      cargarProductos(currentPage + 1); // Recargar la lista de productos
-    } catch (error) {
-      SweetAlert.showMessageAlert('Error', 'No se pudo actualizar el producto', 'error');
-    } finally {
-      setLoading(false); // Desactivar el loader de toda la pantalla
-    }
+      setLoading(true); // Activar el loader de toda la pantalla
+      await verificarYRenovarToken();
+      try {
+          const token = jwtUtils.getTokenFromCookie();
+          const response = await fetch(`${API_BASE_URL}/api/actualizarProducto/${idProducto}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(formData)
+          });
+
+          if (!response.ok) throw new Error('Error al actualizar producto');
+
+          SweetAlert.showMessageAlert('Éxito', 'Producto actualizado correctamente', 'success');
+          setEditMode(null);
+          cargarProductos(currentPage + 1); // Recargar la lista de productos
+      } catch (error) {
+          SweetAlert.showMessageAlert('Error', 'No se pudo actualizar el producto', 'error');
+      } finally {
+          setLoading(false); // Desactivar el loader de toda la pantalla
+      }
   };
 
   const handleVerModelos = (producto) => {
     setSelectedProducto(producto); // Abrir modal con producto seleccionado
   };
 
-  // Manejar cambio de página
   const handlePageClick = (data) => {
     setCurrentPage(data.selected);
   };
 
-  // Manejar cambio en los filtros
   const handleFilterChange = (e, filterName) => {
     const newFilters = { ...filters, [filterName]: e.target.value };
     setFilters(newFilters);
@@ -155,158 +155,208 @@ function ProductTable() {
 
   return (
     <div>
-        {/* Contenedor de la tabla con desplazamiento horizontal */}
-        <div className="overflow-auto">
-          {(loading || changingEstado) && <LoadingScreen />}
+      {/* Contenedor de la tabla con desplazamiento horizontal */}
+      <div className="overflow-auto">
+        {(loading || changingEstado) && <LoadingScreen />}
 
-          <table className="w-full min-w-max table-auto border-collapse bg-white">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
-                  <input
-                    type="text"
-                    placeholder="Filtrar Nombre"
-                    value={filters.nombreProducto}
-                    onChange={(e) => handleFilterChange(e, 'nombreProducto')}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
-                  />
-                </th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
-                  <input
-                    type="text"
-                    placeholder="Filtrar Descripción"
-                    value={filters.descripcion}
-                    onChange={(e) => handleFilterChange(e, 'descripcion')}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
-                  />
-                </th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
-                  <select
-                    value={filters.estado}
-                    onChange={(e) => handleFilterChange(e, 'estado')}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
-                  >
-                    <option value="">Todos</option>
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
-                  </select>
-                </th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {productos.map((producto) => (
-                <tr key={producto.idProducto} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
-                    {editMode === producto.idProducto ? (
-                      <input
-                        type="text"
-                        name="nombreProducto"
-                        value={formData.nombreProducto}
+        <table className="w-full min-w-max table-auto border-collapse bg-white">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                <input
+                  type="text"
+                  placeholder="Filtrar Nombre"
+                  value={filters.nombreProducto}
+                  onChange={(e) => handleFilterChange(e, 'nombreProducto')}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                />
+              </th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                <input
+                  type="text"
+                  placeholder="Filtrar Descripción"
+                  value={filters.descripcion}
+                  onChange={(e) => handleFilterChange(e, 'descripcion')}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                />
+              </th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                Precio
+              </th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                Categoría
+              </th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                Características
+              </th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                Estado
+              </th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase border-b">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {productos.map((producto) => (
+              <tr key={producto.idProducto} className="hover:bg-gray-100">
+                <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                  {editMode === producto.idProducto ? (
+                    <input
+                      type="text"
+                      name="nombreProducto"
+                      value={formData.nombreProducto}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                    />
+                  ) : (
+                    producto.nombreProducto
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                  {editMode === producto.idProducto ? (
+                    <div>
+                      <span className="text-xs text-gray-500 mb-1 block">
+                        Máximo 60 caracteres
+                      </span>
+                      <textarea
+                        name="descripcion"
+                        value={formData.descripcion}
                         onChange={handleInputChange}
+                        maxLength={60}
                         className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
                       />
-                    ) : (
-                      producto.nombreProducto
-                    )}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    </div>
+                  ) : (
+                    producto.descripcion
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                  {editMode === producto.idProducto ? (
+                    <input
+                      type="number"
+                      name="precio"
+                      value={formData.precio}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                    />
+                  ) : (
+                    `$${producto.precio}`
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b">
                     {editMode === producto.idProducto ? (
-                      <div>
-                        <span className="text-xs text-gray-500 mb-1 block">
-                          Máximo 60 caracteres
-                        </span>
-                        <textarea
-                          name="descripcion"
-                          value={formData.descripcion}
-                          onChange={handleInputChange}
-                          maxLength={60}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
-                        />
-                      </div>
+                        <select
+                            name="idCategoria"
+                            value={formData.idCategoria}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                        >
+                            <option value="">Seleccione una categoría</option>
+                            {/* Mapea las categorías disponibles desde la API */}
+                        </select>
                     ) : (
-                      producto.descripcion
+                        producto.categoria?.nombreCategoria || 'Sin categoría' // Manejo seguro de categoría
                     )}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
-                    <button
-                      onClick={() => toggleEstadoProducto(producto.idProducto, producto.estado)}
-                      className={`px-4 py-2 rounded-lg text-white font-semibold transition-all duration-200 ${
-                        producto.estado === 'activo' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
-                      }`}
-                      disabled={changingEstado}
-                    >
-                      {producto.estado}
-                    </button>
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
-                    <div className="flex items-center space-x-3">
-                      {editMode === producto.idProducto ? (
-                        <>
-                          <button
-                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                            onClick={() => handleUpdateProducto(producto.idProducto)}
-                          >
-                            Actualizar
-                          </button>
-                          <button
-                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                            onClick={handleCancelEdit}
-                          >
-                            Cancelar
-                          </button>
-                        </>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b min-w-[200px] max-w-[300px]">
+                  {editMode === producto.idProducto ? (
+                    <textarea
+                      name="caracteristicas"
+                      value={formData.caracteristicas}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                    />
+                  ) : (
+                    <div className="max-h-32 overflow-y-auto">
+                      {producto.caracteristicas ? (
+                        <ul className="space-y-1">
+                          {producto.caracteristicas.split(',').map((caracteristica, index) => (
+                            <li key={index} className="text-sm text-gray-700 border-b border-gray-100 py-1">
+                              • {caracteristica.trim()}
+                            </li>
+                          ))}
+                        </ul>
                       ) : (
-                        <>
-                          <button
-                            className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-                            onClick={() => handleEditClick(producto)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                            onClick={() => handleVerModelos(producto)}
-                          >
-                            Ver Modelos
-                          </button>
-                        </>
+                        <span className="text-gray-500">Sin características</span>
                       )}
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mt-8">
-          <ReactPaginate
-            previousLabel={'Anterior'}
-            nextLabel={'Siguiente'}
-            breakLabel={'...'}
-            pageCount={totalPages}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
-            onPageChange={handlePageClick}
-            containerClassName={'flex justify-center space-x-4'}
-            pageClassName={'px-4 py-2 border rounded-lg'}
-            activeClassName={'bg-gray-900 text-white'}
-          />
-        </div>
-
-        {selectedProducto && (
-          <EditarProductoModal
-            producto={selectedProducto}
-            onClose={() => setSelectedProducto(null)}
-          />
-        )}
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                  <button
+                    onClick={() => toggleEstadoProducto(producto.idProducto, producto.estado)}
+                    className={`px-4 py-2 rounded-lg text-white font-semibold transition-all duration-200 ${
+                      producto.estado === 'activo' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+                    }`}
+                    disabled={changingEstado}
+                  >
+                    {producto.estado}
+                  </button>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                  <div className="flex items-center space-x-3">
+                    {editMode === producto.idProducto ? (
+                      <>
+                        <button
+                          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                          onClick={() => handleUpdateProducto(producto.idProducto)}
+                        >
+                          Actualizar
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                          onClick={() => handleEditClick(producto)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                          onClick={() => handleVerModelos(producto)}
+                        >
+                          Ver Modelos
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      <div className="mt-8">
+        <ReactPaginate
+          previousLabel={'Anterior'}
+          nextLabel={'Siguiente'}
+          breakLabel={'...'}
+          pageCount={totalPages}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={handlePageClick}
+          containerClassName={'flex justify-center space-x-4'}
+          pageClassName={'px-4 py-2 border rounded-lg'}
+          activeClassName={'bg-gray-900 text-white'}
+        />
+      </div>
+
+      {selectedProducto && (
+        <EditarProductoModal
+          producto={selectedProducto}
+          onClose={() => setSelectedProducto(null)}
+        />
+      )}
+    </div>
   );
 }
 
