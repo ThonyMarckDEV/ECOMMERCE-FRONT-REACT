@@ -1,7 +1,6 @@
 import React, { useEffect, useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../js/urlHelper';
-import { verificarYRenovarToken } from '../../js/authToken';
 
 const Categories = forwardRef((props, ref) => {
   const [categories, setCategories] = useState([]);
@@ -101,7 +100,7 @@ const Categories = forwardRef((props, ref) => {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="mx-1 px-4 py-2 rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mx-1 px-4 py-2 text-xs rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed leading-tight"
             >
               &larr; Anterior
             </button>
@@ -110,11 +109,11 @@ const Categories = forwardRef((props, ref) => {
               <button
                 key={index + 1}
                 onClick={() => handlePageChange(index + 1)}
-                className={`mx-1 px-4 py-2 rounded-full ${
+                className={`mx-1 px-4 py-2 text-xs rounded-full ${
                   currentPage === index + 1
                     ? 'bg-black text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                } leading-tight`}
               >
                 {index + 1}
               </button>
@@ -123,11 +122,13 @@ const Categories = forwardRef((props, ref) => {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="mx-1 px-4 py-2 rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mx-1 px-4 py-2 text-xs rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed leading-tight"
             >
               Siguiente &rarr;
             </button>
           </div>
+
+
         </div>
       </div>
     </div>

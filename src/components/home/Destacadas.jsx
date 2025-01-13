@@ -93,7 +93,7 @@ const Destacadas = () => {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="mx-1 px-4 py-2 rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mx-1 px-4 py-1 text-sm rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               &larr; Anterior
             </button>
@@ -102,7 +102,7 @@ const Destacadas = () => {
               <button
                 key={index + 1}
                 onClick={() => handlePageChange(index + 1)}
-                className={`mx-1 px-4 py-2 rounded-full ${
+                className={`mx-1 px-4 py-1 text-sm rounded-full ${
                   currentPage === index + 1
                     ? 'bg-black text-white'
                     : 'bg-gray-200 text-gray-700'
@@ -115,12 +115,14 @@ const Destacadas = () => {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="mx-1 px-4 py-2 rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mx-1 px-4 py-1 text-sm rounded-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Siguiente &rarr;
             </button>
           </div>
-        </div>
+
+      </div>    
+
       </div>
     </div>
   );
