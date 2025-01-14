@@ -74,19 +74,28 @@ const NuevoModeloAdmin = ({ idProducto, onClose, onModeloCreated }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label htmlFor="nombreModelo" className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre del Modelo
-            </label>
-            <input
-              type="text"
-              id="nombreModelo"
-              value={nombreModelo}
-              onChange={(e) => setNombreModelo(e.target.value)}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              required
-            />
-          </div>
+        
+        <div>
+          <label htmlFor="nombreModelo" className="block text-sm font-medium text-gray-700 mb-1">
+            Nombre del Modelo
+          </label>
+          <input
+            type="text"
+            id="nombreModelo"
+            value={nombreModelo}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Expresión regular para permitir solo letras, números y espacios
+              const regex = /^[a-zA-Z0-9\s]*$/;
+              if (regex.test(value)) {
+                setNombreModelo(value); // Actualizar el estado solo si el valor es válido
+              }
+            }}
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+            required
+          />
+        </div>
+
 
           {error && (
             <div className="p-3 bg-red-100 text-red-700 rounded-md text-sm">
