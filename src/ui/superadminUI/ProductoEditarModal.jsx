@@ -105,7 +105,7 @@ const ProductoEditarModal = ({ producto, onClose }) => {
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                  {producto?.nombreCategoria}
+                  {producto?.categoria?.nombreCategoria || 'Sin Categoría'}
                 </span>
               </div>
             </div>
