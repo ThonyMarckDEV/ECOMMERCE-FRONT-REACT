@@ -161,18 +161,69 @@ function AgregarProductoAdmin() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProducto((prev) => ({ ...prev, [name]: value }));
+  
+    // Expresión regular para permitir letras, números y espacios
+    const regex = /^[a-zA-Z0-9\s]*$/;
+  
+    if (regex.test(value)) {
+      setProducto((prev) => ({ ...prev, [name]: value }));
+    } else {
+      console.log("Solo se permiten letras, números y espacios.");
+    }
   };
+  
+  const handlePaste = (e) => {
+    e.preventDefault(); // Evita el comportamiento predeterminado de pegar
+  
+    // Obtén el texto pegado
+    const pastedText = e.clipboardData.getData("text");
+  
+    // Filtra el texto pegado para permitir solo letras, números y espacios
+    const filteredText = pastedText.replace(/[^a-zA-Z0-9\s]/g, "");
+  
+    // Actualiza el estado del producto con el texto filtrado
+    setProducto((prev) => ({
+      ...prev,
+      nombreProducto: filteredText,
+    }));
+  };
+  
 
   const handleModeloChange = (index, e) => {
     const { name, value } = e.target;
+  
+    // Expresión regular para permitir letras, números y espacios
+    const regex = /^[a-zA-Z0-9\s]*$/;
+  
+    if (regex.test(value)) {
+      // Si el valor cumple con la expresión regular, actualiza el estado
+      setModelos((prev) =>
+        prev.map((modelo, i) =>
+          i === index ? { ...modelo, [name]: value } : modelo
+        )
+      );
+    } else {
+      console.log("Solo se permiten letras, números y espacios.");
+    }
+  };
+  
+  const handleModeloPaste = (index, e) => {
+    e.preventDefault(); // Evita el comportamiento predeterminado de pegar
+  
+    // Obtén el texto pegado
+    const pastedText = e.clipboardData.getData("text");
+  
+    // Filtra el texto pegado para permitir solo letras, números y espacios
+    const filteredText = pastedText.replace(/[^a-zA-Z0-9\s]/g, "");
+  
+    // Actualiza el estado del modelo específico con el texto filtrado
     setModelos((prev) =>
       prev.map((modelo, i) =>
-        i === index ? { ...modelo, [name]: value } : modelo
+        i === index ? { ...modelo, nombreModelo: filteredText } : modelo
       )
     );
   };
-
+  
   const handleImagenChange = (modeloIndex, e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
@@ -429,18 +480,23 @@ function AgregarProductoAdmin() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Campos del producto */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Nombre del Producto</label>
-                <input
-                  type="text"
-                  name="nombreProducto"
-                  value={producto.nombreProducto}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  placeholder="Ingrese el nombre del producto"
-                  required
-                />
-              </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Nombre del Producto</label>
+              <input
+                type="text"
+                name="nombreProducto"
+                value={producto.nombreProducto}
+                onChange={handleChange}
+                onPaste={handlePaste} // Manejador para el evento de pegar
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                placeholder="Ingrese el nombre del producto"
+                required
+              />
+              {!/^[a-zA-Z0-9\s]*$/.test(producto.nombreProducto) && (
+                <p className="text-red-500 text-sm">Solo se permiten letras, números y espacios.</p>
+              )}
+            </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Precio</label>
@@ -530,18 +586,25 @@ function AgregarProductoAdmin() {
                       )}
                     </div>
 
+                  
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
+                    {modelos.map((modelo, index) => (
+                      <div key={index} className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Nombre del Modelo</label>
                         <input
                           type="text"
                           name="nombreModelo"
                           value={modelo.nombreModelo}
                           onChange={(e) => handleModeloChange(index, e)}
+                          onPaste={(e) => handleModeloPaste(index, e)} // Manejador para el evento de pegar
                           className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                           placeholder="Nombre del modelo"
                         />
+                        {!/^[a-zA-Z0-9\s]*$/.test(modelo.nombreModelo) && (
+                          <p className="text-red-500 text-sm">Solo se permiten letras, números y espacios.</p>
+                        )}
                       </div>
+                    ))}
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Imágenes del Modelo</label>
