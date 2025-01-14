@@ -40,6 +40,6 @@ export async function updateLastActivity() {
         console.error('Error updating last activity:', error);
     } finally {
         // Verificar el estado del usuario
-         await checkStatus();
+       //  await checkStatus();
     }
 }
