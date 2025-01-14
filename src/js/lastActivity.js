@@ -35,11 +35,15 @@ export async function updateLastActivity() {
             console.log('Last activity successfully updated.');
         } else {
             console.warn('Failed to update last activity.');
+              // Eliminar el token de localStorage
+                   jwtUtils.removeTokenFromCookie();
+              // Redirigir a la página de inicio de sesión en el dominio raíz
+                window.location.href = `/`;
         }
     } catch (error) {
         console.error('Error updating last activity:', error);
     } finally {
         // Verificar el estado del usuario
-         await checkStatus();
+       //  await checkStatus();
     }
 }
