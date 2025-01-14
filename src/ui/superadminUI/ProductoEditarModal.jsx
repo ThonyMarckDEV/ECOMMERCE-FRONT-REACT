@@ -62,6 +62,9 @@ const ProductoEditarModal = ({ producto, onClose }) => {
         // Actualiza el estado local eliminando el modelo
         setModelos(modelos.filter(modelo => modelo.idModelo !== idModelo));
         SweetAlert.showMessageAlert('¡Éxito!', 'Modelo eliminado exitosamente', 'success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } catch (error) {
         console.error('Error:', error);
         SweetAlert.showMessageAlert('Error', 'Hubo un error al eliminar el modelo', 'error');
