@@ -57,10 +57,10 @@ export async function renovarToken() {
         } else if (response.status === 401) {
             const errorData = await response.json();
             if (errorData.error === "The token has been blacklisted") {
-               // console.log('El token ha sido invalidado. Redirigiendo al login...');
+                console.log('El token ha sido invalidado. Redirigiendo al login...');
                 logoutAndRedirect();
             } else {
-                // console.log('El token ha expirado. Recargando la página...');
+                console.log('El token ha expirado. Recargando la página...');
                 setTimeout(() => window.location.reload(), 3000);
             }
         } else if (response.status === 500) {
@@ -70,7 +70,7 @@ export async function renovarToken() {
         }
     } catch (error) {
         console.error("Error al intentar renovar el token:", error);
-        logoutAndRedirect();
+        //logoutAndRedirect();
     }
 }
 
@@ -79,13 +79,13 @@ export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
         const nuevoToken = await renovarToken();
         if (nuevoToken) {
-            // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
+            console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
-            console.log("No se pudo renovar el token, redirigiendo al login...");
+            console.log("No se pudo renovar el token");
             logoutAndRedirect();
         }
     } else {
-        // console.log("El token es válido y no necesita renovación.");
+        console.log("El token es válido y no necesita renovación.");
     }
 }
 
