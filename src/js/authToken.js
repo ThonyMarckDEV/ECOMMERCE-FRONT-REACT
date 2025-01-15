@@ -85,7 +85,7 @@ export async function verificarYRenovarToken() {
             //logoutAndRedirect();
         }
     } else {
-        console.log("El token es válido y no necesita renovación.");
+        //console.log("El token es válido y no necesita renovación.");
     }
 }
 

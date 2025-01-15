@@ -33,7 +33,7 @@ export const checkUserStatus = async () => {
                 console.warn('Token blacklisted, deslogueando al usuario');
                 logoutAndRedirect();  // Desloguear al usuario si el token es inválido
             } else if (data.status === 'success') {
-                console.log('Token válido, usuario autenticado');
+               // console.log('Token válido, usuario autenticado');
             }
         } else {
             // Si la respuesta no es exitosa, deslogueamos al usuario
