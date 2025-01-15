@@ -12,7 +12,7 @@ const Destacadas = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/productos-destacados?page=${currentPage}`);
       const data = await response.json();
-      console.log("Respuesta de la API:", data); // Verifica la estructura de los datos
+     // console.log("Respuesta de la API:", data); // Verifica la estructura de los datos
       if (data.success) {
         if (Array.isArray(data.data.data)) {
           setProductos(data.data);
