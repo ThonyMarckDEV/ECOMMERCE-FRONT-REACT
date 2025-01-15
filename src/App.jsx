@@ -103,13 +103,9 @@ function AppContent() {
     if (!enMantenimiento && token) {
       updateLastActivity();
 
-      // const intervalId = setInterval(() => {
-      //   updateLastActivity();
-      // }, 10000);
-
       const intervalId = setInterval(() => {
         updateLastActivity();
-      }, 1000);
+      }, 10000);
 
       return () => clearInterval(intervalId);
     }
