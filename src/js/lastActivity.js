@@ -31,7 +31,7 @@ export async function updateLastActivity() {
         });
 
         if (response.ok) {
-            //console.log('Last activity successfully updated.');
+            console.log('Last activity successfully updated.');
         } else {
             console.warn('Failed to update last activity.');
         }

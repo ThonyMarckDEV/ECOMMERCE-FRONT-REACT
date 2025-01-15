@@ -54,19 +54,6 @@ export async function renovarToken() {
             } else {
                 throw new Error("El token renovado es el mismo que el anterior.");
             }
-        } else if (response.status === 401) {
-            const errorData = await response.json();
-            if (errorData.error === "The token has been blacklisted") {
-                console.log('El token ha sido invalidado. Redirigiendo al login...');
-              //  logoutAndRedirect();
-            } else {
-                console.log('El token ha expirado. Recargando la página...');
-                setTimeout(() => window.location.reload(), 3000);
-            }
-        } else if (response.status === 500) {
-            console.error("Error del servidor al renovar el token: 500 Internal Server Error.");
-        } else {
-            console.error(`Error desconocido: ${response.status}`);
         }
     } catch (error) {
         console.error("Error al intentar renovar el token:", error);
