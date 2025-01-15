@@ -1,5 +1,4 @@
 import API_BASE_URL from './urlHelper.js';
-import { logout as logoutAndRedirect } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils';
 
 // Función para verificar si el token está próximo a expirar
