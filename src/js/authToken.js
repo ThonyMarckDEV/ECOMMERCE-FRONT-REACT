@@ -1,4 +1,5 @@
 import API_BASE_URL from './urlHelper.js';
+import { logout as logoutAndRedirect } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils';
 
 // Función para verificar si el token está próximo a expirar
@@ -46,9 +47,30 @@ export async function renovarToken() {
             const data = await response.json();
             const nuevoToken = data.accessToken;
 
+            // Verifica si el token renovado es diferente al actual
+            if (nuevoToken !== token) {
+                document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cookie
+                return nuevoToken;
+            } else {
+                throw new Error("El token renovado es el mismo que el anterior.");
+            }
+        } else if (response.status === 401) {
+            const errorData = await response.json();
+            if (errorData.error === "The token has been blacklisted") {
+                console.log('El token ha sido invalidado. Redirigiendo al login...');
+              //  logoutAndRedirect();
+            } else {
+                console.log('El token ha expirado. Recargando la página...');
+                setTimeout(() => window.location.reload(), 3000);
+            }
+        } else if (response.status === 500) {
+            console.error("Error del servidor al renovar el token: 500 Internal Server Error.");
+        } else {
+            console.error(`Error desconocido: ${response.status}`);
         }
     } catch (error) {
         console.error("Error al intentar renovar el token:", error);
+        //logoutAndRedirect();
     }
 }
 
@@ -60,6 +82,7 @@ export async function verificarYRenovarToken() {
            // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token");
+            //logoutAndRedirect();
         }
     } else {
         //console.log("El token es válido y no necesita renovación.");
