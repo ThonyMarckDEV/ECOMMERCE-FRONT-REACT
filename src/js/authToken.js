@@ -58,7 +58,7 @@ export async function renovarToken() {
             const errorData = await response.json();
             if (errorData.error === "The token has been blacklisted") {
                 console.log('El token ha sido invalidado. Redirigiendo al login...');
-                logoutAndRedirect();
+              //  logoutAndRedirect();
             } else {
                 console.log('El token ha expirado. Recargando la página...');
                 setTimeout(() => window.location.reload(), 3000);
