@@ -8,9 +8,6 @@ import jwtUtils from '../utilities/jwtUtils.jsx';
 
 export async function updateLastActivity() {
     try {
-        // Verificar y renovar el token
-       // await verificarYRenovarToken();
-
         const token = jwtUtils.getTokenFromCookie();
         if (!token) {
             console.error('No token found. Logging out...');
