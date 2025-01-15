@@ -9,7 +9,7 @@ import jwtUtils from '../utilities/jwtUtils.jsx';
 export async function updateLastActivity() {
     try {
         // Verificar y renovar el token
-        await verificarYRenovarToken();
+       // await verificarYRenovarToken();
 
         const token = jwtUtils.getTokenFromCookie();
         if (!token) {
