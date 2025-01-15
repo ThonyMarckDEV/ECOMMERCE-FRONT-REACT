@@ -34,12 +34,11 @@ export const checkUserStatus = async () => {
                 logoutAndRedirect();  // Desloguear al usuario si el token es inválido
             } else if (data.status === 'success') {
                 console.log('Token válido, usuario autenticado');
-                // Aquí puedes realizar acciones adicionales si el token es válido
             }
         } else {
             // Si la respuesta no es exitosa, deslogueamos al usuario
             console.error('Error en la verificación del token');
-            //logoutAndRedirect();
+            logoutAndRedirect();  // Desloguear al usuario si el token es inválido
         }
     } catch (error) {
         // Si ocurre un error durante la solicitud, deslogueamos al usuario
