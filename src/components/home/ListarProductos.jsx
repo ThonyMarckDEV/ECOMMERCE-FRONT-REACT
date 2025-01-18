@@ -22,7 +22,8 @@ function ListarProductos({ filtro }) {
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
   const sortMenuRef = useRef(null);
-
+  const [categorias, setCategorias] = useState([]); // Nuevo estado para almacenar las categorías
+  
   const categoriaURL = new URLSearchParams(location.search).get('categoria');
 
   const sortOptions = [
@@ -32,32 +33,52 @@ function ListarProductos({ filtro }) {
     { value: 'price_desc', label: 'Precio: Mayor a Menor' }
   ];
 
-  // Obtener filtros activos de la URL
-  const getActiveFilters = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const activeFilters = [];
-
-    if (searchParams.get('texto')) {
-      activeFilters.push({ type: 'texto', value: searchParams.get('texto') });
-    }
-    if (searchParams.get('categoria')) {
-      activeFilters.push({ type: 'categoria', value: searchParams.get('categoria') });
-    }
-    if (searchParams.get('precioInicial') || searchParams.get('precioFinal')) {
-      activeFilters.push({
-        type: 'precio',
-        value: `S/.${searchParams.get('precioInicial') || 0} - S/.${searchParams.get('precioFinal') || '∞'}`,
-      });
-    }
-    if (searchParams.get('sort')) {
-      const sortLabel = sortOptions.find(opt => opt.value === searchParams.get('sort'))?.label;
-      if (sortLabel) {
-        activeFilters.push({ type: 'sort', value: sortLabel });
+    // Cargar las categorías cuando el componente se monta
+    useEffect(() => {
+      fetch(`${API_BASE_URL}/api/listarCategorias`)
+        .then(response => response.json())
+        .then(data => {
+          setCategorias(data.data);
+        })
+        .catch(error => console.error('Error al cargar categorías:', error));
+    }, []);
+  
+    // Función para obtener el nombre de la categoría por ID
+    const getCategoryName = (categoryId) => {
+      const categoria = categorias.find(cat => cat.idCategoria.toString() === categoryId.toString());
+      return categoria ? categoria.nombreCategoria : categoryId;
+    };
+  
+    // Obtener filtros activos de la URL
+    const getActiveFilters = () => {
+      const searchParams = new URLSearchParams(location.search);
+      const activeFilters = [];
+  
+      if (searchParams.get('texto')) {
+        activeFilters.push({ type: 'texto', value: searchParams.get('texto') });
       }
-    }
-
-    return activeFilters;
-  };
+      if (searchParams.get('categoria')) {
+        const categoryId = searchParams.get('categoria');
+        activeFilters.push({ 
+          type: 'categoria', 
+          value: getCategoryName(categoryId)
+        });
+      }
+      if (searchParams.get('precioInicial') || searchParams.get('precioFinal')) {
+        activeFilters.push({
+          type: 'precio',
+          value: `S/.${searchParams.get('precioInicial') || 0} - S/.${searchParams.get('precioFinal') || '∞'}`,
+        });
+      }
+      if (searchParams.get('sort')) {
+        const sortLabel = sortOptions.find(opt => opt.value === searchParams.get('sort'))?.label;
+        if (sortLabel) {
+          activeFilters.push({ type: 'sort', value: sortLabel });
+        }
+      }
+  
+      return activeFilters;
+    };
 
   // Limpiar todos los filtros
   const clearAllFilters = () => {

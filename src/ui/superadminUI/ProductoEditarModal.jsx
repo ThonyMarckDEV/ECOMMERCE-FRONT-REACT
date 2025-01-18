@@ -62,6 +62,9 @@ const ProductoEditarModal = ({ producto, onClose }) => {
         // Actualiza el estado local eliminando el modelo
         setModelos(modelos.filter(modelo => modelo.idModelo !== idModelo));
         SweetAlert.showMessageAlert('¡Éxito!', 'Modelo eliminado exitosamente', 'success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } catch (error) {
         console.error('Error:', error);
         SweetAlert.showMessageAlert('Error', 'Hubo un error al eliminar el modelo', 'error');
@@ -102,7 +105,7 @@ const ProductoEditarModal = ({ producto, onClose }) => {
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                  {producto?.nombreCategoria}
+                  {producto?.categoria?.nombreCategoria || 'Sin Categoría'}
                 </span>
               </div>
             </div>

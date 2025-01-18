@@ -1,7 +1,7 @@
 import API_BASE_URL from './urlHelper.js';
 import { verificarYRenovarToken } from './authToken.js';
 import { jwtDecode } from 'jwt-decode';
-import { checkStatus } from './checkUserStatus';
+import { checkUserStatus } from './checkUserStatus';
 import { logout } from './logout'; // Cambiar a importación nombrada
 import jwtUtils from '../utilities/jwtUtils.jsx';
 
@@ -10,7 +10,6 @@ export async function updateLastActivity() {
     try {
         // Verificar y renovar el token
         await verificarYRenovarToken();
-
         const token = jwtUtils.getTokenFromCookie();
         if (!token) {
             console.error('No token found. Logging out...');
@@ -40,6 +39,6 @@ export async function updateLastActivity() {
         console.error('Error updating last activity:', error);
     } finally {
         // Verificar el estado del usuario
-         await checkStatus();
+         await checkUserStatus();
     }
 }

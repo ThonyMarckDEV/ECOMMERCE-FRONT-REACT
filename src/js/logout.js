@@ -1,6 +1,5 @@
 import API_BASE_URL from './urlHelper.js';
 import jwtUtils from '../utilities/jwtUtils.jsx';
-import { verificarYRenovarToken } from '../js/authToken';
 
 export async function logout() {
 
@@ -10,7 +9,6 @@ export async function logout() {
     const decodedToken = parseJwt(token);
 
     if (token && decodedToken) {
-        await verificarYRenovarToken();
         try {
             // Llamada a la API para actualizar el estado a loggedOff sin encabezado de token
             await fetch(`${API_BASE_URL}/api/logout`, {
