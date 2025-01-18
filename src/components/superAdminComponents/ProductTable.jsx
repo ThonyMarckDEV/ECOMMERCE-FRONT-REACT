@@ -69,7 +69,7 @@ function ProductTable() {
     await verificarYRenovarToken();
     try {
       const token = jwtUtils.getTokenFromCookie();
-      const response = await fetch(`${API_BASE_URL}/api/listarCategoriasProductos`, {
+      const response = await fetch(`${API_BASE_URL}/api/categoriasproductos`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
