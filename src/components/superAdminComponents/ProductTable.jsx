@@ -9,7 +9,9 @@ import { verificarYRenovarToken } from '../../js/authToken';
 
 function ProductTable() {
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías
   const [loading, setLoading] = useState(false);
+  const [loadingCategorias, setLoadingCategorias] = useState(false); // Estado para la carga de categorías
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [editMode, setEditMode] = useState(null); // ID del producto en modo edición
@@ -34,6 +36,7 @@ function ProductTable() {
 
   useEffect(() => {
     cargarProductos(currentPage + 1); // ReactPaginate empieza en 0, la API en 1
+    cargarCategorias(); // Cargar las categorías al montar el componente
   }, [currentPage, searchTerm, filters]);
 
   const cargarProductos = async (page) => {
@@ -58,6 +61,26 @@ function ProductTable() {
       SweetAlert.showMessageAlert('Error', 'Error al cargar productos', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const cargarCategorias = async () => {
+    setLoadingCategorias(true);
+    await verificarYRenovarToken();
+    try {
+      const token = jwtUtils.getTokenFromCookie();
+      const response = await fetch(`${API_BASE_URL}/api/listarCategoriasProductos`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Error al cargar categorías');
+      const data = await response.json();
+      setCategorias(data);
+    } catch (error) {
+      SweetAlert.showMessageAlert('Error', 'Error al cargar categorías', 'error');
+    } finally {
+      setLoadingCategorias(false);
     }
   };
 
@@ -95,14 +118,14 @@ function ProductTable() {
   const handleEditClick = (producto) => {
     setEditMode(producto.idProducto);
     setFormData({
-        nombreProducto: producto.nombreProducto,
-        descripcion: producto.descripcion,
-        precio: producto.precio,
-        idCategoria: producto.idCategoria || '', // Asegúrate de que idCategoria no sea undefined
-        caracteristicas: producto.caracteristicas || '',
-        estado: producto.estado
+      nombreProducto: producto.nombreProducto,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      idCategoria: producto.idCategoria || '', // Asegúrate de que idCategoria no sea undefined
+      caracteristicas: producto.caracteristicas || '',
+      estado: producto.estado
     });
-};
+  };
 
   const handleCancelEdit = () => {
     setEditMode(null);
@@ -114,29 +137,29 @@ function ProductTable() {
   };
 
   const handleUpdateProducto = async (idProducto) => {
-      setLoading(true); // Activar el loader de toda la pantalla
-      await verificarYRenovarToken();
-      try {
-          const token = jwtUtils.getTokenFromCookie();
-          const response = await fetch(`${API_BASE_URL}/api/actualizarProducto/${idProducto}`, {
-              method: 'PUT',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify(formData)
-          });
+    setLoading(true); // Activar el loader de toda la pantalla
+    await verificarYRenovarToken();
+    try {
+      const token = jwtUtils.getTokenFromCookie();
+      const response = await fetch(`${API_BASE_URL}/api/actualizarProducto/${idProducto}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
 
-          if (!response.ok) throw new Error('Error al actualizar producto');
+      if (!response.ok) throw new Error('Error al actualizar producto');
 
-          SweetAlert.showMessageAlert('Éxito', 'Producto actualizado correctamente', 'success');
-          setEditMode(null);
-          cargarProductos(currentPage + 1); // Recargar la lista de productos
-      } catch (error) {
-          SweetAlert.showMessageAlert('Error', 'No se pudo actualizar el producto', 'error');
-      } finally {
-          setLoading(false); // Desactivar el loader de toda la pantalla
-      }
+      SweetAlert.showMessageAlert('Éxito', 'Producto actualizado correctamente', 'success');
+      setEditMode(null);
+      cargarProductos(currentPage + 1); // Recargar la lista de productos
+    } catch (error) {
+      SweetAlert.showMessageAlert('Error', 'No se pudo actualizar el producto', 'error');
+    } finally {
+      setLoading(false); // Desactivar el loader de toda la pantalla
+    }
   };
 
   const handleVerModelos = (producto) => {
@@ -245,19 +268,23 @@ function ProductTable() {
                   )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700 border-b">
-                    {editMode === producto.idProducto ? (
-                        <select
-                            name="idCategoria"
-                            value={formData.idCategoria}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
-                        >
-                            <option value="">Seleccione una categoría</option>
-                            {/* Mapea las categorías disponibles desde la API */}
-                        </select>
-                    ) : (
-                        producto.categoria?.nombreCategoria || 'Sin categoría' // Manejo seguro de categoría
-                    )}
+                  {editMode === producto.idProducto ? (
+                    <select
+                      name="idCategoria"
+                      value={formData.idCategoria}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-blue-400"
+                    >
+                      <option value="">Seleccione una categoría</option>
+                      {categorias.map((categoria) => (
+                        <option key={categoria.idCategoria} value={categoria.idCategoria}>
+                          {categoria.nombreCategoria}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    producto.categoria?.nombreCategoria || 'Sin categoría'
+                  )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700 border-b min-w-[200px] max-w-[300px]">
                   {editMode === producto.idProducto ? (
