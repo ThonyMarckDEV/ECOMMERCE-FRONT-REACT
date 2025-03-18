@@ -22,12 +22,13 @@ function Perfil() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [newProfileImage, setNewProfileImage] = useState(null);
   const [isDniValid, setIsDniValid] = useState(true);
   const [dniValidationData, setDniValidationData] = useState(null);
   const [showDniNote, setShowDniNote] = useState(false);
   const [isDniLocked, setIsDniLocked] = useState(false);
-
+  const [isHoveringImage, setIsHoveringImage] = useState(false);
+  
+  const fileInputRef = useRef(null);
   const token = jwtUtils.getTokenFromCookie();
   const idUsuario = getIdUsuario(token);
   const perfilRef = useRef(null);
@@ -143,28 +144,6 @@ function Perfil() {
   };
 
   useEffect(() => {
-    if (token) {
-      setIsLoading(true); // Activar la pantalla de carga
-      verificarYRenovarToken();
-      fetch(`${API_BASE_URL}/api/perfilCliente`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          setPerfilData(data.data);
-          setIsLoading(false); // Desactivar la pantalla de carga
-        })
-        .catch(error => {
-          console.error("Error al obtener los datos del perfil:", error);
-          setIsLoading(false); // Desactivar la pantalla de carga
-        });
-    }
-  }, [token]);
-
-  useEffect(() => {
     // Desactivar el modo de edición si el clic es fuera del contenedor de perfil
     const handleClickOutside = (e) => {
       if (perfilRef.current && !perfilRef.current.contains(e.target)) {
@@ -205,17 +184,29 @@ function Perfil() {
       });
   };
   
-
-  const handleProfileImageChange = (e) => {
-    setNewProfileImage(e.target.files[0]); // Guardamos la imagen seleccionada
+  // Nueva función para manejar el clic en la imagen de perfil
+  const handleProfileClick = () => {
+    if (isEditing) {
+      // Activar el input de archivo oculto
+      fileInputRef.current.click();
+    }
   };
 
-  const handleProfileImageUpload = () => {
-    if (newProfileImage) {
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Subir la imagen automáticamente cuando se selecciona
+      uploadProfileImage(file);
+    }
+  };
+
+  const uploadProfileImage = (file) => {
+    if (file) {
       const formData = new FormData();
-      formData.append('perfil', newProfileImage); // Asegúrate de que el nombre del campo sea 'perfil'
+      formData.append('perfil', file);
       verificarYRenovarToken();
-      setIsLoading(true); // Activar la pantalla de carga
+      setIsLoading(true);
+      
       fetch(`${API_BASE_URL}/api/uploadProfileImageCliente/${idUsuario}`, {
         method: 'POST',
         headers: {
@@ -225,10 +216,8 @@ function Perfil() {
       })
         .then(response => response.json())
         .then(() => {
-          SweetAlert.showMessageAlert('Exito!', 'Foto de perfil actualizada exitosamente.', 'success'); 
-          // Desactivar el modo de edición después de la subida de la foto
-          setIsEditing(false);
-  
+          SweetAlert.showMessageAlert('Exito!', 'Foto de perfil actualizada exitosamente.', 'success');
+          
           // Obtener nuevamente los datos del perfil para actualizar la foto
           fetch(`${API_BASE_URL}/api/perfilCliente`, {
             method: 'GET',
@@ -238,7 +227,7 @@ function Perfil() {
           })
             .then(response => response.json())
             .then(data => {
-              setPerfilData(data.data); // Actualizar los datos del perfil
+              setPerfilData(data.data);
               setIsLoading(false);
             })
             .catch(error => {
@@ -248,7 +237,7 @@ function Perfil() {
         })
         .catch(error => {
           console.error("Error al subir la foto de perfil:", error);
-          SweetAlert.showMessageAlert('Error', 'Error al actualizar la foto de perfil.', 'error'); 
+          SweetAlert.showMessageAlert('Error', 'Error al actualizar la foto de perfil.', 'error');
           setIsLoading(false);
         });
     }
@@ -269,8 +258,14 @@ function Perfil() {
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl flex flex-col items-center"
           style={{ minHeight: '650px' }}
         >
-          {/* Foto de perfil */}
-          <div className="flex justify-center items-center mb-6">
+          {/* Foto de perfil con opción de cambio al pasar el mouse */}
+          <div 
+            className="flex justify-center items-center mb-6 relative"
+            onMouseEnter={() => isEditing && setIsHoveringImage(true)}
+            onMouseLeave={() => setIsHoveringImage(false)}
+            onClick={handleProfileClick}
+            style={{ cursor: isEditing ? 'pointer' : 'default' }}
+          >
             <img
               src={perfilData.perfil}
               alt="Foto de perfil"
@@ -279,8 +274,40 @@ function Perfil() {
                 width: '160px',
                 height: '160px',
                 backgroundColor: '#f0f0f0',
+                transition: 'opacity 0.3s',
+                opacity: isHoveringImage && isEditing ? '0.7' : '1'
               }}
               loading="eager"
+            />
+            
+            {/* Icono para cambiar foto cuando se pasa el mouse */}
+            {isEditing && isHoveringImage && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="48" 
+                  height="48" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="text-white"
+                >
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+              </div>
+            )}
+            
+            {/* Input oculto para subir la foto */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleProfileImageChange}
+              style={{ display: 'none' }}
             />
           </div>
 
@@ -404,18 +431,6 @@ function Perfil() {
             </div>
           </div>
 
-          {/* Campo para seleccionar la nueva foto de perfil */}
-          {isEditing && (
-            <div className="flex flex-col space-y-2 mb-6">
-              <label className="font-semibold text-gray-700">Foto de perfil</label>
-              <input
-                type="file"
-                onChange={handleProfileImageChange}
-                className="text-gray-800"
-              />
-            </div>
-          )}
-
           {/* Botones para editar y guardar */}
           <div className="flex justify-center md:justify-start space-x-4">
             {!isEditing ? (
@@ -426,34 +441,18 @@ function Perfil() {
                 Editar
               </button>
             ) : (
-              <>
-                <button
-                  onClick={handleSave}
-                  className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
-                >
-                  Guardar Cambios
-                </button>
-                <button
-                  onClick={handleProfileImageUpload}
-                  className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-800"
-                >
-                  Actualizar Foto
-                </button>
-              </>
+              <button
+                onClick={handleSave}
+                className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-600"
+              >
+                Guardar Cambios
+              </button>
             )}
           </div>
         </div>
       </div>
     </div>
   );
-  
-  }
+}
+
 export default Perfil;
-
-
-
-
-
-
-
-
