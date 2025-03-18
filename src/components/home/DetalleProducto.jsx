@@ -523,6 +523,7 @@ function DetalleProducto({ productoId, onClose }) {
               </div>
             </div>
           )}
+          
         </div>
 
         {/* Fixed bottom buttons */}
