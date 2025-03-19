@@ -10,7 +10,7 @@ function tokenExpirado() {
         return true;
     }
 
-    const payload = parseJwt(token);
+    const payload = jwtUtils.parseJwt(token);
     if (!payload || !payload.exp) {
         // console.error("El token es inválido o no contiene un campo de expiración.");
         return true;
@@ -20,7 +20,7 @@ function tokenExpirado() {
     const timeLeft = exp - Date.now(); // Tiempo restante en milisegundos
     const timeLeftInMinutes = Math.floor(timeLeft / 1000 / 60); // Tiempo restante en minutos
 
-   // console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
+  //  console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
 
     const isExpiring = timeLeft <= 120000; // Renovar 2 minutos antes de expirar
     return isExpiring;
@@ -57,7 +57,7 @@ export async function renovarToken() {
         }
     } catch (error) {
         console.error("Error al intentar renovar el token:", error);
-        //logoutAndRedirect();
+       // logoutAndRedirect();
     }
 }
 
@@ -66,31 +66,11 @@ export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
         const nuevoToken = await renovarToken();
         if (nuevoToken) {
-           // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
+          //  console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token");
-            //logoutAndRedirect();
         }
     } else {
         //console.log("El token es válido y no necesita renovación.");
-    }
-}
-
-// Función para decodificar el token
-function parseJwt(token) {
-    if (!token) return null;
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split('') 
-                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
-        );
-        return JSON.parse(jsonPayload);
-    } catch (error) {
-        console.error("Error al decodificar el token JWT:", error);
-        return null;
     }
 }
