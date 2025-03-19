@@ -39,11 +39,11 @@ const Login = ({ closeLoginModal }) => {
       const result = await response.json();
 
       if (response.ok) {
-        //Obtenenos el token y guardamos en token
         const token = result.token;
-
-        // Crear una cookie de sesión
+        const sessionId = result.sessionId;
+        // Guardar el token en una cookie
         document.cookie = `jwt=${token}; path=/`;
+        jwtUtils.setSessionCookie(sessionId);
         
         // Función para actualizar la actividad
         updateLastActivity();
@@ -87,9 +87,10 @@ const Login = ({ closeLoginModal }) => {
   
         if (loginResponse.ok) {
           const token = result.token;
-          
-
+          const sessionId = result.sessionId;
+          // Guardar el token en una cookie
           document.cookie = `jwt=${token}; path=/`;
+          jwtUtils.setSessionCookie(sessionId);
           
           updateLastActivity();
           window.location.href = '/';
