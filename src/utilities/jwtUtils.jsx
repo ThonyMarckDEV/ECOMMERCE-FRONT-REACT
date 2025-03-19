@@ -105,6 +105,55 @@ export const removeTokenFromCookie = () => {
   document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 };
 
+export const  parseJwt = (token) => {
+  if (!token) return null;
+  try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+          atob(base64)
+              .split('')
+              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+      );
+      return JSON.parse(jsonPayload);
+  } catch (error) {
+      console.error("Error al decodificar el token JWT:", error);
+      return null;
+  }
+};
+
+// Cookie utility functions for session management
+export const getSessionIdFromCookie = () => {
+  try {
+    const cookies = document.cookie.split(';');
+    const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('sessionId='));
+    if (!sessionCookie) return null;
+    return sessionCookie.split('=')[1];
+  } catch (error) {
+    console.error('Error getting session ID from cookie:', error);
+    return null;
+  }
+};
+
+// Additional utility functions for complete cookie management
+export const setSessionCookie = (sessionId) => {
+  try {
+    document.cookie = `sessionId=${sessionId}; path=/`;
+  } catch (error) {
+    console.error('Error setting session cookie:', error);
+  }
+};
+
+export const clearSessionCookie = () => {
+  try {
+    document.cookie = 'sessionId=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+  } catch (error) {
+    console.error('Error clearing session cookie:', error);
+  }
+};
+
+
 export default {
   getEmailVerified,
   getPerfil,
@@ -116,5 +165,9 @@ export default {
   verifyToken,
   getIdCarrito,
   getTokenFromCookie,
-  removeTokenFromCookie
+  removeTokenFromCookie,
+  parseJwt,
+  getSessionIdFromCookie,
+  setSessionCookie,
+  clearSessionCookie
 };
