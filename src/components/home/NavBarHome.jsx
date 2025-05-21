@@ -77,7 +77,7 @@ const Navbar = () => {
               to="/" 
               className="text-2xl tracking-widest text-white hover:text-zinc-200 transition-colors duration-300"
             >
-              ECOMMERCE
+              MELYMARCKSTORE
             </Link>
 
             {/* Desktop Navigation */}
