@@ -9,7 +9,7 @@ function tokenExpirado() {
         // console.log("Token no encontrado en la cookie.");
         return true;
     }
-
+    
     const payload = jwtUtils.parseJwt(token);
     if (!payload || !payload.exp) {
         // console.error("El token es inválido o no contiene un campo de expiración.");
