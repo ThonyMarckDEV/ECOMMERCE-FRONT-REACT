@@ -1,5 +1,5 @@
 // src/js/urlHelper.js
 
-const API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRob255bWFyY2szODUyMTN4ZEBnbWFpbC5jb20ifQ.i2LQzVYFJwQ0uRFQDDuGvsgqNlfNXeEH8-pm_GbUhqQ";
+const API_TOKEN = process.env.REACT_APP_API_TOKEN;
 
 export default API_TOKEN
